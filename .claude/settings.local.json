@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(taskkill:*)",
+      "Bash(cmd /c \"taskkill /F /PID 10768\")",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(rd /s /q node_modules)"
+    ]
+  }
+}
