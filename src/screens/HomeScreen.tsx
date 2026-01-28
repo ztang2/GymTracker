@@ -1,61 +1,217 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  Alert,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { HomeScreenProps } from '../navigation/types';
-import { getRecentWorkouts, type WorkoutSession } from '../services';
+import {
+  getRecentWorkouts,
+  getWorkoutStatsByRange,
+  getUserProfile,
+  getLevelInfo,
+  type WorkoutSession,
+  type LevelInfo,
+} from '../services';
+import {
+  StatCard,
+  ActionButton,
+  WorkoutHistoryCard,
+  LoadingState,
+  EmptyState,
+  XPProgressBar,
+} from '../components';
+import { colors, typography, spacing } from '../constants/theme';
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
+  const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
+  const [weeklyMinutes, setWeeklyMinutes] = useState(0);
+  const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadWorkouts();
-  }, []);
+  // Reload data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [])
+  );
 
-  const loadWorkouts = async () => {
+  const loadData = async () => {
     try {
-      const recent = await getRecentWorkouts('test-user-123', 10);
+      // Fetch recent workouts, weekly stats, and user profile
+      const [recent, stats, profile] = await Promise.all([
+        getRecentWorkouts('test-user-123', 8),
+        getWorkoutStatsByRange('test-user-123', 'week'),
+        getUserProfile('test-user-123'),
+      ]);
+
       setWorkouts(recent);
+      setWeeklyWorkouts(stats.total_workouts);
+      setWeeklyMinutes(stats.total_duration_minutes);
+
+      // Calculate level info from profile
+      if (profile) {
+        setLevelInfo(getLevelInfo(profile.total_xp));
+      }
     } catch (error) {
-      console.error('Failed to load workouts:', error);
+      console.error('Failed to load data:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  }, []);
+
+  const handleNewWorkout = () => {
+    navigation.navigate('ActiveWorkoutScreen');
+  };
+
+  const handleSetGoal = () => {
+    navigation.navigate('GoalSettingScreen');
+  };
+
+  const handleWorkoutPress = (workoutId: string) => {
+    navigation.navigate('WorkoutDetailScreen', { workoutId });
+  };
+
+  // Cycle through colors for workout cards
+  const accentColors = [colors.purple, colors.pink, colors.teal, colors.orange];
+
+  if (loading) {
+    return <LoadingState />;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Recent Workouts</Text>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : workouts.length === 0 ? (
-        <Text>No workouts yet. Start your first workout!</Text>
-      ) : (
-        <FlatList
-          data={workouts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.workoutCard}
-              onPress={() => navigation.navigate('WorkoutDetailScreen', { workoutId: item.id })}
-            >
-              <Text style={styles.workoutDate}>{item.date}</Text>
-              <Text style={styles.workoutTime}>
-                {new Date(item.start_time).toLocaleTimeString()}
-              </Text>
-              {item.notes && <Text style={styles.workoutNotes}>{item.notes}</Text>}
-            </TouchableOpacity>
-          )}
-        />
+    <ScrollView
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.appTitle}>FitTrack</Text>
+        <Text style={styles.tagline}>Let's crush your goals today</Text>
+      </View>
+
+      {/* XP Progress Bar */}
+      {levelInfo && (
+        <View style={styles.xpSection}>
+          <XPProgressBar levelInfo={levelInfo} />
+        </View>
       )}
-    </View>
+
+      {/* Weekly Stats Cards */}
+      <View style={styles.statsRow}>
+        <StatCard
+          title="Workouts"
+          value={weeklyWorkouts.toString()}
+          subtitle="This week"
+          gradientColors={colors.gradientPurplePink}
+        />
+        <StatCard
+          title="Minutes"
+          value={weeklyMinutes.toString()}
+          subtitle="This week"
+          gradientColors={[colors.pink, colors.pinkLight]}
+        />
+      </View>
+
+      {/* Quick Start Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Quick Start</Text>
+        <View style={styles.quickStartRow}>
+          <ActionButton
+            title="New Workout"
+            icon="barbell"
+            onPress={handleNewWorkout}
+            gradientColors={colors.gradientTealGreen}
+          />
+          <ActionButton
+            title="Set Goal"
+            icon="flag"
+            onPress={handleSetGoal}
+            gradientColors={colors.gradientOrange}
+          />
+        </View>
+      </View>
+
+      {/* Recent Workouts Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Recent Workouts</Text>
+        {workouts.length === 0 ? (
+          <EmptyState
+            title="No Workouts"
+            message="No workouts yet. Start your first workout!"
+            actionLabel="New Workout"
+            onAction={handleNewWorkout}
+          />
+        ) : (
+          <View style={styles.workoutsList}>
+            {workouts.map((workout, index) => (
+              <WorkoutHistoryCard
+                key={workout.id}
+                workout={workout}
+                onPress={() => handleWorkoutPress(workout.id)}
+                accentColor={accentColors[index % accentColors.length]}
+              />
+            ))}
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  workoutCard: { padding: 15, backgroundColor: '#f0f0f0', borderRadius: 8, marginBottom: 10 },
-  workoutDate: { fontSize: 18, fontWeight: '600' },
-  workoutTime: { fontSize: 14, color: '#666', marginTop: 4 },
-  workoutNotes: { fontSize: 12, color: '#999', marginTop: 4 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.lg,
+  },
+  appTitle: {
+    ...typography.largeTitle,
+    marginBottom: spacing.xs,
+  },
+  tagline: {
+    ...typography.body,
+    color: colors.textSecondary,
+  },
+  xpSection: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.xl,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.xl,
+    gap: spacing.md,
+    marginBottom: spacing.xxl,
+  },
+  section: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.xxl,
+  },
+  sectionTitle: {
+    ...typography.title2,
+    marginBottom: spacing.lg,
+  },
+  quickStartRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  workoutsList: {
+    gap: spacing.md,
+  },
 });

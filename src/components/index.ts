@@ -1,2 +1,29 @@
 // Export your components here
-// Example: export { default as Button } from './Button';
+export { default as StatCard } from './StatCard';
+export { default as TimeRangeSelector } from './TimeRangeSelector';
+export { default as ContributionCalendar } from './ContributionCalendar';
+export { default as ProgressBar } from './ProgressBar';
+export { default as WorkoutTrendChart } from './WorkoutTrendChart';
+export { default as CategoryChart } from './CategoryChart';
+export { default as ExerciseFrequencyList } from './ExerciseFrequencyList';
+export { default as LoadingState } from './LoadingState';
+export { default as EmptyState } from './EmptyState';
+
+// FitTrack UI components
+export { default as ActionButton } from './ActionButton';
+export { default as WorkoutHistoryCard } from './WorkoutHistoryCard';
+export { default as MonthCalendar } from './MonthCalendar';
+export { default as DailyProgressBar } from './DailyProgressBar';
+export { default as GoalProgressCard } from './GoalProgressCard';
+export { default as UserProfileCard } from './UserProfileCard';
+export { default as SettingsMenuItem } from './SettingsMenuItem';
+
+// Gamification components
+export { default as WorkoutSummaryModal } from './WorkoutSummaryModal';
+export { default as XPProgressBar } from './XPProgressBar';
+export { default as LevelBadge } from './LevelBadge';
+export { default as BadgeCard } from './BadgeCard';
+export { default as BadgeUnlockedModal } from './BadgeUnlockedModal';
+export { default as PRBadge } from './PRBadge';
+export { default as PRCelebrationModal } from './PRCelebrationModal';
+export { default as SaveAsTemplateModal } from './SaveAsTemplateModal';

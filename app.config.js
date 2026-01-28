@@ -28,6 +28,14 @@ export default {
     web: {
       favicon: './assets/favicon.png',
     },
+    plugins: [
+      [
+        'expo-notifications',
+        {
+          color: '#14B8A6',
+        },
+      ],
+    ],
     extra: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY,

@@ -1,82 +1,191 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform } from 'react-native';
 import type {
   MainTabParamList,
   HomeStackParamList,
-  WorkoutStackParamList,
-  ExercisesStackParamList,
+  CalendarStackParamList,
+  ProgressStackParamList,
+  ProfileStackParamList,
 } from './types';
 import {
   HomeScreen,
   WorkoutDetailScreen,
   WorkoutScreen,
+  ActiveWorkoutScreen,
   ExerciseSelectionScreen,
   ExerciseListScreen,
   ExerciseDetailScreen,
+  CalendarScreen,
+  ProgressScreen,
+  ExerciseProgressScreen,
+  ProfileScreen,
+  GoalSettingScreen,
+  AchievementsScreen,
+  TemplateListScreen,
 } from '../screens';
+import { colors } from '../constants/theme';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const HomeStack = createStackNavigator<HomeStackParamList>();
-const WorkoutStack = createStackNavigator<WorkoutStackParamList>();
-const ExercisesStack = createStackNavigator<ExercisesStackParamList>();
+const CalendarStack = createStackNavigator<CalendarStackParamList>();
+const ProgressStack = createStackNavigator<ProgressStackParamList>();
+const ProfileStack = createStackNavigator<ProfileStackParamList>();
+
+// Common screen options for dark theme
+const screenOptions = {
+  headerStyle: {
+    backgroundColor: colors.background,
+  },
+  headerTintColor: colors.textPrimary,
+  headerTitleStyle: {
+    color: colors.textPrimary,
+  },
+};
 
 function HomeNavigator() {
   return (
-    <HomeStack.Navigator>
-      <HomeStack.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Home' }} />
+    <HomeStack.Navigator screenOptions={screenOptions}>
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
       <HomeStack.Screen
         name="WorkoutDetailScreen"
         component={WorkoutDetailScreen}
         options={{ title: 'Workout Details' }}
       />
-    </HomeStack.Navigator>
-  );
-}
-
-function WorkoutNavigator() {
-  return (
-    <WorkoutStack.Navigator>
-      <WorkoutStack.Screen
+      <HomeStack.Screen
         name="WorkoutScreen"
         component={WorkoutScreen}
-        options={{ title: 'Workout' }}
+        options={{ title: 'New Workout' }}
       />
-      <WorkoutStack.Screen
+      <HomeStack.Screen
+        name="ActiveWorkoutScreen"
+        component={ActiveWorkoutScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
         name="ExerciseSelectionScreen"
         component={ExerciseSelectionScreen}
         options={{ title: 'Add Exercise' }}
       />
-    </WorkoutStack.Navigator>
-  );
-}
-
-function ExercisesNavigator() {
-  return (
-    <ExercisesStack.Navigator>
-      <ExercisesStack.Screen
+      <HomeStack.Screen
         name="ExerciseListScreen"
         component={ExerciseListScreen}
-        options={{ title: 'Exercises' }}
+        options={{ title: 'Exercise Library' }}
       />
-      <ExercisesStack.Screen
+      <HomeStack.Screen
         name="ExerciseDetailScreen"
         component={ExerciseDetailScreen}
         options={{ title: 'Exercise Details' }}
       />
-    </ExercisesStack.Navigator>
+      <HomeStack.Screen
+        name="GoalSettingScreen"
+        component={GoalSettingScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="AchievementsScreen"
+        component={AchievementsScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="TemplateListScreen"
+        component={TemplateListScreen}
+        options={{ headerShown: false }}
+      />
+    </HomeStack.Navigator>
+  );
+}
+
+function CalendarNavigator() {
+  return (
+    <CalendarStack.Navigator screenOptions={screenOptions}>
+      <CalendarStack.Screen
+        name="CalendarScreen"
+        component={CalendarScreen}
+        options={{ headerShown: false }}
+      />
+    </CalendarStack.Navigator>
+  );
+}
+
+function ProgressNavigator() {
+  return (
+    <ProgressStack.Navigator screenOptions={screenOptions}>
+      <ProgressStack.Screen
+        name="ProgressScreen"
+        component={ProgressScreen}
+        options={{ headerShown: false }}
+      />
+      <ProgressStack.Screen
+        name="ExerciseProgressScreen"
+        component={ExerciseProgressScreen}
+        options={{ title: 'Exercise Progress' }}
+      />
+    </ProgressStack.Navigator>
+  );
+}
+
+function ProfileNavigator() {
+  return (
+    <ProfileStack.Navigator screenOptions={screenOptions}>
+      <ProfileStack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="AchievementsScreen"
+        component={AchievementsScreen}
+        options={{ headerShown: false }}
+      />
+    </ProfileStack.Navigator>
   );
 }
 
 export default function AppNavigator() {
+  const insets = useSafeAreaInsets();
+
+  // On Android, ensure minimum spacing even if insets aren't detected (common in Expo Go)
+  // On iOS, safe area insets are always reliable
+  const bottomInset = Platform.OS === 'android'
+    ? Math.max(insets.bottom, 20)
+    : insets.bottom;
+
   return (
     <NavigationContainer>
       <Tab.Navigator
-        screenOptions={{
+        screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: '#2196F3',
-          tabBarInactiveTintColor: '#666',
-        }}
+          tabBarActiveTintColor: colors.pink,
+          tabBarInactiveTintColor: colors.textTertiary,
+          tabBarStyle: {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+            paddingBottom: bottomInset + 4,
+            paddingTop: 4,
+            height: 60 + bottomInset,
+          },
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName: keyof typeof Ionicons.glyphMap;
+
+            if (route.name === 'HomeTab') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'CalendarTab') {
+              iconName = focused ? 'calendar' : 'calendar-outline';
+            } else if (route.name === 'ProgressTab') {
+              iconName = focused ? 'trending-up' : 'trending-up-outline';
+            } else if (route.name === 'ProfileTab') {
+              iconName = focused ? 'person' : 'person-outline';
+            } else {
+              iconName = 'help-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+        })}
       >
         <Tab.Screen
           name="HomeTab"
@@ -84,14 +193,19 @@ export default function AppNavigator() {
           options={{ tabBarLabel: 'Home' }}
         />
         <Tab.Screen
-          name="WorkoutTab"
-          component={WorkoutNavigator}
-          options={{ tabBarLabel: 'Workout' }}
+          name="CalendarTab"
+          component={CalendarNavigator}
+          options={{ tabBarLabel: 'Calendar' }}
         />
         <Tab.Screen
-          name="ExercisesTab"
-          component={ExercisesNavigator}
-          options={{ tabBarLabel: 'Exercises' }}
+          name="ProgressTab"
+          component={ProgressNavigator}
+          options={{ tabBarLabel: 'Progress' }}
+        />
+        <Tab.Screen
+          name="ProfileTab"
+          component={ProfileNavigator}
+          options={{ tabBarLabel: 'Profile' }}
         />
       </Tab.Navigator>
     </NavigationContainer>
