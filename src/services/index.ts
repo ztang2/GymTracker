@@ -1,5 +1,6 @@
 export { supabase } from './supabase';
 export { seedExercises, SEED_EXERCISES } from './seedData';
+export * from './authService';
 export * from './exerciseService';
 export * from './workoutService';
 export * from './workoutLogger';

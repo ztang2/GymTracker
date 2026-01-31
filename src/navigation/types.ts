@@ -2,6 +2,12 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { StackScreenProps } from '@react-navigation/stack';
 
+// Auth stack params
+export type AuthStackParamList = {
+  LoginScreen: undefined;
+  SignUpScreen: undefined;
+};
+
 // Main bottom tab navigator params (FitTrack UI: Home, Calendar, Progress, Profile)
 export type MainTabParamList = {
   HomeTab: undefined;

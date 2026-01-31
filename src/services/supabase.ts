@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Type-safe environment variable access
 const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl as string;
@@ -12,12 +13,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Create Supabase client with optimal settings
+// Create Supabase client with auth persistence
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    // Disable auth initially for anonymous usage
-    autoRefreshToken: false,
-    persistSession: false,
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
     detectSessionInUrl: false,
   },
 });

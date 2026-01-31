@@ -1,3 +1,8 @@
+// Auth screens
+export { default as LoginScreen } from './LoginScreen';
+export { default as SignUpScreen } from './SignUpScreen';
+
+// Main screens
 export { default as HomeScreen } from './HomeScreen';
 export { default as WorkoutDetailScreen } from './WorkoutDetailScreen';
 export { default as WorkoutScreen } from './WorkoutScreen';

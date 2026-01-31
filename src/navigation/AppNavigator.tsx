@@ -3,8 +3,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Platform } from 'react-native';
+import { Platform, View, ActivityIndicator } from 'react-native';
 import type {
+  AuthStackParamList,
   MainTabParamList,
   HomeStackParamList,
   CalendarStackParamList,
@@ -12,6 +13,8 @@ import type {
   ProfileStackParamList,
 } from './types';
 import {
+  LoginScreen,
+  SignUpScreen,
   HomeScreen,
   WorkoutDetailScreen,
   WorkoutScreen,
@@ -27,8 +30,10 @@ import {
   AchievementsScreen,
   TemplateListScreen,
 } from '../screens';
+import { useAuth } from '../contexts';
 import { colors } from '../constants/theme';
 
+const AuthStack = createStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const HomeStack = createStackNavigator<HomeStackParamList>();
 const CalendarStack = createStackNavigator<CalendarStackParamList>();
@@ -45,6 +50,15 @@ const screenOptions = {
     color: colors.textPrimary,
   },
 };
+
+function AuthNavigator() {
+  return (
+    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+      <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
+      <AuthStack.Screen name="SignUpScreen" component={SignUpScreen} />
+    </AuthStack.Navigator>
+  );
+}
 
 function HomeNavigator() {
   return (
@@ -145,7 +159,7 @@ function ProfileNavigator() {
   );
 }
 
-export default function AppNavigator() {
+function MainTabNavigator() {
   const insets = useSafeAreaInsets();
 
   // On Android, ensure minimum spacing even if insets aren't detected (common in Expo Go)
@@ -155,7 +169,6 @@ export default function AppNavigator() {
     : insets.bottom;
 
   return (
-    <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -208,6 +221,24 @@ export default function AppNavigator() {
           options={{ tabBarLabel: 'Profile' }}
         />
       </Tab.Navigator>
+  );
+}
+
+export default function AppNavigator() {
+  const { user, loading } = useAuth();
+
+  // Show loading screen while checking auth state
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.purple} />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {user ? <MainTabNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 }

@@ -23,6 +23,7 @@ import {
   saveWorkout,
   type ActiveWorkoutState,
 } from '../services/workoutLogger';
+import { useAuth } from '../contexts';
 import { colors, spacing, borderRadius, typography } from '../constants/theme';
 import {
   WorkoutSummaryModal,
@@ -64,6 +65,7 @@ const showAlert = (
 
 export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenProps) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
 
   // Workout state
   const [startTime] = useState(new Date());
@@ -161,8 +163,9 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
 
   // Fetch last performance data when an exercise is added
   const fetchLastPerformance = useCallback(async (exerciseId: string) => {
+    if (!user) return;
     try {
-      const perf = await getLastPerformance('test-user-123', exerciseId);
+      const perf = await getLastPerformance(user.id, exerciseId);
       if (perf) {
         setLastPerformanceData((prev) => {
           const newMap = new Map(prev);

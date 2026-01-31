@@ -25,9 +25,11 @@ import {
   EmptyState,
   XPProgressBar,
 } from '../components';
+import { useAuth } from '../contexts';
 import { colors, typography, spacing } from '../constants/theme';
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
+  const { user } = useAuth();
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [weeklyMinutes, setWeeklyMinutes] = useState(0);
@@ -38,17 +40,21 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   // Reload data every time the screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      loadData();
-    }, [])
+      if (user) {
+        loadData();
+      }
+    }, [user])
   );
 
   const loadData = async () => {
+    if (!user) return;
+    
     try {
       // Fetch recent workouts, weekly stats, and user profile
       const [recent, stats, profile] = await Promise.all([
-        getRecentWorkouts('test-user-123', 8),
-        getWorkoutStatsByRange('test-user-123', 'week'),
-        getUserProfile('test-user-123'),
+        getRecentWorkouts(user.id, 8),
+        getWorkoutStatsByRange(user.id, 'week'),
+        getUserProfile(user.id),
       ]);
 
       setWorkouts(recent);
