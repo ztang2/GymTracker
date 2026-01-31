@@ -1,39 +1,55 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import type { ProgressScreenProps } from '../navigation/types';
 import {
-  StatCard,
-  TimeRangeSelector,
-  DailyProgressBar,
-  GoalProgressCard,
+  SummaryCardRow,
+  WeeklyActivityChart,
+  MonthlyOverview,
+  VolumeTrendChart,
+  RecentPRsList,
+  MuscleGroupDistribution,
   LoadingState,
   EmptyState,
 } from '../components';
-import type { DayProgress } from '../components/DailyProgressBar';
-import type { Goal } from '../components/GoalProgressCard';
+import type { SummaryCardData } from '../components/SummaryCardRow';
+import type { DayActivityData } from '../components/WeeklyActivityChart';
+import type { WeekOverviewData } from '../components/MonthlyOverview';
+import type { WeekVolumeData } from '../components/VolumeTrendChart';
+import type { PRDisplayData } from '../components/RecentPRsList';
+import type { CategoryWorkoutData } from '../components/MuscleGroupDistribution';
 import {
-  getWorkoutStatsByRange,
   getDailyWorkoutCounts,
-  getTotalVolume,
-  getDateRangeForTimeRange,
+  getCategoryDistribution,
 } from '../services/statsService';
-import type { TimeRange, WorkoutStats } from '../services/types';
+import { getUserPRs } from '../services/prService';
+import { getWorkoutsByDateRange, getWorkoutSession } from '../services/workoutService';
 import { colors, typography, spacing } from '../constants/theme';
 import { useAuth } from '../contexts';
+import {
+  formatISODate,
+  parseISODate,
+  subtractDays,
+  getToday,
+  getDayOfWeek,
+  formatDate,
+} from '../utils/dateUtils';
 
 export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   const { user } = useAuth();
 
-  const [selectedRange, setSelectedRange] = useState<TimeRange>('month');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Data states
-  const [workoutStats, setWorkoutStats] = useState<WorkoutStats | null>(null);
-  const [weeklyProgress, setWeeklyProgress] = useState<DayProgress[]>([]);
-  const [monthlyGoals, setMonthlyGoals] = useState<Goal[]>([]);
-  const [totalVolume, setTotalVolume] = useState(0);
+  const [summaryCards, setSummaryCards] = useState<SummaryCardData[]>([]);
+  const [weeklyActivity, setWeeklyActivity] = useState<DayActivityData[]>([]);
+  const [monthlyOverview, setMonthlyOverview] = useState<WeekOverviewData[]>([]);
+  const [volumeTrend, setVolumeTrend] = useState<WeekVolumeData[]>([]);
+  const [recentPRs, setRecentPRs] = useState<PRDisplayData[]>([]);
+  const [muscleGroups, setMuscleGroups] = useState<CategoryWorkoutData[]>([]);
+  const [hasAnyData, setHasAnyData] = useState(false);
 
   const userId = user!.id;
 
@@ -41,65 +57,230 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
     try {
       setError(null);
 
-      const { startDate, endDate } = getDateRangeForTimeRange(selectedRange);
+      const today = getToday();
+      const todayStr = formatISODate(today);
 
-      // Fetch stats and daily counts
-      const [stats, dailyCounts, volume] = await Promise.all([
-        getWorkoutStatsByRange(userId, selectedRange),
-        getDailyWorkoutCounts(userId, startDate, endDate),
-        getTotalVolume(userId, startDate, endDate),
+      // Date ranges
+      const thisWeekStart = formatISODate(subtractDays(today, 6)); // Last 7 days
+      const lastWeekStart = formatISODate(subtractDays(today, 13));
+      const lastWeekEnd = formatISODate(subtractDays(today, 7));
+      const monthStart = formatISODate(subtractDays(today, 29)); // Last 30 days
+      const twelveWeeksStart = formatISODate(subtractDays(today, 84)); // Last 12 weeks
+
+      // Fetch all workouts for last 30 days
+      const allWorkouts = await getWorkoutsByDateRange(userId, monthStart, todayStr);
+      setHasAnyData(allWorkouts.length > 0);
+
+      // ========== SUMMARY CARDS ==========
+      const thisWeekWorkouts = allWorkouts.filter(w => w.date >= thisWeekStart);
+      const lastWeekWorkouts = allWorkouts.filter(
+        w => w.date >= lastWeekStart && w.date <= lastWeekEnd
+      );
+
+      // Calculate this week's stats
+      let thisWeekVolume = 0;
+      let thisWeekTime = 0;
+      for (const workout of thisWeekWorkouts) {
+        const fullWorkout = await getWorkoutSession(workout.id, userId);
+        if (fullWorkout) {
+          thisWeekTime += fullWorkout.duration_minutes || 0;
+          for (const exercise of fullWorkout.exercises) {
+            for (const set of exercise.sets) {
+              thisWeekVolume += set.reps * (set.weight_kg || 0);
+            }
+          }
+        }
+      }
+
+      // Calculate last week's stats
+      let lastWeekVolume = 0;
+      let lastWeekTime = 0;
+      for (const workout of lastWeekWorkouts) {
+        const fullWorkout = await getWorkoutSession(workout.id, userId);
+        if (fullWorkout) {
+          lastWeekTime += fullWorkout.duration_minutes || 0;
+          for (const exercise of fullWorkout.exercises) {
+            for (const set of exercise.sets) {
+              lastWeekVolume += set.reps * (set.weight_kg || 0);
+            }
+          }
+        }
+      }
+
+      // Build summary cards
+      const workoutComparison = thisWeekWorkouts.length - lastWeekWorkouts.length;
+      const volumeComparison = Math.round(thisWeekVolume - lastWeekVolume);
+      const timeComparison = thisWeekTime - lastWeekTime;
+
+      setSummaryCards([
+        {
+          label: 'Workouts',
+          value: thisWeekWorkouts.length,
+          comparison: {
+            value: workoutComparison,
+            trend: workoutComparison > 0 ? 'up' : workoutComparison < 0 ? 'down' : 'neutral',
+          },
+        },
+        {
+          label: 'Volume',
+          value: Math.round(thisWeekVolume),
+          unit: 'kg',
+          comparison: {
+            value: volumeComparison,
+            trend: volumeComparison > 0 ? 'up' : volumeComparison < 0 ? 'down' : 'neutral',
+          },
+        },
+        {
+          label: 'Time',
+          value: thisWeekTime,
+          unit: 'min',
+          comparison: {
+            value: timeComparison,
+            trend: timeComparison > 0 ? 'up' : timeComparison < 0 ? 'down' : 'neutral',
+          },
+        },
       ]);
 
-      setWorkoutStats(stats);
-      setTotalVolume(volume);
-
-      // Build weekly progress data (last 7 days)
-      const today = new Date();
-      const weekData: DayProgress[] = [];
-      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
+      // ========== WEEKLY ACTIVITY CHART ==========
+      const weeklyData: DayActivityData[] = [];
       for (let i = 6; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        // Use local date to avoid UTC timezone shift
-        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const dayData = dailyCounts.find(d => d.date === dateStr);
+        const date = subtractDays(today, i);
+        const dateStr = formatISODate(date);
+        const dayWorkouts = allWorkouts.filter(w => w.date === dateStr);
 
-        weekData.push({
-          day: dayNames[date.getDay()],
+        let dayVolume = 0;
+        for (const workout of dayWorkouts) {
+          const fullWorkout = await getWorkoutSession(workout.id, userId);
+          if (fullWorkout) {
+            for (const exercise of fullWorkout.exercises) {
+              for (const set of exercise.sets) {
+                dayVolume += set.reps * (set.weight_kg || 0);
+              }
+            }
+          }
+        }
+
+        weeklyData.push({
+          day: getDayOfWeek(date),
           date: date.getDate(),
-          completed: (dayData?.count || 0) > 0,
-          workoutCount: dayData?.count || 0,
+          volume: Math.round(dayVolume),
+          workoutCount: dayWorkouts.length,
+          isToday: i === 0,
         });
       }
-      setWeeklyProgress(weekData);
+      setWeeklyActivity(weeklyData);
 
-      // Build monthly goals (hardcoded for now)
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-      const msStart = new Date(currentYear, currentMonth, 1);
-      const msEnd = new Date(currentYear, currentMonth + 1, 0);
-      const monthStart = `${msStart.getFullYear()}-${String(msStart.getMonth() + 1).padStart(2, '0')}-${String(msStart.getDate()).padStart(2, '0')}`;
-      const monthEnd = `${msEnd.getFullYear()}-${String(msEnd.getMonth() + 1).padStart(2, '0')}-${String(msEnd.getDate()).padStart(2, '0')}`;
+      // ========== MONTHLY OVERVIEW (last 4 weeks) ==========
+      const weeks: WeekOverviewData[] = [];
+      const weekLabels = ['This Week', 'Last Week', '2 Weeks Ago', '3 Weeks Ago'];
 
-      // Count workouts this month
-      const monthWorkouts = dailyCounts.filter(d => d.date >= monthStart && d.date <= monthEnd && d.count > 0).length;
+      for (let weekIndex = 0; weekIndex < 4; weekIndex++) {
+        const days: boolean[] = [];
+        let totalWorkouts = 0;
 
-      setMonthlyGoals([
-        {
-          title: 'Workout Days',
-          current: monthWorkouts,
-          target: 20,
-          color: colors.teal,
-        },
-        {
-          title: 'Total Volume',
-          current: Math.round(volume),
-          target: 10000,
-          color: colors.orange,
-          unit: 'kg',
-        },
-      ]);
+        for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+          const date = subtractDays(today, weekIndex * 7 + dayOffset);
+          const dateStr = formatISODate(date);
+          const dayWorkouts = allWorkouts.filter(w => w.date === dateStr);
+          const hasWorkout = dayWorkouts.length > 0;
+          
+          days.unshift(hasWorkout); // Add to front to get Mon-Sun order
+          if (hasWorkout) totalWorkouts += dayWorkouts.length;
+        }
+
+        weeks.push({
+          label: weekLabels[weekIndex],
+          days,
+          totalWorkouts,
+        });
+      }
+      setMonthlyOverview(weeks);
+
+      // ========== VOLUME TREND (last 12 weeks) ==========
+      const volumeData: WeekVolumeData[] = [];
+      for (let weekNum = 11; weekNum >= 0; weekNum--) {
+        const weekEnd = subtractDays(today, weekNum * 7);
+        const weekStart = subtractDays(weekEnd, 6);
+        const weekStartStr = formatISODate(weekStart);
+        const weekEndStr = formatISODate(weekEnd);
+
+        const weekWorkouts = await getWorkoutsByDateRange(userId, weekStartStr, weekEndStr);
+        
+        let weekVolume = 0;
+        for (const workout of weekWorkouts) {
+          const fullWorkout = await getWorkoutSession(workout.id, userId);
+          if (fullWorkout) {
+            for (const exercise of fullWorkout.exercises) {
+              for (const set of exercise.sets) {
+                weekVolume += set.reps * (set.weight_kg || 0);
+              }
+            }
+          }
+        }
+
+        volumeData.push({
+          week: formatDate(weekStart, 'MMM DD'),
+          volume: Math.round(weekVolume),
+          weekNumber: 11 - weekNum,
+        });
+      }
+      setVolumeTrend(volumeData);
+
+      // ========== RECENT PRS ==========
+      const allPRs = await getUserPRs(userId);
+      
+      // Determine recency (gold = this week, silver = this month, bronze = older)
+      const prsWithRecency: PRDisplayData[] = allPRs.slice(0, 5).map(pr => {
+        const prDate = parseISODate(pr.achieved_at.split('T')[0]);
+        const daysSince = Math.floor((today.getTime() - prDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        let recency: 'gold' | 'silver' | 'bronze';
+        if (daysSince <= 7) recency = 'gold';
+        else if (daysSince <= 30) recency = 'silver';
+        else recency = 'bronze';
+
+        // Format record type
+        let recordType = '';
+        let value = '';
+        switch (pr.record_type) {
+          case 'max_weight':
+            recordType = 'Max Weight';
+            value = `${pr.value.toFixed(1)} kg`;
+            break;
+          case 'max_reps':
+            recordType = 'Max Reps';
+            value = `${pr.value} reps`;
+            break;
+          case 'estimated_1rm':
+            recordType = 'Est. 1RM';
+            value = `${pr.value.toFixed(1)} kg`;
+            break;
+          case 'max_volume':
+            recordType = 'Max Volume';
+            value = `${pr.value.toLocaleString()} kg`;
+            break;
+        }
+
+        return {
+          id: pr.id,
+          exerciseName: (pr.exercise as any)?.name || 'Unknown Exercise',
+          recordType,
+          value,
+          date: pr.achieved_at.split('T')[0],
+          recency,
+        };
+      });
+      setRecentPRs(prsWithRecency);
+
+      // ========== MUSCLE GROUP DISTRIBUTION ==========
+      const distribution = await getCategoryDistribution(userId, monthStart, todayStr);
+      const muscleData: CategoryWorkoutData[] = distribution.map(d => ({
+        category: d.category.charAt(0).toUpperCase() + d.category.slice(1),
+        count: d.count,
+        percentage: d.percentage,
+      }));
+      setMuscleGroups(muscleData);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load progress data');
       console.error('Progress fetch error:', err);
@@ -107,20 +288,19 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [selectedRange, userId]);
+  }, [userId]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // Use useFocusEffect to refresh data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      fetchData();
+    }, [fetchData])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
     fetchData();
-  };
-
-  const onRangeChange = (range: TimeRange) => {
-    setSelectedRange(range);
-    setLoading(true);
   };
 
   if (loading && !refreshing) {
@@ -140,7 +320,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
     );
   }
 
-  if (!workoutStats || workoutStats.total_workouts === 0) {
+  if (!hasAnyData) {
     return (
       <View style={styles.container}>
         <EmptyState
@@ -158,64 +338,48 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.purpleLight} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={colors.purpleLight}
+        />
+      }
     >
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Progress</Text>
-        <Text style={styles.headerSubtitle}>Monitor your journey</Text>
+        <Text style={styles.headerSubtitle}>Your fitness journey at a glance</Text>
       </View>
 
-      {/* Time Range Selector */}
-      <TimeRangeSelector selectedRange={selectedRange} onSelectRange={onRangeChange} />
-
-      {/* This Week Progress */}
-      {weeklyProgress.length > 0 && (
-        <View style={styles.section}>
-          <DailyProgressBar weekData={weeklyProgress} title="This Week" />
-        </View>
-      )}
-
-      {/* Monthly Goals */}
-      {monthlyGoals.length > 0 && (
-        <View style={styles.section}>
-          <GoalProgressCard goals={monthlyGoals} title="Monthly Goals" />
-        </View>
-      )}
-
-      {/* Key Metrics Grid */}
+      {/* Summary Cards */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Overview</Text>
-        <View style={styles.metricsGrid}>
-          <View style={styles.metricRow}>
-            <StatCard
-              title="Total Workouts"
-              value={workoutStats.total_workouts}
-              variant="gradient"
-              gradientColors={colors.gradientPurplePink}
-            />
-            <StatCard
-              title="This Month"
-              value={workoutStats.workouts_this_month}
-              subtitle="Last 30 days"
-              variant="gradient"
-              gradientColors={colors.gradientTealGreen}
-            />
-          </View>
+        <SummaryCardRow cards={summaryCards} />
+      </View>
 
-          <View style={styles.metricRow}>
-            <StatCard
-              title="Avg Duration"
-              value={`${workoutStats.avg_workout_duration} min`}
-              subtitle="Per workout"
-            />
-            <StatCard
-              title="Total Time"
-              value={`${Math.round(workoutStats.total_duration_minutes / 60)} hrs`}
-              subtitle={`${workoutStats.total_duration_minutes} min`}
-            />
-          </View>
-        </View>
+      {/* Weekly Activity Chart */}
+      <View style={styles.section}>
+        <WeeklyActivityChart weekData={weeklyActivity} />
+      </View>
+
+      {/* Monthly Overview */}
+      <View style={styles.section}>
+        <MonthlyOverview weeks={monthlyOverview} />
+      </View>
+
+      {/* Volume Trend */}
+      <View style={styles.section}>
+        <VolumeTrendChart data={volumeTrend} />
+      </View>
+
+      {/* Recent PRs */}
+      <View style={styles.section}>
+        <RecentPRsList prs={recentPRs} />
+      </View>
+
+      {/* Muscle Group Distribution */}
+      <View style={styles.section}>
+        <MuscleGroupDistribution data={muscleGroups} />
       </View>
 
       {/* Bottom padding */}
@@ -244,19 +408,7 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: spacing.xl,
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    ...typography.title2,
     marginBottom: spacing.lg,
-  },
-  metricsGrid: {
-    gap: spacing.sm,
-  },
-  metricRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
   },
   bottomPadding: {
     height: spacing.xxl,

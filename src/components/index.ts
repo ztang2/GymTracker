@@ -18,6 +18,14 @@ export { default as GoalProgressCard } from './GoalProgressCard';
 export { default as UserProfileCard } from './UserProfileCard';
 export { default as SettingsMenuItem } from './SettingsMenuItem';
 
+// Progress Screen components
+export { default as SummaryCardRow } from './SummaryCardRow';
+export { default as WeeklyActivityChart } from './WeeklyActivityChart';
+export { default as MonthlyOverview } from './MonthlyOverview';
+export { default as VolumeTrendChart } from './VolumeTrendChart';
+export { default as RecentPRsList } from './RecentPRsList';
+export { default as MuscleGroupDistribution } from './MuscleGroupDistribution';
+
 // Gamification components
 export { default as WorkoutSummaryModal } from './WorkoutSummaryModal';
 export { default as XPProgressBar } from './XPProgressBar';
