@@ -61,7 +61,8 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
+        // Use local date to avoid UTC timezone shift
+        const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         const dayData = dailyCounts.find(d => d.date === dateStr);
 
         weekData.push({
@@ -76,8 +77,10 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       // Build monthly goals (hardcoded for now)
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
-      const monthStart = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
-      const monthEnd = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+      const msStart = new Date(currentYear, currentMonth, 1);
+      const msEnd = new Date(currentYear, currentMonth + 1, 0);
+      const monthStart = `${msStart.getFullYear()}-${String(msStart.getMonth() + 1).padStart(2, '0')}-${String(msStart.getDate()).padStart(2, '0')}`;
+      const monthEnd = `${msEnd.getFullYear()}-${String(msEnd.getMonth() + 1).padStart(2, '0')}-${String(msEnd.getDate()).padStart(2, '0')}`;
 
       // Count workouts this month
       const monthWorkouts = dailyCounts.filter(d => d.date >= monthStart && d.date <= monthEnd && d.count > 0).length;

@@ -83,16 +83,20 @@ export default function MonthCalendar({
 
     return (
       <View key={day} style={styles.dayCell}>
-        {/* Glowing ring for workout days */}
-        {workout && !today && (
+        {/* Glowing ring for workout days (also shown on today if workout exists) */}
+        {workout && (
           <View style={[styles.workoutRing, { borderColor: workoutIndicatorColor }]}>
             <View style={[styles.workoutGlow, { backgroundColor: workoutIndicatorColor }]} />
           </View>
         )}
 
-        {/* Pink solid circle for today */}
+        {/* Pink solid circle for today (smaller if also a workout day, so teal ring shows) */}
         {today && (
-          <View style={[styles.todayCircle, { backgroundColor: todayIndicatorColor }]} />
+          <View style={[
+            styles.todayCircle,
+            { backgroundColor: todayIndicatorColor },
+            workout && styles.todayCircleWithWorkout,
+          ]} />
         )}
 
         {/* Day number */}
@@ -214,6 +218,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
     shadowRadius: 8,
+  },
+  // Smaller today circle when overlapping with workout ring
+  todayCircleWithWorkout: {
+    width: '60%',
+    height: '60%',
   },
   dayContent: {
     alignItems: 'center',
