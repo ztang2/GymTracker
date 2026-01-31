@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { CartesianChart, Bar } from 'victory-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, typography, spacing, borderRadius } from '../constants/theme';
 
 export interface DayActivityData {
@@ -20,47 +20,49 @@ export default function WeeklyActivityChart({
   weekData,
   title = 'This Week',
 }: WeeklyActivityChartProps) {
-  // Format data for victory-native
-  const chartData = weekData.map((day, index) => ({
-    x: index,
-    y: day.volume || 0.1, // Minimum value to show empty bars
-    label: day.day,
-    date: day.date,
-    hasWorkout: day.workoutCount > 0,
-    isToday: day.isToday,
-  }));
-
   const maxVolume = Math.max(...weekData.map(d => d.volume), 1);
+  const chartHeight = 180;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       
       <View style={styles.chartContainer}>
-        <CartesianChart
-          data={chartData}
-          xKey="x"
-          yKeys={['y']}
-          domainPadding={{ left: 20, right: 20, top: 20, bottom: 20 }}
-          axisOptions={{
-            labelColor: colors.textSecondary,
-            formatYLabel: (value) => `${Math.round(value)}`,
-            formatXLabel: () => '', // We'll draw custom labels below
-            lineColor: colors.border,
-            lineWidth: 0,
-          }}
-        >
-          {({ points, chartBounds }) => (
-            <Bar
-              points={points.y}
-              chartBounds={chartBounds}
-              color={colors.purpleLight}
-              roundedCorners={{ topLeft: 4, topRight: 4 }}
-              animate={{ type: 'timing', duration: 300 }}
-              barWidth={24}
-            />
-          )}
-        </CartesianChart>
+        <View style={styles.barsRow}>
+          {weekData.map((day, index) => {
+            const heightPercentage = day.volume > 0 ? (day.volume / maxVolume) * 0.85 : 0.05;
+            const barHeight = chartHeight * heightPercentage;
+            const hasWorkout = day.workoutCount > 0;
+
+            return (
+              <View key={index} style={styles.barColumn}>
+                <View style={styles.barWrapper}>
+                  {hasWorkout ? (
+                    <LinearGradient
+                      colors={[colors.purpleLight, colors.purple]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0, y: 1 }}
+                      style={[
+                        styles.bar,
+                        { height: barHeight },
+                        day.isToday && styles.todayBar,
+                      ]}
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        styles.bar,
+                        styles.emptyBar,
+                        { height: barHeight },
+                        day.isToday && styles.todayBar,
+                      ]}
+                    />
+                  )}
+                </View>
+              </View>
+            );
+          })}
+        </View>
       </View>
 
       {/* Custom day labels */}
@@ -95,6 +97,41 @@ const styles = StyleSheet.create({
   chartContainer: {
     height: 180,
     marginBottom: spacing.sm,
+    justifyContent: 'flex-end',
+  },
+  barsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'flex-end',
+    height: '100%',
+    paddingHorizontal: spacing.md,
+  },
+  barColumn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    height: '100%',
+  },
+  barWrapper: {
+    width: 24,
+    justifyContent: 'flex-end',
+  },
+  bar: {
+    width: '100%',
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    minHeight: 4,
+  },
+  emptyBar: {
+    backgroundColor: 'rgba(100, 100, 100, 0.3)',
+  },
+  todayBar: {
+    borderWidth: 2,
+    borderColor: colors.teal,
+    shadowColor: colors.teal,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
   },
   labelsContainer: {
     flexDirection: 'row',
@@ -103,6 +140,7 @@ const styles = StyleSheet.create({
   },
   labelColumn: {
     alignItems: 'center',
+    flex: 1,
   },
   dayLabel: {
     ...typography.caption,
