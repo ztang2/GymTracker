@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,11 @@ import {
   ScrollView,
   RefreshControl,
   Alert,
+  Animated,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { HomeScreenProps } from '../navigation/types';
 import {
   getRecentWorkouts,
@@ -27,6 +30,50 @@ import {
 } from '../components';
 import { useAuth, useTheme } from '../contexts';
 import { typography, spacing } from '../constants/theme';
+
+// Gradient Icon component with pulse animation
+interface GradientIconProps {
+  iconName: keyof typeof Ionicons.glyphMap;
+  gradientColors: readonly [string, string, ...string[]];
+}
+
+function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Create a looping pulse animation
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.05,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+
+    return () => pulse.stop();
+  }, [scaleAnim]);
+
+  return (
+    <Animated.View style={[styles.gradientIconContainer, { transform: [{ scale: scaleAnim }] }]}>
+      <LinearGradient
+        colors={gradientColors as any}
+        style={styles.gradientCircle}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <Ionicons name={iconName} size={28} color="#FFFFFF" />
+      </LinearGradient>
+    </Animated.View>
+  );
+}
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { user } = useAuth();
@@ -118,23 +165,32 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       {/* Weekly Stats Cards */}
       <View style={styles.statsRow}>
-        <StatCard
-          title="Workouts"
-          value={weeklyWorkouts.toString()}
-          subtitle="This week"
-          gradientColors={colors.gradientPurplePink}
-        />
-        <StatCard
-          title="Minutes"
-          value={weeklyMinutes.toString()}
-          subtitle="This week"
-          gradientColors={[colors.pink, colors.pinkLight]}
-        />
+        <View style={styles.statCardWrapper}>
+          <GradientIcon iconName="barbell" gradientColors={colors.gradientCyanBlue} />
+          <StatCard
+            title="Workouts"
+            value={weeklyWorkouts.toString()}
+            subtitle="This week"
+            gradientColors={colors.gradientPurplePink}
+          />
+        </View>
+        <View style={styles.statCardWrapper}>
+          <GradientIcon iconName="timer-outline" gradientColors={colors.gradientPinkPurple} />
+          <StatCard
+            title="Minutes"
+            value={weeklyMinutes.toString()}
+            subtitle="This week"
+            gradientColors={[colors.pink, colors.pinkLight]}
+          />
+        </View>
       </View>
 
       {/* Quick Start Section */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Quick Start</Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="flash" size={20} color={colors.orange} />
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Quick Actions</Text>
+        </View>
         <View style={styles.quickStartRow}>
           <ActionButton
             title="New Workout"
@@ -153,7 +209,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       {/* Recent Workouts Section */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recent Workouts</Text>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="flame" size={20} color={colors.pink} />
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recent Workouts</Text>
+        </View>
         {workouts.length === 0 ? (
           <EmptyState
             title="No Workouts"
@@ -204,13 +263,40 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginBottom: spacing.xxl,
   },
+  statCardWrapper: {
+    flex: 1,
+    position: 'relative',
+  },
+  gradientIconContainer: {
+    position: 'absolute',
+    top: -12,
+    left: 12,
+    zIndex: 10,
+  },
+  gradientCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
   section: {
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.xxl,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
   sectionTitle: {
     ...typography.title2,
-    marginBottom: spacing.lg,
   },
   quickStartRow: {
     flexDirection: 'row',

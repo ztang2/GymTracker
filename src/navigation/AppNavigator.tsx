@@ -193,7 +193,7 @@ function ProfileNavigator() {
 
 function MainTabNavigator() {
   const insets = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   // On Android, ensure minimum spacing even if insets aren't detected (common in Expo Go)
   // On iOS, safe area insets are always reliable
@@ -201,11 +201,14 @@ function MainTabNavigator() {
     ? Math.max(insets.bottom, 20)
     : insets.bottom;
 
+  // Active tab color: pink/coral in dark mode, purple in light mode
+  const activeTabColor = isDark ? colors.pink : colors.purple;
+
   return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor: colors.pink,
+          tabBarActiveTintColor: activeTabColor,
           tabBarInactiveTintColor: colors.textTertiary,
           tabBarStyle: {
             backgroundColor: colors.tabBarBackground,

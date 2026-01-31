@@ -46,10 +46,10 @@ export default function ExerciseDetailScreen({ route }: ExerciseDetailScreenProp
 }
 
 const createStyles = (colors: any) => StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 8 },
-  category: { fontSize: 14, color: '#666', marginBottom: 24 },
+  container: { flex: 1, padding: 20, backgroundColor: colors.background },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 8, color: colors.textPrimary },
+  category: { fontSize: 14, color: colors.textSecondary, marginBottom: 24 },
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 8 },
-  sectionText: { fontSize: 16, lineHeight: 24, color: '#333' },
+  sectionTitle: { fontSize: 18, fontWeight: '600', marginBottom: 8, color: colors.textPrimary },
+  sectionText: { fontSize: 16, lineHeight: 24, color: colors.textSecondary },
 });

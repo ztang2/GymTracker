@@ -1,35 +1,38 @@
 // THEME DESIGN SYSTEM
 
-// Dark theme colors
+// Dark theme colors (FitFlow-inspired)
 export const darkColors = {
-  // Background colors (dark theme)
-  background: '#000000',  // Pure black background
-  backgroundElevated: '#0a0a0a',  // Slightly elevated surfaces
-  cardBackground: '#1a1a1a',  // Card backgrounds (glassmorphism)
-  cardBackgroundHover: '#252525',  // Hovered/pressed cards
+  // Background colors (dark theme) - Deep navy-purple
+  background: '#0D0B1E',  // Deep navy-purple background (NOT pure black)
+  backgroundElevated: '#16133A',  // Slightly lighter purple-navy
+  cardBackground: 'rgba(30, 25, 60, 0.8)',  // Dark translucent with purple tint
+  cardBackgroundHover: 'rgba(40, 35, 80, 0.9)',  // Hovered/pressed cards
 
   // Text colors (dark theme)
-  textPrimary: '#ffffff',  // Primary text (white)
-  textSecondary: '#9ca3af',  // Secondary text (gray-400)
-  textTertiary: '#6b7280',  // Tertiary text (gray-500)
-  textMuted: '#4b5563',  // Very subtle text (gray-600)
+  textPrimary: '#FFFFFF',  // Pure white
+  textSecondary: '#A59FBF',  // Muted lavender-gray
+  textTertiary: '#6B6585',  // Darker muted
+  textMuted: '#4b5563',  // Very subtle text
 
   // Vibrant accent colors
-  purple: '#8B5CF6',  // Violet-500
-  purpleLight: '#A855F7',  // Violet-400
-  pink: '#EC4899',  // Pink-500
-  pinkLight: '#F472B6',  // Pink-400
+  purple: '#8B5CF6',  // Vibrant purple
+  purpleLight: '#A855F7',  // Lighter purple
+  pink: '#EC4899',  // Pink accent
+  pinkLight: '#F472B6',  // Lighter pink
   green: '#10B981',  // Emerald-500
   greenLight: '#34D399',  // Emerald-400
-  teal: '#14B8A6',  // Teal-500
-  tealLight: '#2DD4BF',  // Teal-400
-  orange: '#F97316',  // Orange-500
-  orangeLight: '#FB923C',  // Orange-400
+  teal: '#14B8A6',  // Teal accent
+  tealLight: '#2DD4BF',  // Lighter teal
+  orange: '#F97316',  // Orange accent
+  orangeLight: '#FB923C',  // Lighter orange
 
   // Gradient definitions (for gradient cards)
   gradientPurplePink: ['#A855F7', '#EC4899'] as readonly ['#A855F7', '#EC4899'],  // Purple to pink
   gradientTealGreen: ['#14B8A6', '#10B981'] as readonly ['#14B8A6', '#10B981'],  // Teal to green
   gradientOrange: ['#F97316', '#FB923C'] as readonly ['#F97316', '#FB923C'],  // Orange gradient
+  gradientCyanBlue: ['#06B6D4', '#3B82F6'] as readonly ['#06B6D4', '#3B82F6'],  // Cyan to blue (for workouts icon)
+  gradientPinkPurple: ['#EC4899', '#8B5CF6'] as readonly ['#EC4899', '#8B5CF6'],  // Pink to purple (for minutes icon)
+  gradientPinkCoral: ['#EC4899', '#F97316'] as readonly ['#EC4899', '#F97316'],  // Pink to coral (for Set Goal button)
 
   // Contribution calendar colors (dark theme)
   calendarEmpty: '#1a1a1a',  // Dark gray for empty days
@@ -48,54 +51,57 @@ export const darkColors = {
   categoryCardio: '#EF4444',  // Red
 
   // UI element colors
-  border: '#252525',  // Subtle borders
-  borderLight: 'rgba(255, 255, 255, 0.08)',  // Glassmorphism borders
-  borderFocus: '#A855F7',  // Purple border for focus states
+  border: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted border
+  borderLight: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted subtle border
+  borderFocus: '#8B5CF6',  // Purple border for focus states
   success: '#10B981',
   error: '#EF4444',
   warning: '#F59E0B',
   info: '#3B82F6',
   
   // Input colors
-  inputBackground: '#1a1a1a',
-  inputBorder: '#252525',
-  inputPlaceholder: '#6b7280',
+  inputBackground: '#1A1635',
+  inputBorder: 'rgba(139, 92, 246, 0.15)',
+  inputPlaceholder: '#6B6585',
   
   // Tab bar
-  tabBarBackground: '#000000',
-  tabBarBorder: '#252525',
+  tabBarBackground: '#0D0B1E',  // Same deep navy as background
+  tabBarBorder: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted border
 };
 
-// Light theme colors
+// Light theme colors (FitFlow-inspired)
 export const lightColors = {
-  // Background colors (light theme)
-  background: '#FFFFFF',  // Pure white background
-  backgroundElevated: '#F5F5F5',  // Slightly elevated surfaces
-  cardBackground: '#F8F9FA',  // Card backgrounds (very light gray)
+  // Background colors (light theme) - Soft lavender-white
+  background: '#FAF8FF',  // Soft off-white with lavender tint
+  backgroundElevated: '#EDE8FF',  // Elevated surfaces with lavender
+  cardBackground: '#FFFFFF',  // Pure white cards
   cardBackgroundHover: '#F5F5F5',  // Hovered/pressed cards
 
-  // Text colors (light theme)
-  textPrimary: '#1A1A1A',  // Primary text (dark gray)
-  textSecondary: '#6B7280',  // Secondary text (gray-500)
-  textTertiary: '#9CA3AF',  // Tertiary text (gray-400)
-  textMuted: '#D1D5DB',  // Very subtle text (gray-300)
+  // Text colors (light theme) - Purple undertones
+  textPrimary: '#1E1533',  // Dark charcoal with purple tint
+  textSecondary: '#6B5B8A',  // Muted purple-gray
+  textTertiary: '#A394C0',  // Lighter purple-gray
+  textMuted: '#D1D5DB',  // Very subtle text
 
   // Vibrant accent colors (same as dark)
-  purple: '#8B5CF6',  // Violet-500
-  purpleLight: '#A855F7',  // Violet-400
-  pink: '#EC4899',  // Pink-500
-  pinkLight: '#F472B6',  // Pink-400
+  purple: '#8B5CF6',  // Vibrant purple
+  purpleLight: '#A855F7',  // Lighter purple
+  pink: '#EC4899',  // Pink accent
+  pinkLight: '#F472B6',  // Lighter pink
   green: '#10B981',  // Emerald-500
   greenLight: '#34D399',  // Emerald-400
-  teal: '#14B8A6',  // Teal-500
-  tealLight: '#2DD4BF',  // Teal-400
-  orange: '#F97316',  // Orange-500
-  orangeLight: '#FB923C',  // Orange-400
+  teal: '#14B8A6',  // Teal accent
+  tealLight: '#2DD4BF',  // Lighter teal
+  orange: '#F97316',  // Orange accent
+  orangeLight: '#FB923C',  // Lighter orange
 
   // Gradient definitions (same as dark)
   gradientPurplePink: ['#A855F7', '#EC4899'] as readonly ['#A855F7', '#EC4899'],
   gradientTealGreen: ['#14B8A6', '#10B981'] as readonly ['#14B8A6', '#10B981'],
   gradientOrange: ['#F97316', '#FB923C'] as readonly ['#F97316', '#FB923C'],
+  gradientCyanBlue: ['#06B6D4', '#3B82F6'] as readonly ['#06B6D4', '#3B82F6'],  // Cyan to blue
+  gradientPinkPurple: ['#EC4899', '#8B5CF6'] as readonly ['#EC4899', '#8B5CF6'],  // Pink to purple
+  gradientPinkCoral: ['#EC4899', '#F97316'] as readonly ['#EC4899', '#F97316'],  // Pink to coral
 
   // Contribution calendar colors (light theme)
   calendarEmpty: '#F5F5F5',  // Light gray for empty days
@@ -114,22 +120,22 @@ export const lightColors = {
   categoryCardio: '#EF4444',  // Red
 
   // UI element colors
-  border: '#E5E7EB',  // Light gray borders
-  borderLight: '#E5E7EB',  // No glassmorphism in light mode
-  borderFocus: '#A855F7',  // Purple border for focus states
+  border: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted border
+  borderLight: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted subtle border
+  borderFocus: '#8B5CF6',  // Purple border for focus states
   success: '#10B981',
   error: '#EF4444',
   warning: '#F59E0B',
   info: '#3B82F6',
   
   // Input colors
-  inputBackground: '#F0F0F0',
-  inputBorder: '#D1D5DB',
-  inputPlaceholder: '#9CA3AF',
+  inputBackground: '#F0ECFF',
+  inputBorder: 'rgba(139, 92, 246, 0.12)',
+  inputPlaceholder: '#A394C0',
   
   // Tab bar
-  tabBarBackground: '#FFFFFF',
-  tabBarBorder: '#E5E7EB',
+  tabBarBackground: '#FFFFFF',  // White background
+  tabBarBorder: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted border
 };
 
 // Type definition for theme colors
@@ -230,6 +236,14 @@ export const shadows = {
     shadowOpacity: 0.37,
     shadowRadius: 7.49,
     elevation: 8,
+  },
+  // Purple glow for dark mode cards
+  purpleGlow: {
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
   },
 };
 
