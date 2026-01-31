@@ -68,11 +68,11 @@ export default function MonthlyOverview({
 
 const createStyles = (colors: any) => StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   title: {
     ...typography.title2,

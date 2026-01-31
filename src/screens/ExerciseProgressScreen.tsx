@@ -31,14 +31,14 @@ import type {
   PersonalRecord,
 } from '../services/types';
 import { useAuth, useTheme } from '../contexts';
-import { typography, spacing, getCategoryColor, borderRadius, colors } from '../constants/theme';
+import { typography, spacing, getCategoryColor, borderRadius } from '../constants/theme';
 import { formatDate, parseISODate } from '../utils/dateUtils';
 
 type NavigationProp = StackNavigationProp<HomeStackParamList>;
 
 const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }) => {
-  const { colors: themeColors } = useTheme();
-  const styles = createStyles(themeColors);
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { exerciseId } = route.params;
   const { user } = useAuth();
   const navigation = useNavigation<NavigationProp>();
@@ -273,7 +273,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
       <View style={styles.section}>
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Ionicons name="time-outline" size={24} color={themeColors.textSecondary} />
+            <Ionicons name="time-outline" size={24} color={colors.textSecondary} />
             <Text style={styles.cardTitle}>Recent History</Text>
           </View>
 
@@ -299,7 +299,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
                   <Ionicons
                     name="chevron-forward"
                     size={20}
-                    color={themeColors.textTertiary}
+                    color={colors.textTertiary}
                   />
                 </TouchableOpacity>
               ))}
@@ -320,20 +320,20 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
   );
 };
 
-const createStyles = (themeColors: any) => StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: themeColors.background,
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     padding: spacing.xl,
     marginHorizontal: spacing.xl,
     marginTop: spacing.xl,
     marginBottom: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   headerRow: {
     flexDirection: 'row',
@@ -358,23 +358,23 @@ const createStyles = (themeColors: any) => StyleSheet.create({
   },
   categoryText: {
     ...typography.caption,
-    color: themeColors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '600',
   },
   timesPerformed: {
     ...typography.callout,
-    color: themeColors.textSecondary,
+    color: colors.textSecondary,
   },
   section: {
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.md,
   },
   card: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -393,13 +393,13 @@ const createStyles = (themeColors: any) => StyleSheet.create({
   prItem: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    backgroundColor: colors.cardBackground,
     padding: spacing.md,
     borderRadius: borderRadius.md,
   },
   prLabel: {
     ...typography.caption,
-    color: themeColors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: spacing.xs,
   },
   prValue: {
@@ -408,11 +408,11 @@ const createStyles = (themeColors: any) => StyleSheet.create({
   },
   prDate: {
     ...typography.caption2,
-    color: themeColors.textTertiary,
+    color: colors.textTertiary,
   },
   prEmpty: {
     ...typography.title,
-    color: themeColors.textTertiary,
+    color: colors.textTertiary,
   },
   historyList: {
     gap: spacing.xs,
@@ -425,7 +425,7 @@ const createStyles = (themeColors: any) => StyleSheet.create({
   },
   historyItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    borderBottomColor: colors.cardBackground,
   },
   historyItemLeft: {
     flex: 1,
@@ -436,7 +436,7 @@ const createStyles = (themeColors: any) => StyleSheet.create({
   },
   historySets: {
     ...typography.caption,
-    color: themeColors.textSecondary,
+    color: colors.textSecondary,
   },
   emptyHistory: {
     paddingVertical: spacing.xxl,
@@ -444,16 +444,16 @@ const createStyles = (themeColors: any) => StyleSheet.create({
   },
   emptyText: {
     ...typography.callout,
-    color: themeColors.textSecondary,
+    color: colors.textSecondary,
   },
   emptySubtext: {
     ...typography.caption,
-    color: themeColors.textTertiary,
+    color: colors.textTertiary,
     marginTop: spacing.xs,
   },
   errorText: {
     ...typography.headline,
-    color: themeColors.error,
+    color: colors.error,
     textAlign: 'center',
     marginTop: spacing.xxl,
   },

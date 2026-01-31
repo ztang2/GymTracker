@@ -71,7 +71,7 @@ export const lightColors = {
   // Background colors (light theme)
   background: '#FFFFFF',  // Pure white background
   backgroundElevated: '#F5F5F5',  // Slightly elevated surfaces
-  cardBackground: '#FFFFFF',  // Card backgrounds (solid white)
+  cardBackground: '#F8F9FA',  // Card backgrounds (very light gray)
   cardBackgroundHover: '#F5F5F5',  // Hovered/pressed cards
 
   // Text colors (light theme)

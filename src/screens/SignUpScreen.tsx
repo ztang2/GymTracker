@@ -239,9 +239,9 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontWeight: '600',
   },
   input: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
     borderRadius: borderRadius.md,
     padding: spacing.lg,
     color: colors.textPrimary,

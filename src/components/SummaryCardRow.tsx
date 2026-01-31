@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useTheme } from '../contexts';
+import { typography, spacing, borderRadius } from '../constants/theme';
 
 export interface SummaryCardData {
   label: string;
@@ -18,6 +19,9 @@ interface SummaryCardRowProps {
 }
 
 export default function SummaryCardRow({ cards }: SummaryCardRowProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   const getTrendIcon = (trend: 'up' | 'down' | 'neutral') => {
     switch (trend) {
       case 'up':
@@ -68,18 +72,18 @@ export default function SummaryCardRow({ cards }: SummaryCardRowProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     gap: spacing.sm,
   },
   card: {
     flex: 1,
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   label: {
     ...typography.caption,
@@ -113,4 +117,4 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textTertiary,
   },
-});
+} as const);

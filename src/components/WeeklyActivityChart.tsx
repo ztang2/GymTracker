@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useTheme } from '../contexts';
+import { typography, spacing, borderRadius } from '../constants/theme';
 
 export interface DayActivityData {
   day: string; // "Mon", "Tue", etc.
@@ -20,6 +21,8 @@ export default function WeeklyActivityChart({
   weekData,
   title = 'This Week',
 }: WeeklyActivityChartProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const maxVolume = Math.max(...weekData.map(d => d.volume), 1);
   const chartHeight = 180;
 
@@ -82,16 +85,17 @@ export default function WeeklyActivityChart({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   title: {
     ...typography.title2,
+    color: colors.textPrimary,
     marginBottom: spacing.lg,
   },
   chartContainer: {
@@ -123,7 +127,7 @@ const styles = StyleSheet.create({
     minHeight: 4,
   },
   emptyBar: {
-    backgroundColor: 'rgba(100, 100, 100, 0.3)',
+    backgroundColor: colors.border,
   },
   todayBar: {
     borderWidth: 2,
@@ -144,10 +148,12 @@ const styles = StyleSheet.create({
   },
   dayLabel: {
     ...typography.caption,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   dateLabel: {
     ...typography.caption2,
+    color: colors.textTertiary,
   },
   todayLabel: {
     color: colors.teal,

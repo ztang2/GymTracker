@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useTheme } from '../contexts';
+import { typography, spacing, borderRadius } from '../constants/theme';
 import { formatDate, parseISODate } from '../utils/dateUtils';
 
 export interface PRDisplayData {
@@ -22,6 +23,9 @@ export default function RecentPRsList({
   prs,
   title = 'Recent PRs',
 }: RecentPRsListProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   const getTrophyColor = (recency: 'gold' | 'silver' | 'bronze') => {
     switch (recency) {
       case 'gold':
@@ -88,13 +92,13 @@ export default function RecentPRsList({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   header: {
     flexDirection: 'row',

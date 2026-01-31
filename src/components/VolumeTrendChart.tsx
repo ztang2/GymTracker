@@ -105,7 +105,7 @@ export default function VolumeTrendChart({
                 y1={y}
                 x2={chartWidth - padding.right}
                 y2={y}
-                stroke="rgba(255, 255, 255, 0.05)"
+                stroke={colors.border}
                 strokeWidth="1"
               />
             );
@@ -156,11 +156,11 @@ export default function VolumeTrendChart({
 
 const createStyles = (colors: any) => StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
+    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.border,
   },
   title: {
     ...typography.title2,

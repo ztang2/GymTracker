@@ -158,11 +158,11 @@ export default function MonthCalendar({
 const createStyles = (colors: any) => StyleSheet.create({
   container: {
     // Glassmorphism effect
-    backgroundColor: 'rgba(26, 26, 26, 0.6)', // Semi-transparent dark
+    backgroundColor: colors.cardBackground, // Semi-transparent dark
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)', // Subtle border
+    borderColor: colors.border, // Subtle border
     // Shadow for depth
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },

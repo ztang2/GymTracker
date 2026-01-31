@@ -10,7 +10,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { formatDuration } from '../services/workoutLogger';
 import { REST_TIMER_OPTIONS } from '../services';
-import { colors, typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { useTheme } from '../contexts';
+import { typography, spacing, borderRadius, shadows } from '../constants/theme';
 
 interface RestTimerToastProps {
   visible: boolean;
@@ -35,6 +36,9 @@ export const RestTimerToast: React.FC<RestTimerToastProps> = ({
   onCloseOptions,
   onSelectDuration,
 }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   if (!visible) return null;
 
   return (
@@ -94,7 +98,7 @@ export const RestTimerToast: React.FC<RestTimerToastProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   restTimerToast: {
     position: 'absolute',
     left: spacing.xl,
