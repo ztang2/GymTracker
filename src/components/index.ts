@@ -27,3 +27,9 @@ export { default as BadgeUnlockedModal } from './BadgeUnlockedModal';
 export { default as PRBadge } from './PRBadge';
 export { default as PRCelebrationModal } from './PRCelebrationModal';
 export { default as SaveAsTemplateModal } from './SaveAsTemplateModal';
+
+// Active Workout Screen components
+export { WorkoutHeader } from './WorkoutHeader';
+export { RestTimerToast } from './RestTimerToast';
+export { ExerciseCard } from './ExerciseCard';
+export { ExerciseSelectionModal } from './ExerciseSelectionModal';

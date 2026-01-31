@@ -1,0 +1,137 @@
+import { useState, useCallback } from 'react';
+import {
+  createLocalExercise,
+  createEmptySet,
+  type LocalExercise,
+  type LocalSet,
+} from '../services/workoutLogger';
+import type { Exercise } from '../services';
+
+interface UseWorkoutStateReturn {
+  exercises: LocalExercise[];
+  addExercise: (exercise: Exercise) => void;
+  removeExercise: (exerciseLocalId: string) => void;
+  addSet: (exerciseLocalId: string) => void;
+  removeSet: (exerciseLocalId: string, setId: string) => void;
+  updateSet: (
+    exerciseLocalId: string,
+    setId: string,
+    field: 'weight' | 'reps',
+    value: string
+  ) => void;
+  toggleSetComplete: (exerciseLocalId: string, setId: string) => boolean;
+}
+
+/**
+ * Custom hook for managing workout state (exercises and sets)
+ * Returns functions to add/remove exercises and sets, update set values, and toggle completion
+ */
+export const useWorkoutState = (): UseWorkoutStateReturn => {
+  const [exercises, setExercises] = useState<LocalExercise[]>([]);
+
+  const addExercise = useCallback((exercise: Exercise) => {
+    const newExercise = createLocalExercise(
+      exercise.id,
+      exercise.name,
+      exercise.category
+    );
+    setExercises((prev) => [...prev, newExercise]);
+  }, []);
+
+  const removeExercise = useCallback((exerciseLocalId: string) => {
+    setExercises((prev) => prev.filter((ex) => ex.id !== exerciseLocalId));
+  }, []);
+
+  const addSet = useCallback((exerciseLocalId: string) => {
+    setExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id === exerciseLocalId) {
+          return { ...ex, sets: [...ex.sets, createEmptySet()] };
+        }
+        return ex;
+      })
+    );
+  }, []);
+
+  const removeSet = useCallback((exerciseLocalId: string, setId: string) => {
+    setExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id === exerciseLocalId && ex.sets.length > 1) {
+          return { ...ex, sets: ex.sets.filter((s) => s.id !== setId) };
+        }
+        return ex;
+      })
+    );
+  }, []);
+
+  const updateSet = useCallback(
+    (
+      exerciseLocalId: string,
+      setId: string,
+      field: 'weight' | 'reps',
+      value: string
+    ) => {
+      const numValue = parseInt(value, 10) || 0;
+      setExercises((prev) =>
+        prev.map((ex) => {
+          if (ex.id === exerciseLocalId) {
+            return {
+              ...ex,
+              sets: ex.sets.map((s) => {
+                if (s.id === setId) {
+                  return { ...s, [field]: numValue };
+                }
+                return s;
+              }),
+            };
+          }
+          return ex;
+        })
+      );
+    },
+    []
+  );
+
+  /**
+   * Toggles the completion status of a set
+   * Returns true if the set was just marked as complete (for haptic feedback)
+   */
+  const toggleSetComplete = useCallback(
+    (exerciseLocalId: string, setId: string): boolean => {
+      let wasCompleted = false;
+      let justCompleted = false;
+
+      setExercises((prev) =>
+        prev.map((ex) => {
+          if (ex.id === exerciseLocalId) {
+            return {
+              ...ex,
+              sets: ex.sets.map((s) => {
+                if (s.id === setId) {
+                  wasCompleted = s.completed;
+                  justCompleted = !wasCompleted;
+                  return { ...s, completed: !s.completed };
+                }
+                return s;
+              }),
+            };
+          }
+          return ex;
+        })
+      );
+
+      return justCompleted;
+    },
+    []
+  );
+
+  return {
+    exercises,
+    addExercise,
+    removeExercise,
+    addSet,
+    removeSet,
+    updateSet,
+    toggleSetComplete,
+  };
+};
