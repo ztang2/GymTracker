@@ -24,10 +24,12 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const loadData = async () => {
     try {
       // Get date range for the last year to include all workout days
-      const endDate = new Date().toISOString().split('T')[0];
-      const startDate = new Date();
+      // Use local date formatting to avoid UTC timezone shift
+      const now = new Date();
+      const endDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      const startDate = new Date(now);
       startDate.setFullYear(startDate.getFullYear() - 1);
-      const startDateStr = startDate.toISOString().split('T')[0];
+      const startDateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
 
       const [dailyCounts, streak] = await Promise.all([
         getDailyWorkoutCounts(user!.id, startDateStr, endDate),

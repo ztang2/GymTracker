@@ -139,12 +139,15 @@ export const formatISODate = (date: Date): string => {
 };
 
 /**
- * Parse ISO date string to Date
+ * Parse ISO date string to Date (in local timezone)
+ * Note: new Date('YYYY-MM-DD') parses as UTC midnight, which shifts the date
+ * back a day in western timezones. This function parses as local midnight instead.
  * @param dateStr - ISO date string (YYYY-MM-DD)
- * @returns Date object
+ * @returns Date object at local midnight
  */
 export const parseISODate = (dateStr: string): Date => {
-  return new Date(dateStr);
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
 };
 
 /**

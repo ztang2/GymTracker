@@ -27,6 +27,7 @@ import {
   formatWeekIdentifier,
   getToday,
   getYesterday,
+  parseISODate,
 } from '../utils/dateUtils';
 
 /**
@@ -147,9 +148,9 @@ export async function getDailyWorkoutCounts(
     workoutsByDate.set(workout.date, [...existing, workout]);
   });
 
-  // Generate array of all dates in range
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  // Generate array of all dates in range (parse as local to avoid UTC shift)
+  const start = parseISODate(startDate);
+  const end = parseISODate(endDate);
   const dates = getDateRange(start, end);
 
   // Map to DayData
@@ -265,8 +266,8 @@ export async function getLongestStreak(userId: string): Promise<number> {
   let currentStreak = 1;
 
   for (let i = 1; i < workoutDates.length; i++) {
-    const prevDate = new Date(workoutDates[i - 1]);
-    const currDate = new Date(workoutDates[i]);
+    const prevDate = parseISODate(workoutDates[i - 1]);
+    const currDate = parseISODate(workoutDates[i]);
 
     // Check if dates are consecutive
     const daysDiff = Math.round(
@@ -494,7 +495,7 @@ export async function getWeeklyWorkoutCounts(
   const weeklyMap = new Map<string, WeeklyCount>();
 
   for (const workout of workouts) {
-    const date = new Date(workout.date);
+    const date = parseISODate(workout.date);
     const weekId = formatWeekIdentifier(date);
 
     const existing = weeklyMap.get(weekId);

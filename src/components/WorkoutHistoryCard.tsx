@@ -16,8 +16,10 @@ export default function WorkoutHistoryCard({
   accentColor = colors.purple,
 }: WorkoutHistoryCardProps) {
   // Format date (e.g., "Jan 15, 2026")
+  // Parse YYYY-MM-DD as local date to avoid UTC timezone shift
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
