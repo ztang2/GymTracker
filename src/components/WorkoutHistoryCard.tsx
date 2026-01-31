@@ -51,7 +51,7 @@ export default function WorkoutHistoryCard({
         </Text>
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>{formatDate(workout.date)}</Text>
-          {workout.duration_minutes && (
+          {workout.duration_minutes != null && workout.duration_minutes > 0 && (
             <>
               <Text style={styles.metaText}> • </Text>
               <Text style={styles.metaText}>{workout.duration_minutes} min</Text>
