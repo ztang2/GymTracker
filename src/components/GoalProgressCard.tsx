@@ -1,6 +1,7 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing } from '../constants/theme';
 import ProgressBar from './ProgressBar';
 
 export interface Goal {
@@ -20,6 +21,8 @@ export default function GoalProgressCard({
   goals,
   title = 'Monthly Goals',
 }: GoalProgressCardProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -40,7 +43,7 @@ export default function GoalProgressCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

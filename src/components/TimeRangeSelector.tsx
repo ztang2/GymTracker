@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
 import { TimeRange } from '../services/types';
 
 interface TimeRangeSelectorProps {
@@ -15,6 +16,8 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
   onSelectRange,
   ranges = ['week', 'month', '3months', 'year', 'all'],
 }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const getRangeLabel = (range: TimeRange): string => {
     switch (range) {
       case 'week':
@@ -68,7 +71,7 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     paddingVertical: spacing.md,
   },

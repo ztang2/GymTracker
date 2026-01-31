@@ -5,8 +5,8 @@ import { StatCard, TimeRangeSelector, WorkoutTrendChart, LoadingState } from '..
 import { getExerciseProgress, getDateRangeForTimeRange } from '../services/statsService';
 import { getExerciseById } from '../services/exerciseService';
 import { TimeRange, ExerciseProgress, Exercise } from '../services/types';
-import { useAuth } from '../contexts';
-import { colors, typography, spacing, getCategoryColor, borderRadius } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
+import { typography, spacing, getCategoryColor, borderRadius } from '../constants/theme';
 
 type ExerciseProgressScreenRouteProp = RouteProp<
   { ExerciseProgressScreen: { exerciseId: string } },
@@ -18,6 +18,8 @@ interface ExerciseProgressScreenProps {
 }
 
 const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { exerciseId } = route.params;
   const { user } = useAuth();
   const [selectedRange, setSelectedRange] = useState<TimeRange>('3months');
@@ -181,7 +183,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

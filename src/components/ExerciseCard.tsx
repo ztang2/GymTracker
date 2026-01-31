@@ -1,9 +1,10 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { LocalExercise } from '../services/workoutLogger';
 import type { LastPerformance } from '../services';
-import { colors, typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows } from '../constants/theme';
 
 interface ExerciseCardProps {
   exercise: LocalExercise;
@@ -34,6 +35,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onUpdateSet,
   onToggleComplete,
 }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   return (
     <View style={styles.exerciseCard}>
       {/* Exercise Header */}
@@ -134,7 +137,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   exerciseCard: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

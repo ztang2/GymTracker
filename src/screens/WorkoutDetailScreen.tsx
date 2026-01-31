@@ -2,10 +2,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import type { WorkoutDetailScreenProps } from '../navigation/types';
 import { getWorkoutSession, type WorkoutSessionWithExercises } from '../services';
-import { useAuth } from '../contexts';
+import { useAuth , useTheme } from '../contexts';
 
 export default function WorkoutDetailScreen({ route }: WorkoutDetailScreenProps) {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
   const { workoutId } = route.params;
   const [workout, setWorkout] = useState<WorkoutSessionWithExercises | null>(null);
@@ -45,7 +47,7 @@ export default function WorkoutDetailScreen({ route }: WorkoutDetailScreenProps)
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   exercisesTitle: { fontSize: 18, fontWeight: '600', marginTop: 20, marginBottom: 10 },

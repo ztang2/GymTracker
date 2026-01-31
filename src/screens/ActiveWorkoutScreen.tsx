@@ -23,8 +23,8 @@ import {
   saveWorkout,
   type ActiveWorkoutState,
 } from '../services/workoutLogger';
-import { useAuth } from '../contexts';
-import { colors, spacing, borderRadius, typography } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
+import { spacing, borderRadius, typography } from '../constants/theme';
 import {
   WorkoutSummaryModal,
   WorkoutHeader,
@@ -66,6 +66,8 @@ const showAlert = (
 export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenProps) {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
   // Workout state
   const [startTime] = useState(new Date());
@@ -440,7 +442,7 @@ const Typography: React.FC<{ style?: any; children: React.ReactNode }> = ({
   return <Text style={style}>{children}</Text>;
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

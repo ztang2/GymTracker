@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../contexts';
 import {
   View,
   Text,
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllExercises, type Exercise, type ExerciseCategory } from '../services';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
 
 interface ExerciseSelectionModalProps {
   visible: boolean;
@@ -55,6 +56,8 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
   onSelectExercise,
   topInset,
 }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -235,7 +238,7 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background,

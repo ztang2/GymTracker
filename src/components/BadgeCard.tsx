@@ -1,8 +1,9 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
+import { typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
 import type { BadgeWithStatus, BadgeRarity } from '../services/types';
 import ProgressBar from './ProgressBar';
 
@@ -18,6 +19,8 @@ const formatEarnedDate = (dateStr: string): string => {
 };
 
 export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const rarityColor = rarityColors[badge.rarity];
   const rarityGradient = rarityGradients[badge.rarity];
 
@@ -118,7 +121,7 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

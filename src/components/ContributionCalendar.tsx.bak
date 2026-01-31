@@ -27,7 +27,6 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({
 }) => {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const scale = colorScale || [colors.calendarEmpty, colors.calendarLevel1, colors.calendarLevel2, colors.calendarLevel3];
   
   const defaultColorScale = colorScale || [
     colors.calendarEmpty,
@@ -44,10 +43,10 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({
 
   // Get color based on workout count
   const getColor = (count: number): string => {
-    if (count === 0) return defaultColorScale[0];
-    if (count === 1) return defaultColorScale[1];
-    if (count === 2) return defaultColorScale[2];
-    return defaultColorScale[3];
+    if (count === 0) return colorScale[0];
+    if (count === 1) return colorScale[1];
+    if (count === 2) return colorScale[2];
+    return colorScale[3];
   };
 
   // Group data by week
@@ -218,7 +217,7 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({
         {/* Legend */}
         <View style={styles.legend}>
           <Text style={styles.legendText}>Less</Text>
-          {scale.map((color, index) => (
+          {colorScale.map((color, index) => (
             <View
               key={`legend-${index}`}
               style={[styles.legendCell, { backgroundColor: color }]}

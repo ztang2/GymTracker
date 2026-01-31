@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useTheme } from '../contexts';
 import { useState, useEffect } from 'react';
 import type { ExerciseSelectionScreenProps } from '../navigation/types';
 import { getAllExercises, addExerciseToWorkout, type Exercise } from '../services';
 
 export default function ExerciseSelectionScreen({ route, navigation }: ExerciseSelectionScreenProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { workoutId } = route.params;
   const [exercises, setExercises] = useState<Exercise[]>([]);
 
@@ -46,7 +49,7 @@ export default function ExerciseSelectionScreen({ route, navigation }: ExerciseS
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   exerciseCard: { padding: 15, backgroundColor: '#f0f0f0', borderRadius: 8, marginBottom: 10 },

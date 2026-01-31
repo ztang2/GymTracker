@@ -27,8 +27,8 @@ const StatCard: React.FC<StatCardProps> = ({
 }) => {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const gradColors = gradientColors || colors.gradientPurplePink;
-  const bgColor = backgroundColor || colors.cardBackground;
+  const cardGradient = gradientColors || colors.gradientPurplePink;
+  const cardBackground = backgroundColor || colors.cardBackground;
   const content = (
     <View style={styles.content}>
       {icon && <View style={styles.iconContainer}>{icon}</View>}
@@ -43,7 +43,7 @@ const StatCard: React.FC<StatCardProps> = ({
       <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.container}>
         {variant === 'gradient' ? (
           <LinearGradient
-            colors={gradColors}
+            colors={gradientColors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.card}
@@ -63,7 +63,7 @@ const StatCard: React.FC<StatCardProps> = ({
     <View style={styles.container}>
       {variant === 'gradient' ? (
         <LinearGradient
-          colors={gradColors}
+          colors={gradientColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.card}

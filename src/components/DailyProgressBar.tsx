@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing } from '../constants/theme';
 
 export interface DayProgress {
   day: string; // "Mon", "Tue", etc.
@@ -19,6 +20,8 @@ export default function DailyProgressBar({
   weekData,
   title = 'This Week',
 }: DailyProgressBarProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   // Normalize bar heights based on workout count (1-3+)
   const getBarHeight = (dayData: DayProgress) => {
     if (!dayData.completed) return 0;
@@ -60,7 +63,7 @@ export default function DailyProgressBar({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

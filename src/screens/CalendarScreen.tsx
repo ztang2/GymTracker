@@ -5,11 +5,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { CalendarScreenProps } from '../navigation/types';
 import { getDailyWorkoutCounts, getCurrentStreak } from '../services/statsService';
 import { MonthCalendar, LoadingState } from '../components';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
-import { useAuth } from '../contexts';
+import { typography, spacing, borderRadius } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
 
 export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [workoutDays, setWorkoutDays] = useState<Set<string>>(new Set());
@@ -155,7 +157,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
+import { useTheme } from '../contexts';
 
 interface EmptyStateProps {
   title: string;
@@ -18,12 +19,14 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   onAction,
   icon,
 }) => {
+  const { colors } = useTheme();
+  
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {icon && <View style={styles.iconContainer}>{icon}</View>}
 
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.message}>{message}</Text>
+      <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
+      <Text style={[styles.message, { color: colors.textSecondary }]}>{message}</Text>
 
       {actionLabel && onAction && (
         <TouchableOpacity onPress={onAction} activeOpacity={0.8}>
@@ -46,7 +49,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
     padding: spacing.xxxl,
   },
   iconContainer: {
@@ -59,7 +61,6 @@ const styles = StyleSheet.create({
   },
   message: {
     ...typography.callout,
-    color: colors.textSecondary,
     textAlign: 'center',
     maxWidth: 280,
     marginBottom: spacing.xxl,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     ...typography.headline,
-    color: colors.textPrimary,
+    color: '#FFFFFF',
   },
 });
 

@@ -30,8 +30,7 @@ import {
   AchievementsScreen,
   TemplateListScreen,
 } from '../screens';
-import { useAuth } from '../contexts';
-import { colors } from '../constants/theme';
+import { useAuth, useTheme } from '../contexts';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -39,17 +38,6 @@ const HomeStack = createStackNavigator<HomeStackParamList>();
 const CalendarStack = createStackNavigator<CalendarStackParamList>();
 const ProgressStack = createStackNavigator<ProgressStackParamList>();
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
-
-// Common screen options for dark theme
-const screenOptions = {
-  headerStyle: {
-    backgroundColor: colors.background,
-  },
-  headerTintColor: colors.textPrimary,
-  headerTitleStyle: {
-    color: colors.textPrimary,
-  },
-};
 
 function AuthNavigator() {
   return (
@@ -61,6 +49,17 @@ function AuthNavigator() {
 }
 
 function HomeNavigator() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: {
+      backgroundColor: colors.background,
+    },
+    headerTintColor: colors.textPrimary,
+    headerTitleStyle: {
+      color: colors.textPrimary,
+    },
+  };
+  
   return (
     <HomeStack.Navigator screenOptions={screenOptions}>
       <HomeStack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
@@ -114,6 +113,17 @@ function HomeNavigator() {
 }
 
 function CalendarNavigator() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: {
+      backgroundColor: colors.background,
+    },
+    headerTintColor: colors.textPrimary,
+    headerTitleStyle: {
+      color: colors.textPrimary,
+    },
+  };
+  
   return (
     <CalendarStack.Navigator screenOptions={screenOptions}>
       <CalendarStack.Screen
@@ -126,6 +136,17 @@ function CalendarNavigator() {
 }
 
 function ProgressNavigator() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: {
+      backgroundColor: colors.background,
+    },
+    headerTintColor: colors.textPrimary,
+    headerTitleStyle: {
+      color: colors.textPrimary,
+    },
+  };
+  
   return (
     <ProgressStack.Navigator screenOptions={screenOptions}>
       <ProgressStack.Screen
@@ -143,6 +164,17 @@ function ProgressNavigator() {
 }
 
 function ProfileNavigator() {
+  const { colors } = useTheme();
+  const screenOptions = {
+    headerStyle: {
+      backgroundColor: colors.background,
+    },
+    headerTintColor: colors.textPrimary,
+    headerTitleStyle: {
+      color: colors.textPrimary,
+    },
+  };
+  
   return (
     <ProfileStack.Navigator screenOptions={screenOptions}>
       <ProfileStack.Screen
@@ -161,6 +193,7 @@ function ProfileNavigator() {
 
 function MainTabNavigator() {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
 
   // On Android, ensure minimum spacing even if insets aren't detected (common in Expo Go)
   // On iOS, safe area insets are always reliable
@@ -175,8 +208,8 @@ function MainTabNavigator() {
           tabBarActiveTintColor: colors.pink,
           tabBarInactiveTintColor: colors.textTertiary,
           tabBarStyle: {
-            backgroundColor: colors.background,
-            borderTopColor: colors.border,
+            backgroundColor: colors.tabBarBackground,
+            borderTopColor: colors.tabBarBorder,
             paddingBottom: bottomInset + 4,
             paddingTop: 4,
             height: 60 + bottomInset,
@@ -226,6 +259,7 @@ function MainTabNavigator() {
 
 export default function AppNavigator() {
   const { user, loading } = useAuth();
+  const { colors } = useTheme();
 
   // Show loading screen while checking auth state
   if (loading) {

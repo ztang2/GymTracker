@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from '../contexts';
 import {
   View,
   Text,
@@ -9,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
+import { typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
 import type { Badge } from '../services/types';
 
 interface BadgeUnlockedModalProps {
@@ -23,6 +24,8 @@ export default function BadgeUnlockedModal({
   badge,
   onClose,
 }: BadgeUnlockedModalProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
@@ -126,7 +129,7 @@ export default function BadgeUnlockedModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',

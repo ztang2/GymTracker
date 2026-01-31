@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { CartesianChart, Bar, PolarChart, Pie } from 'victory-native';
-import { colors, typography, spacing, borderRadius, getCategoryColor } from '../constants/theme';
+import { typography, spacing, borderRadius, getCategoryColor } from '../constants/theme';
 import { CategoryDistribution } from '../services/types';
 
 interface CategoryChartProps {
@@ -19,6 +20,9 @@ const CategoryChart: React.FC<CategoryChartProps> = ({
   height = 220,
   title,
 }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+  
   // Format data with colors
   const formattedData = data.map((item) => {
     const categoryName = item.category.charAt(0).toUpperCase() + item.category.slice(1);
@@ -130,7 +134,7 @@ const CategoryChart: React.FC<CategoryChartProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     marginVertical: spacing.md,
   },

@@ -2,8 +2,20 @@ import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/navigation';
-import { AuthProvider } from './src/contexts';
+import { AuthProvider, ThemeProvider, useTheme } from './src/contexts';
 import { setupNotificationChannel } from './src/services';
+
+// Inner component that uses theme context
+function AppContent() {
+  const { isDark } = useTheme();
+  
+  return (
+    <>
+      <AppNavigator />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+    </>
+  );
+}
 
 export default function App() {
   // Set up Android notification channel on app startup
@@ -14,8 +26,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <AppNavigator />
-        <StatusBar style="light" />
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

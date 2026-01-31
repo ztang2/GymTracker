@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from '../contexts';
 import {
   View,
   Text,
@@ -10,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius, prColors } from '../constants/theme';
+import { typography, spacing, borderRadius, prColors } from '../constants/theme';
 import type { PRDetectionResult } from '../services/types';
 import { getPRTypeName, formatPRValue } from '../services/prService';
 
@@ -25,6 +26,8 @@ export default function PRCelebrationModal({
   prs,
   onClose,
 }: PRCelebrationModalProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const scaleAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -144,7 +147,7 @@ export default function PRCelebrationModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',

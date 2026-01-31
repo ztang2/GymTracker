@@ -23,6 +23,7 @@ export default function MonthCalendar({
 }: MonthCalendarProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
+  
   const todayColor = todayIndicatorColor || colors.pink;
   const workoutColor = workoutIndicatorColor || colors.teal;
   const today = new Date();
@@ -90,8 +91,8 @@ export default function MonthCalendar({
       <View key={day} style={styles.dayCell}>
         {/* Glowing ring for workout days (also shown on today if workout exists) */}
         {workout && (
-          <View style={[styles.workoutRing, { borderColor: workoutColor }]}>
-            <View style={[styles.workoutGlow, { backgroundColor: workoutColor }]} />
+          <View style={[styles.workoutRing, { borderColor: workoutIndicatorColor }]}>
+            <View style={[styles.workoutGlow, { backgroundColor: workoutIndicatorColor }]} />
           </View>
         )}
 
@@ -99,7 +100,7 @@ export default function MonthCalendar({
         {today && (
           <View style={[
             styles.todayCircle,
-            { backgroundColor: todayColor },
+            { backgroundColor: todayIndicatorColor },
             workout && styles.todayCircleWithWorkout,
           ]} />
         )}

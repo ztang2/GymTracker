@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-import { colors, typography, spacing } from '../constants/theme';
+import { typography, spacing } from '../constants/theme';
+import { useTheme } from '../contexts';
 
 interface LoadingStateProps {
   message?: string;
@@ -9,12 +10,15 @@ interface LoadingStateProps {
 
 const LoadingState: React.FC<LoadingStateProps> = ({
   message = 'Loading your stats...',
-  color = colors.purpleLight
+  color
 }) => {
+  const { colors } = useTheme();
+  const spinnerColor = color || colors.purpleLight;
+  
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color={color} />
-      {message && <Text style={styles.message}>{message}</Text>}
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <ActivityIndicator size="large" color={spinnerColor} />
+      {message && <Text style={[styles.message, { color: colors.textSecondary }]}>{message}</Text>}
     </View>
   );
 };
@@ -24,12 +28,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
     padding: spacing.xxl,
   },
   message: {
     ...typography.callout,
-    color: colors.textSecondary,
     marginTop: spacing.lg,
     textAlign: 'center',
   },

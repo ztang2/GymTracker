@@ -1,6 +1,7 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
 
 export interface WeekOverviewData {
   label: string; // "This Week", "Last Week", etc.
@@ -17,6 +18,8 @@ export default function MonthlyOverview({
   weeks,
   title = 'Last 4 Weeks',
 }: MonthlyOverviewProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
   return (
@@ -63,7 +66,7 @@ export default function MonthlyOverview({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: 'rgba(26, 26, 26, 0.6)',
     borderRadius: borderRadius.lg,

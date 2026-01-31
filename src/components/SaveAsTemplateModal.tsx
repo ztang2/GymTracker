@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTheme } from '../contexts';
 import {
   View,
   Text,
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
 import { COMMON_TEMPLATES } from '../services/templateService';
 
 interface SaveAsTemplateModalProps {
@@ -41,6 +42,8 @@ export default function SaveAsTemplateModal({
   onClose,
   loading = false,
 }: SaveAsTemplateModalProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -165,7 +168,7 @@ export default function SaveAsTemplateModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',

@@ -24,8 +24,8 @@ import {
 } from '../services/statsService';
 import { getUserPRs } from '../services/prService';
 import { getWorkoutsByDateRange, getWorkoutSession } from '../services/workoutService';
-import { colors, typography, spacing } from '../constants/theme';
-import { useAuth } from '../contexts';
+import { typography, spacing } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
 import {
   formatISODate,
   parseISODate,
@@ -37,6 +37,8 @@ import {
 
 export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -388,7 +390,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

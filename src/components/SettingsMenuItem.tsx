@@ -1,7 +1,8 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing } from '../constants/theme';
+import { typography, spacing } from '../constants/theme';
+import { useTheme } from '../contexts';
 
 interface SettingsMenuItemProps {
   title: string;
@@ -9,6 +10,7 @@ interface SettingsMenuItemProps {
   onPress: () => void;
   showChevron?: boolean;
   showDivider?: boolean;
+  rightText?: string;
 }
 
 export default function SettingsMenuItem({
@@ -17,7 +19,10 @@ export default function SettingsMenuItem({
   onPress,
   showChevron = true,
   showDivider = true,
+  rightText,
 }: SettingsMenuItemProps) {
+  const { colors } = useTheme();
+  
   return (
     <View>
       <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
@@ -27,7 +32,12 @@ export default function SettingsMenuItem({
         </View>
 
         {/* Title */}
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
+
+        {/* Right Text */}
+        {rightText && (
+          <Text style={[styles.rightText, { color: colors.textTertiary }]}>{rightText}</Text>
+        )}
 
         {/* Chevron */}
         {showChevron && (
@@ -36,7 +46,7 @@ export default function SettingsMenuItem({
       </TouchableOpacity>
 
       {/* Divider */}
-      {showDivider && <View style={styles.divider} />}
+      {showDivider && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
     </View>
   );
 }
@@ -58,9 +68,12 @@ const styles = StyleSheet.create({
     ...typography.body,
     flex: 1,
   },
+  rightText: {
+    ...typography.callout,
+    marginRight: spacing.xs,
+  },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
     marginLeft: spacing.xl + 32 + spacing.md, // Align with title text
   },
 });

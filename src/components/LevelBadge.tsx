@@ -1,8 +1,9 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing, borderRadius, getLevelTier } from '../constants/theme';
+import { typography, spacing, borderRadius, getLevelTier } from '../constants/theme';
 
 interface LevelBadgeProps {
   level: number;
@@ -11,6 +12,8 @@ interface LevelBadgeProps {
 }
 
 export default function LevelBadge({ level, size = 'medium', showTier = false }: LevelBadgeProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const tier = getLevelTier(level);
 
   const sizeConfig = {
@@ -50,7 +53,7 @@ export default function LevelBadge({ level, size = 'medium', showTier = false }:
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     alignItems: 'center',
     gap: spacing.xs,

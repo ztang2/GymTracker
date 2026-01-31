@@ -18,7 +18,7 @@ export default function WorkoutHistoryCard({
 }: WorkoutHistoryCardProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const accent = accentColor || colors.purple;
+  const cardAccent = accentColor || colors.purple;
   // Format date (e.g., "Jan 15, 2026")
   // Parse YYYY-MM-DD as local date to avoid UTC timezone shift
   const formatDate = (dateString: string) => {
@@ -40,7 +40,7 @@ export default function WorkoutHistoryCard({
   return (
     <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
       {/* Left side: Colored circular icon */}
-      <View style={[styles.iconContainer, { backgroundColor: accent }]}>
+      <View style={[styles.iconContainer, { backgroundColor: accentColor }]}>
         <Ionicons name="barbell" size={24} color={colors.textPrimary} />
       </View>
 

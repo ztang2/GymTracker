@@ -1,8 +1,9 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing } from '../constants/theme';
 
 interface ActionButtonProps {
   title: string;
@@ -19,6 +20,8 @@ export default function ActionButton({
   color,
   gradientColors,
 }: ActionButtonProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const buttonContent = (
     <View style={styles.content}>
       <Ionicons name={icon} size={32} color={colors.textPrimary} />
@@ -52,7 +55,7 @@ export default function ActionButton({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     width: 160,
     height: 160,

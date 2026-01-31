@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   REST_TIMER_SECONDS: '@fittrack/rest_timer_seconds',
   HAPTIC_FEEDBACK_ENABLED: '@fittrack/haptic_feedback_enabled',
   NOTIFICATIONS_ENABLED: '@fittrack/notifications_enabled',
+  THEME_MODE: '@fittrack/theme_mode',
 } as const;
 
 // Default settings values
@@ -12,6 +13,7 @@ export const DEFAULT_SETTINGS = {
   restTimerSeconds: 90,
   hapticFeedbackEnabled: true,
   notificationsEnabled: true,
+  themeMode: 'system' as const,
 } as const;
 
 // Available rest timer options
@@ -126,6 +128,41 @@ export async function setNotificationsEnabled(enabled: boolean): Promise<void> {
 }
 
 // ============================================================================
+// THEME MODE SETTINGS
+// ============================================================================
+
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+/**
+ * Get the user's preferred theme mode
+ * @returns Promise<ThemeMode> - Theme mode ('light' | 'dark' | 'system')
+ */
+export async function getThemeMode(): Promise<ThemeMode> {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEYS.THEME_MODE);
+    if (value === 'light' || value === 'dark' || value === 'system') {
+      return value;
+    }
+    return DEFAULT_SETTINGS.themeMode;
+  } catch (error) {
+    console.error('Error reading theme mode setting:', error);
+    return DEFAULT_SETTINGS.themeMode;
+  }
+}
+
+/**
+ * Set the user's preferred theme mode
+ * @param mode - Theme mode ('light' | 'dark' | 'system')
+ */
+export async function setThemeMode(mode: ThemeMode): Promise<void> {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.THEME_MODE, mode);
+  } catch (error) {
+    console.error('Error saving theme mode setting:', error);
+  }
+}
+
+// ============================================================================
 // BULK SETTINGS
 // ============================================================================
 
@@ -133,6 +170,7 @@ export interface LocalSettings {
   restTimerSeconds: number;
   hapticFeedbackEnabled: boolean;
   notificationsEnabled: boolean;
+  themeMode: ThemeMode;
 }
 
 /**
@@ -140,16 +178,18 @@ export interface LocalSettings {
  * @returns Promise<LocalSettings> - All local settings
  */
 export async function getAllSettings(): Promise<LocalSettings> {
-  const [restTimerSeconds, hapticFeedbackEnabled, notificationsEnabled] = await Promise.all([
+  const [restTimerSeconds, hapticFeedbackEnabled, notificationsEnabled, themeMode] = await Promise.all([
     getRestTimerSeconds(),
     isHapticFeedbackEnabled(),
     isNotificationsEnabled(),
+    getThemeMode(),
   ]);
 
   return {
     restTimerSeconds,
     hapticFeedbackEnabled,
     notificationsEnabled,
+    themeMode,
   };
 }
 
@@ -162,6 +202,7 @@ export async function resetAllSettings(): Promise<void> {
       STORAGE_KEYS.REST_TIMER_SECONDS,
       STORAGE_KEYS.HAPTIC_FEEDBACK_ENABLED,
       STORAGE_KEYS.NOTIFICATIONS_ENABLED,
+      STORAGE_KEYS.THEME_MODE,
     ]);
   } catch (error) {
     console.error('Error resetting settings:', error);

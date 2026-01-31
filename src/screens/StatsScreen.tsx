@@ -20,10 +20,12 @@ import {
   getDateRangeForTimeRange,
 } from '../services/statsService';
 import { TimeRange, WorkoutStats, CalendarData, CategoryDistribution, ExerciseFrequency, WeeklyCount } from '../services/types';
-import { useAuth } from '../contexts';
-import { colors, typography, spacing } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
+import { typography, spacing } from '../constants/theme';
 
 const StatsScreen: React.FC = () => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { user } = useAuth();
   const [selectedRange, setSelectedRange] = useState<TimeRange>('month');
   const [loading, setLoading] = useState(true);
@@ -250,7 +252,7 @@ const StatsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

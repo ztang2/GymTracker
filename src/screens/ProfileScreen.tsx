@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import type { ProfileScreenProps } from '../navigation/types';
 import { UserProfileCard, SettingsMenuItem, XPProgressBar } from '../components';
 import { getUserProfile, getLevelInfo, type LevelInfo } from '../services';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
-import { useAuth } from '../contexts';
+import { typography, spacing, borderRadius } from '../constants/theme';
+import { useAuth, useTheme, type ThemeMode } from '../contexts';
 
 
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   const { user, signOut } = useAuth();
+  const { colors, themeMode, setThemeMode } = useTheme();
 
   // Get user display name from metadata or email
   const userName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Fitness Enthusiast';
@@ -16,6 +18,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     : 'Recently';
   const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
+  const [showThemeModal, setShowThemeModal] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -36,6 +39,23 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
   const handleAchievements = () => {
     navigation.navigate('AchievementsScreen');
+  };
+
+  const handleTheme = () => {
+    setShowThemeModal(true);
+  };
+
+  const handleSelectTheme = (mode: ThemeMode) => {
+    setThemeMode(mode);
+    setShowThemeModal(false);
+  };
+
+  const getThemeLabel = (mode: ThemeMode): string => {
+    switch (mode) {
+      case 'light': return 'Light';
+      case 'dark': return 'Dark';
+      case 'system': return 'System';
+    }
   };
 
   const handleNotifications = () => {
@@ -116,8 +136,14 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
       {/* Settings Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Settings</Text>
-        <View style={styles.settingsCard}>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Settings</Text>
+        <View style={[styles.settingsCard, { backgroundColor: colors.cardBackground }]}>
+          <SettingsMenuItem
+            title="Theme"
+            icon="color-palette-outline"
+            onPress={handleTheme}
+            rightText={getThemeLabel(themeMode)}
+          />
           <SettingsMenuItem
             title="Notifications"
             icon="notifications"
@@ -146,6 +172,75 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           />
         </View>
       </View>
+
+      {/* Theme Selection Modal */}
+      <Modal
+        visible={showThemeModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowThemeModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setShowThemeModal(false)}
+        >
+          <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Theme</Text>
+            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+              Choose your preferred theme
+            </Text>
+
+            <View style={styles.themeOptions}>
+              {(['light', 'dark', 'system'] as ThemeMode[]).map((mode) => (
+                <TouchableOpacity
+                  key={mode}
+                  style={[
+                    styles.themeOption,
+                    { 
+                      backgroundColor: themeMode === mode ? colors.purple + '20' : 'transparent',
+                      borderColor: themeMode === mode ? colors.purple : colors.border,
+                    }
+                  ]}
+                  onPress={() => handleSelectTheme(mode)}
+                >
+                  <View style={styles.themeOptionLeft}>
+                    <Ionicons 
+                      name={
+                        mode === 'light' ? 'sunny' : 
+                        mode === 'dark' ? 'moon' : 
+                        'phone-portrait-outline'
+                      }
+                      size={24}
+                      color={themeMode === mode ? colors.purple : colors.textSecondary}
+                    />
+                    <View style={styles.themeOptionText}>
+                      <Text style={[styles.themeOptionTitle, { color: colors.textPrimary }]}>
+                        {getThemeLabel(mode)}
+                      </Text>
+                      <Text style={[styles.themeOptionDesc, { color: colors.textSecondary }]}>
+                        {mode === 'system' ? 'Match device settings' : 
+                         mode === 'light' ? 'Always use light mode' : 
+                         'Always use dark mode'}
+                      </Text>
+                    </View>
+                  </View>
+                  {themeMode === mode && (
+                    <Ionicons name="checkmark-circle" size={24} color={colors.purple} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.modalCloseButton, { backgroundColor: colors.purple }]}
+              onPress={() => setShowThemeModal(false)}
+            >
+              <Text style={styles.modalCloseButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </ScrollView>
   );
 }
@@ -153,7 +248,6 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: spacing.xl,
@@ -166,7 +260,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     ...typography.body,
-    color: colors.textSecondary,
   },
   section: {
     paddingHorizontal: spacing.xl,
@@ -177,8 +270,65 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   settingsCard: {
-    backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xl,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    borderRadius: borderRadius.lg,
+    padding: spacing.xxl,
+  },
+  modalTitle: {
+    ...typography.title,
+    marginBottom: spacing.xs,
+  },
+  modalSubtitle: {
+    ...typography.body,
+    marginBottom: spacing.xxl,
+  },
+  themeOptions: {
+    gap: spacing.md,
+    marginBottom: spacing.xxl,
+  },
+  themeOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.lg,
+    borderRadius: borderRadius.md,
+    borderWidth: 2,
+  },
+  themeOptionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: spacing.md,
+  },
+  themeOptionText: {
+    flex: 1,
+  },
+  themeOptionTitle: {
+    ...typography.headline,
+    marginBottom: 2,
+  },
+  themeOptionDesc: {
+    ...typography.caption,
+  },
+  modalCloseButton: {
+    padding: spacing.lg,
+    borderRadius: borderRadius.md,
+    alignItems: 'center',
+  },
+  modalCloseButtonText: {
+    ...typography.headline,
+    color: '#FFFFFF',
   },
 });

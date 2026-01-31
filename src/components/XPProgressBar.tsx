@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, typography, spacing, borderRadius, xpGradient } from '../constants/theme';
+import { typography, spacing, borderRadius, xpGradient } from '../constants/theme';
 import type { LevelInfo } from '../services/types';
 
 interface XPProgressBarProps {
@@ -10,6 +11,8 @@ interface XPProgressBarProps {
 }
 
 export default function XPProgressBar({ levelInfo, compact = false }: XPProgressBarProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const xpInLevel = levelInfo.currentXP - levelInfo.xpForCurrentLevel;
   const xpNeeded = levelInfo.xpForNextLevel - levelInfo.xpForCurrentLevel;
 
@@ -74,7 +77,7 @@ export default function XPProgressBar({ levelInfo, compact = false }: XPProgress
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

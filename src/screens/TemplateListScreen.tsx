@@ -19,8 +19,8 @@ import {
   type WorkoutTemplate,
 } from '../services';
 import { LoadingState, EmptyState } from '../components';
-import { colors, typography, spacing, borderRadius, shadows, getCategoryColor } from '../constants/theme';
-import { useAuth } from '../contexts';
+import { typography, spacing, borderRadius, shadows, getCategoryColor } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
 
 // Cross-platform alert helper
 type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
@@ -51,6 +51,8 @@ const showAlert = (
 
 export default function TemplateListScreen({ navigation }: TemplateListScreenProps) {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
@@ -256,7 +258,7 @@ export default function TemplateListScreen({ navigation }: TemplateListScreenPro
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

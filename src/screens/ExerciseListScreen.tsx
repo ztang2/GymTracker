@@ -1,9 +1,12 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { useTheme } from '../contexts';
 import { useState, useEffect } from 'react';
 import type { ExerciseListScreenProps } from '../navigation/types';
 import { getAllExercises, searchExercises, type Exercise } from '../services';
 
 export default function ExerciseListScreen({ navigation }: ExerciseListScreenProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -56,7 +59,7 @@ export default function ExerciseListScreen({ navigation }: ExerciseListScreenPro
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   searchInput: {

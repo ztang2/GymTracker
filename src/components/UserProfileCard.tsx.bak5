@@ -19,7 +19,7 @@ export default function UserProfileCard({
 }: UserProfileCardProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const gradColors = gradientColors || colors.gradientPurplePink;
+  const cardGradient = gradientColors || colors.gradientPurplePink;
   // Get initials from user name (first letter of first and last name)
   const getInitials = (name: string) => {
     const parts = name.trim().split(' ');
@@ -31,7 +31,7 @@ export default function UserProfileCard({
 
   return (
     <LinearGradient
-      colors={gradColors}
+      colors={gradientColors}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}

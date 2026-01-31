@@ -1,6 +1,7 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, typography, spacing, borderRadius, getCategoryColor } from '../constants/theme';
+import { typography, spacing, borderRadius, getCategoryColor } from '../constants/theme';
 
 export interface CategoryWorkoutData {
   category: string;
@@ -17,6 +18,8 @@ export default function MuscleGroupDistribution({
   data,
   title = 'This Month\'s Focus',
 }: MuscleGroupDistributionProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   // Handle empty state
   if (data.length === 0) {
     return (
@@ -62,7 +65,7 @@ export default function MuscleGroupDistribution({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: 'rgba(26, 26, 26, 0.6)',
     borderRadius: borderRadius.lg,

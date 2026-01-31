@@ -25,11 +25,12 @@ import {
   EmptyState,
   XPProgressBar,
 } from '../components';
-import { useAuth } from '../contexts';
-import { colors, typography, spacing } from '../constants/theme';
+import { useAuth, useTheme } from '../contexts';
+import { typography, spacing } from '../constants/theme';
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [workouts, setWorkouts] = useState<WorkoutSession[]>([]);
   const [weeklyWorkouts, setWeeklyWorkouts] = useState(0);
   const [weeklyMinutes, setWeeklyMinutes] = useState(0);
@@ -99,13 +100,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.appTitle}>FitTrack</Text>
-        <Text style={styles.tagline}>Let's crush your goals today</Text>
+        <Text style={[styles.appTitle, { color: colors.textPrimary }]}>FitTrack</Text>
+        <Text style={[styles.tagline, { color: colors.textSecondary }]}>Let's crush your goals today</Text>
       </View>
 
       {/* XP Progress Bar */}
@@ -133,7 +134,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       {/* Quick Start Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Quick Start</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Quick Start</Text>
         <View style={styles.quickStartRow}>
           <ActionButton
             title="New Workout"
@@ -152,7 +153,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       {/* Recent Workouts Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent Workouts</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recent Workouts</Text>
         {workouts.length === 0 ? (
           <EmptyState
             title="No Workouts"
@@ -180,7 +181,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: spacing.xl,
@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
   },
   tagline: {
     ...typography.body,
-    color: colors.textSecondary,
   },
   xpSection: {
     paddingHorizontal: spacing.xl,

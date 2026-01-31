@@ -11,8 +11,8 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAuth } from '../contexts';
-import { colors, spacing, typography, borderRadius } from '../constants/theme';
+import { useAuth, useTheme } from '../contexts';
+import { spacing, typography, borderRadius } from '../constants/theme';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { AuthStackParamList } from '../navigation/types';
 
@@ -22,6 +22,7 @@ type LoginScreenProps = {
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
   const { signIn } = useAuth();
+  const { colors } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +56,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.content}>
@@ -67,19 +68,23 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             end={{ x: 1, y: 0 }}
             style={styles.logoGradient}
           >
-            <Text style={styles.logoText}>FitTrack</Text>
+            <Text style={[styles.logoText, { color: colors.textPrimary }]}>FitTrack</Text>
           </LinearGradient>
-          <Text style={styles.subtitle}>Track your fitness journey</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Track your fitness journey</Text>
         </View>
 
         {/* Login Form */}
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Email</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { 
+                backgroundColor: colors.inputBackground, 
+                borderColor: colors.inputBorder,
+                color: colors.textPrimary 
+              }]}
               placeholder="your.email@example.com"
-              placeholderTextColor={colors.textTertiary}
+              placeholderTextColor={colors.inputPlaceholder}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -90,11 +95,15 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Password</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { 
+                backgroundColor: colors.inputBackground, 
+                borderColor: colors.inputBorder,
+                color: colors.textPrimary 
+              }]}
               placeholder="Enter your password"
-              placeholderTextColor={colors.textTertiary}
+              placeholderTextColor={colors.inputPlaceholder}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -106,7 +115,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
           {/* Sign In Button */}
           <TouchableOpacity
-            style={styles.buttonContainer}
+            style={[styles.buttonContainer, { shadowColor: colors.purple }]}
             onPress={handleSignIn}
             disabled={loading}
             activeOpacity={0.8}
@@ -118,7 +127,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               style={styles.button}
             >
               {loading ? (
-                <ActivityIndicator color={colors.textPrimary} />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text style={styles.buttonText}>Sign In</Text>
               )}
@@ -127,12 +136,12 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
           {/* Sign Up Link */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
+            <Text style={[styles.footerText, { color: colors.textSecondary }]}>Don't have an account? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('SignUpScreen')}
               disabled={loading}
             >
-              <Text style={styles.linkText}>Sign Up</Text>
+              <Text style={[styles.linkText, { color: colors.purple }]}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -144,7 +153,6 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -165,12 +173,10 @@ const styles = StyleSheet.create({
     ...typography.largeTitle,
     fontSize: 42,
     fontWeight: '800',
-    color: colors.textPrimary,
     letterSpacing: 1,
   },
   subtitle: {
     ...typography.body,
-    color: colors.textSecondary,
   },
   form: {
     gap: spacing.lg,
@@ -179,23 +185,19 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   label: {
-    ...typography.bodySecondary,
+    fontSize: 16,
     fontWeight: '600',
   },
   input: {
-    backgroundColor: 'rgba(26, 26, 26, 0.6)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: borderRadius.md,
     padding: spacing.lg,
-    color: colors.textPrimary,
     fontSize: 16,
   },
   buttonContainer: {
     marginTop: spacing.lg,
     borderRadius: borderRadius.md,
     overflow: 'hidden',
-    shadowColor: colors.purple,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -208,7 +210,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     ...typography.headline,
-    color: colors.textPrimary,
+    color: '#FFFFFF',
     fontWeight: '700',
   },
   footer: {
@@ -219,11 +221,9 @@ const styles = StyleSheet.create({
   },
   footerText: {
     ...typography.body,
-    color: colors.textSecondary,
   },
   linkText: {
     ...typography.body,
-    color: colors.purple,
     fontWeight: '600',
   },
 });

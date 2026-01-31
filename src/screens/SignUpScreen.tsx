@@ -12,8 +12,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAuth } from '../contexts';
-import { colors, spacing, typography, borderRadius } from '../constants/theme';
+import { useAuth , useTheme } from '../contexts';
+import { spacing, typography, borderRadius } from '../constants/theme';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { AuthStackParamList } from '../navigation/types';
 
@@ -23,6 +23,8 @@ type SignUpScreenProps = {
 
 export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   const { signUp } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -195,7 +197,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

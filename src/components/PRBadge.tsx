@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, typography, spacing, borderRadius, prColors } from '../constants/theme';
+import { typography, spacing, borderRadius, prColors } from '../constants/theme';
 
 interface PRBadgeProps {
   size?: 'small' | 'medium' | 'large';
@@ -9,6 +10,8 @@ interface PRBadgeProps {
 }
 
 export default function PRBadge({ size = 'medium', showLabel = true }: PRBadgeProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const sizeConfig = {
     small: { badge: 20, icon: 12, font: 10 },
     medium: { badge: 28, icon: 16, font: 12 },
@@ -38,7 +41,7 @@ export default function PRBadge({ size = 'medium', showLabel = true }: PRBadgePr
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

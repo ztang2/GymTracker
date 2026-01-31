@@ -24,9 +24,9 @@ import {
   GOAL_PERIOD_LABELS,
   GOAL_TYPE_ICONS,
 } from '../services/goalService';
-import { colors, typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows } from '../constants/theme';
 import { ProgressBar, LoadingState } from '../components';
-import { useAuth } from '../contexts';
+import { useAuth , useTheme } from '../contexts';
 
 // Cross-platform alert helper
 type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
@@ -100,6 +100,8 @@ const GOAL_CONFIGS: Array<{
 
 export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps) {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
 
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
@@ -437,7 +439,7 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

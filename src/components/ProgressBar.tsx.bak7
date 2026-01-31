@@ -53,7 +53,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     }).start();
   }, [percentage]);
 
-  const isGradient = Array.isArray(finalColor);
+  const isGradient = Array.isArray(barColor);
   const isSimpleMode = !label;
 
   // Simple mode - just the bar without labels

@@ -1,8 +1,9 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDuration } from '../services/workoutLogger';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
 
 interface WorkoutHeaderProps {
   elapsedSeconds: number;
@@ -13,6 +14,8 @@ export const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   elapsedSeconds,
   onCancel,
 }) => {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={onCancel}>
@@ -27,7 +30,7 @@ export const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',

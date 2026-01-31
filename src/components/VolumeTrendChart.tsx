@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Circle, Line as SvgLine } from 'react-native-svg';
-import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius } from '../constants/theme';
 
 export interface WeekVolumeData {
   week: string; // Week label like "W1", "W2" or "Jan 6"
@@ -18,6 +19,8 @@ export default function VolumeTrendChart({
   data,
   title = 'Volume Trend',
 }: VolumeTrendChartProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   // Handle empty data
   if (data.length === 0) {
     return (
@@ -151,7 +154,7 @@ export default function VolumeTrendChart({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     backgroundColor: 'rgba(26, 26, 26, 0.6)',
     borderRadius: borderRadius.lg,
