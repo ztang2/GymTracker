@@ -585,3 +585,32 @@ export async function deleteAllSetsForExercise(
     throw new Error(`Failed to delete all sets for exercise: ${error.message}`);
   }
 }
+
+// ============================================================================
+// ALIASES FOR CONSISTENCY (Task-specific naming)
+// ============================================================================
+
+/**
+ * Alias for updateSet - Update an exercise set
+ */
+export const updateExerciseSet = updateSet;
+
+/**
+ * Alias for addSetToExercise - Add a new set to an exercise
+ */
+export const addExerciseSet = addSetToExercise;
+
+/**
+ * Alias for deleteSet - Delete an exercise set
+ */
+export const deleteExerciseSet = deleteSet;
+
+/**
+ * Alias for addExerciseToWorkout - Add an exercise to a workout
+ */
+export const addWorkoutExercise = addExerciseToWorkout;
+
+/**
+ * Alias for removeExerciseFromWorkout - Remove an exercise from a workout
+ */
+export const deleteWorkoutExercise = removeExerciseFromWorkout;

@@ -95,7 +95,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   levelNumber: {
     ...typography.title,
-    color: colors.textPrimary,
+    color: '#FFFFFF',  // Always white on colored badge backgrounds
   },
   progressSection: {
     flex: 1,

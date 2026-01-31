@@ -11,4 +11,5 @@ export * from './goalService';
 export * from './gamificationService';
 export * from './prService';
 export * from './templateService';
+export * from './exerciseStatsService';
 export * from './types';

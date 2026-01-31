@@ -98,11 +98,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Profile</Text>
-        <Text style={styles.subtitle}>Manage your account</Text>
+        <Text style={[styles.title, { color: colors.textPrimary }]}>Profile</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Manage your account</Text>
       </View>
 
       {/* User Profile Card */}

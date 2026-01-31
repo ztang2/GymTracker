@@ -41,7 +41,7 @@ export default function WorkoutHistoryCard({
     <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
       {/* Left side: Colored circular icon */}
       <View style={[styles.iconContainer, { backgroundColor: accent }]}>
-        <Ionicons name="barbell" size={24} color={colors.textPrimary} />
+        <Ionicons name="barbell" size={24} color="#FFFFFF" />
       </View>
 
       {/* Middle: Workout info */}
@@ -89,6 +89,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   exerciseText: {
     ...typography.body,
     fontWeight: '600',
+    color: colors.textPrimary,  // Dynamic color based on theme
   },
   metaRow: {
     flexDirection: 'row',
@@ -96,5 +97,6 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   metaText: {
     ...typography.caption,
+    color: colors.textSecondary,  // Dynamic color based on theme
   },
 });

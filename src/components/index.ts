@@ -23,6 +23,7 @@ export { default as SummaryCardRow } from './SummaryCardRow';
 export { default as WeeklyActivityChart } from './WeeklyActivityChart';
 export { default as MonthlyOverview } from './MonthlyOverview';
 export { default as VolumeTrendChart } from './VolumeTrendChart';
+export { default as ExerciseProgressChart } from './ExerciseProgressChart';
 export { default as RecentPRsList } from './RecentPRsList';
 export { default as MuscleGroupDistribution } from './MuscleGroupDistribution';
 

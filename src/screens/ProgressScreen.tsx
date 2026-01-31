@@ -402,6 +402,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   headerTitle: {
     ...typography.largeTitle,
+    color: colors.textPrimary,
   },
   headerSubtitle: {
     ...typography.body,

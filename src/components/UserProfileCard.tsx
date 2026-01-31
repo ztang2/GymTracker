@@ -89,7 +89,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   initialsText: {
     fontSize: 32,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: '#FFFFFF',  // Always white on gradient backgrounds
   },
   infoContainer: {
     flex: 1,
@@ -98,6 +98,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   nameText: {
     ...typography.title,
     fontWeight: '700',
+    color: '#FFFFFF',  // Always white on gradient backgrounds
   },
   memberText: {
     ...typography.callout,

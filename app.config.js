@@ -35,6 +35,7 @@ export default {
           color: '#14B8A6',
         },
       ],
+      '@react-native-community/datetimepicker',
     ],
     extra: {
       supabaseUrl: process.env.SUPABASE_URL,

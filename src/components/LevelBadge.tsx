@@ -65,7 +65,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   levelText: {
-    color: colors.textPrimary,
+    color: '#FFFFFF',  // Always white on colored badge backgrounds
     fontWeight: '700',
   },
   tierContainer: {

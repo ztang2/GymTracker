@@ -105,6 +105,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   value: {
     ...typography.statNumber,
+    color: colors.textPrimary,  // Dynamic color based on theme
     marginBottom: spacing.xs,
   },
   subtitle: {

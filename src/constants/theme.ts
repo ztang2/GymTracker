@@ -153,59 +153,50 @@ export const spacing = {
   xxxl: 32,
 };
 
+// Typography helpers (use with colors from useTheme)
 export const typography = {
   // Large headings
   largeTitle: {
     fontSize: 34,
     fontWeight: '700' as const,
-    color: colors.textPrimary,
     letterSpacing: 0.4,
   },
   title: {
     fontSize: 24,
     fontWeight: '700' as const,
-    color: colors.textPrimary,
   },
   title2: {
     fontSize: 20,
     fontWeight: '600' as const,
-    color: colors.textPrimary,
   },
   headline: {
     fontSize: 17,
     fontWeight: '600' as const,
-    color: colors.textPrimary,
   },
   body: {
     fontSize: 16,
     fontWeight: '400' as const,
-    color: colors.textPrimary,
   },
   bodySecondary: {
     fontSize: 16,
     fontWeight: '400' as const,
-    color: colors.textSecondary,
   },
   callout: {
     fontSize: 14,
     fontWeight: '400' as const,
-    color: colors.textPrimary,
   },
   caption: {
     fontSize: 12,
     fontWeight: '400' as const,
-    color: colors.textSecondary,
   },
   caption2: {
     fontSize: 11,
     fontWeight: '400' as const,
-    color: colors.textTertiary,
   },
   // Stat card number style
   statNumber: {
     fontSize: 40,
     fontWeight: '700' as const,
-    color: colors.textPrimary,
   },
 };
 

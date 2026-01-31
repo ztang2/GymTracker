@@ -31,7 +31,7 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
           <Ionicons
             name={badge.icon_name as any}
             size={24}
-            color={badge.isUnlocked ? colors.textPrimary : colors.textMuted}
+            color={badge.isUnlocked ? '#FFFFFF' : colors.textMuted}
           />
           {!badge.isUnlocked && (
             <View style={styles.lockOverlay}>
@@ -58,7 +58,7 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
               end={{ x: 1, y: 1 }}
               style={styles.iconGradient}
             >
-              <Ionicons name={badge.icon_name as any} size={28} color={colors.textPrimary} />
+              <Ionicons name={badge.icon_name as any} size={28} color="#FFFFFF" />
             </LinearGradient>
           ) : (
             <View style={styles.lockedIcon}>

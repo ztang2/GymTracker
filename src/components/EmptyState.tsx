@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     ...typography.headline,
-    color: '#FFFFFF',
+    color: '#FFFFFF',  // Always white on gradient buttons for contrast
   },
 });
 

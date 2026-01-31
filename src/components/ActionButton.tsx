@@ -22,13 +22,7 @@ export default function ActionButton({
 }: ActionButtonProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
-  const buttonContent = (
-    <View style={styles.content}>
-      <Ionicons name={icon} size={32} color={colors.textPrimary} />
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
-
+  
   if (gradientColors) {
     return (
       <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.8}>
@@ -38,7 +32,10 @@ export default function ActionButton({
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
         >
-          {buttonContent}
+          <View style={styles.content}>
+            <Ionicons name={icon} size={32} color="#FFFFFF" />
+            <Text style={styles.titleGradient}>{title}</Text>
+          </View>
         </LinearGradient>
       </TouchableOpacity>
     );
@@ -50,7 +47,10 @@ export default function ActionButton({
       style={[styles.container, styles.solidButton, { backgroundColor: color || colors.cardBackground }]}
       activeOpacity={0.8}
     >
-      {buttonContent}
+      <View style={styles.content}>
+        <Ionicons name={icon} size={32} color={colors.textPrimary} />
+        <Text style={styles.title}>{title}</Text>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -80,6 +80,13 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.headline,
+    color: colors.textPrimary,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  titleGradient: {
+    ...typography.headline,
+    color: '#FFFFFF',  // Always white on gradient backgrounds
     textAlign: 'center',
     fontWeight: '600',
   },

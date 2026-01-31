@@ -169,6 +169,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.largeTitle,
+    color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   subtitle: {
@@ -195,6 +196,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   monthText: {
     ...typography.title2,
+    color: colors.textPrimary,
     fontWeight: '600',
   },
   calendarContainer: {
@@ -251,6 +253,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   streakLabel: {
     ...typography.headline,
+    color: '#FFFFFF',  // Always white on gradient backgrounds
     marginBottom: spacing.xs,
     fontWeight: '600',
   },
@@ -263,7 +266,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   streakValue: {
     fontSize: 48,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: '#FFFFFF',  // Always white on gradient backgrounds
   },
   streakUnit: {
     ...typography.title2,

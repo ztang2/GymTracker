@@ -126,16 +126,14 @@ export async function savePR(
 // ============================================================================
 
 /**
- * Calculate estimated 1RM using Brzycki formula
- * 1RM = weight × (36 / (37 - reps))
- * Note: Only accurate for reps <= 10
+ * Calculate estimated 1RM using Epley formula
+ * 1RM = weight × (1 + reps/30)
+ * Note: Most accurate for reps between 1-10
  */
 export function calculateEstimated1RM(weight: number, reps: number): number {
   if (reps <= 0 || weight <= 0) return 0;
   if (reps === 1) return weight;
-  // Limit to 10 reps for accuracy
-  const adjustedReps = Math.min(reps, 10);
-  return weight * (36 / (37 - adjustedReps));
+  return weight * (1 + reps / 30);
 }
 
 /**

@@ -71,6 +71,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.title2,
+    color: colors.textPrimary,
     marginBottom: spacing.xl,
   },
   barsContainer: {
@@ -100,9 +101,11 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   dayText: {
     ...typography.caption,
+    color: colors.textPrimary,
     fontWeight: '600',
   },
   dateText: {
     ...typography.caption2,
+    color: colors.textSecondary,
   },
 });
