@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitTrack Light Theme Playground</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #111; color: #fff; padding: 16px; }
+  h1 { text-align: center; margin-bottom: 8px; font-size: 24px; }
+  .subtitle { text-align: center; color: #999; margin-bottom: 24px; font-size: 14px; }
+  
+  .themes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .theme-card {
+    width: 340px;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 3px solid transparent;
+  }
+  .theme-card:hover { transform: scale(1.02); }
+  .theme-card.selected { border-color: #A855F7; box-shadow: 0 0 20px rgba(168,85,247,0.4); }
+  
+  .theme-label {
+    text-align: center;
+    padding: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    background: #222;
+    letter-spacing: 0.5px;
+  }
+  .theme-desc {
+    text-align: center;
+    padding: 0 12px 12px;
+    font-size: 12px;
+    color: #888;
+    background: #222;
+  }
+  
+  /* Mini app mockup */
+  .app-mock {
+    padding: 20px 16px;
+    min-height: 520px;
+  }
+  .mock-header h2 { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+  .mock-header p { font-size: 12px; margin-bottom: 16px; }
+  
+  .stats-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .stat-card { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid; }
+  .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 24px; font-weight: 800; margin: 4px 0; }
+  .stat-sub { font-size: 10px; }
+  
+  .section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  
+  .chart-card { padding: 16px; border-radius: 14px; border: 1px solid; margin-bottom: 16px; }
+  .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .bars-row { display: flex; align-items: flex-end; gap: 6px; height: 100px; margin-bottom: 8px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar { width: 20px; border-radius: 4px 4px 0 0; min-height: 4px; }
+  .bar-label { font-size: 9px; font-weight: 600; }
+  
+  .workout-item { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; border: 1px solid; margin-bottom: 8px; }
+  .workout-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .workout-name { font-size: 14px; font-weight: 600; }
+  .workout-meta { font-size: 11px; }
+  
+  .tab-bar { display: flex; border-top: 1px solid; padding: 8px 0 4px; margin-top: 16px; }
+  .tab { flex: 1; text-align: center; font-size: 10px; font-weight: 600; padding: 4px; }
+  .tab-icon { font-size: 18px; margin-bottom: 2px; }
+  
+  .action-btns { display: flex; gap: 8px; margin-bottom: 16px; }
+  .action-btn { flex: 1; padding: 14px; border-radius: 14px; text-align: center; font-weight: 700; font-size: 13px; color: white; }
+  
+  .calendar-dots { display: flex; gap: 6px; margin-bottom: 16px; }
+  .cal-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+
+  .vote-section { text-align: center; margin-top: 32px; padding: 20px; }
+  .vote-section h2 { margin-bottom: 8px; }
+  .vote-section p { color: #999; font-size: 14px; }
+  
+  @media (max-width: 720px) {
+    .theme-card { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🎨 FitTrack Light Theme Playground</h1>
+<p class="subtitle">Tap a theme to select it. Tell me which one you like!</p>
+
+<div class="themes-grid" id="grid"></div>
+
+<div class="vote-section">
+  <h2>Which theme do you prefer?</h2>
+  <p>Just tell me the letter (A–F) and I'll apply it!</p>
+</div>
+
+<script>
+const themes = [
+  {
+    id: 'A',
+    name: 'Clean White',
+    desc: 'Minimal, modern, Apple-inspired',
+    bg: '#FFFFFF',
+    cardBg: '#F8F9FA',
+    cardBorder: '#E5E7EB',
+    textPrimary: '#1A1A1A',
+    textSecondary: '#6B7280',
+    textTertiary: '#9CA3AF',
+    accent1: '#A855F7', // purple
+    accent2: '#14B8A6', // teal
+    tabBg: '#FFFFFF',
+    tabBorder: '#E5E7EB',
+    tabActive: '#A855F7',
+    tabInactive: '#9CA3AF',
+    statCardBg: '#F8F9FA',
+    statCardBorder: '#E5E7EB',
+    barEmpty: '#E5E7EB',
+    barFill: 'linear-gradient(to top, #A855F7, #C084FC)',
+    actionBtn1: 'linear-gradient(135deg, #14B8A6, #10B981)',
+    actionBtn2: 'linear-gradient(135deg, #F97316, #FB923C)',
+    workoutIconBg: '#EDE9FE',
+    workoutItemBg: '#FFFFFF',
+    workoutItemBorder: '#E5E7EB',
+    calDotEmpty: '#F3F4F6',
+    calDotFill: '#14B8A6',
+    calDotToday: '#EC4899',
+  },
+  {
+    id: 'B',
+    name: 'Warm Cream',
+    desc: 'Soft, warm tones with golden accents',
+    bg: '#FFFBF5',
+    cardBg: '#FFF8F0',
+    cardBorder: '#F0E6D6',
+    textPrimary: '#2D2418',
+    textSecondary: '#8B7355',
+    textTertiary: '#B8A68C',
+    accent1: '#D97706', // amber
+    accent2: '#059669', // emerald
+    tabBg: '#FFFBF5',
+    tabBorder: '#F0E6D6',
+    tabActive: '#D97706',
+    tabInactive: '#B8A68C',
+    statCardBg: '#FFF8F0',
+    statCardBorder: '#F0E6D6',
+    barEmpty: '#F0E6D6',
+    barFill: 'linear-gradient(to top, #D97706, #FBBF24)',
+    actionBtn1: 'linear-gradient(135deg, #059669, #34D399)',
+    actionBtn2: 'linear-gradient(135deg, #DC2626, #F87171)',
+    workoutIconBg: '#FEF3C7',
+    workoutItemBg: '#FFFBF5',
+    workoutItemBorder: '#F0E6D6',
+    calDotEmpty: '#F5EEE4',
+    calDotFill: '#059669',
+    calDotToday: '#DC2626',
+  },
+  {
+    id: 'C',
+    name: 'Cool Blue',
+    desc: 'Professional, calm, blue accents',
+    bg: '#F8FAFC',
+    cardBg: '#F1F5F9',
+    cardBorder: '#CBD5E1',
+    textPrimary: '#0F172A',
+    textSecondary: '#475569',
+    textTertiary: '#94A3B8',
+    accent1: '#3B82F6', // blue
+    accent2: '#8B5CF6', // violet
+    tabBg: '#F8FAFC',
+    tabBorder: '#CBD5E1',
+    tabActive: '#3B82F6',
+    tabInactive: '#94A3B8',
+    statCardBg: '#F1F5F9',
+    statCardBorder: '#CBD5E1',
+    barEmpty: '#CBD5E1',
+    barFill: 'linear-gradient(to top, #3B82F6, #60A5FA)',
+    actionBtn1: 'linear-gradient(135deg, #8B5CF6, #A78BFA)',
+    actionBtn2: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
+    workoutIconBg: '#DBEAFE',
+    workoutItemBg: '#F8FAFC',
+    workoutItemBorder: '#CBD5E1',
+    calDotEmpty: '#E2E8F0',
+    calDotFill: '#3B82F6',
+    calDotToday: '#EC4899',
+  },
+  {
+    id: 'D',
+    name: 'Mint Fresh',
+    desc: 'Energetic, fresh green vibes',
+    bg: '#F0FDF9',
+    cardBg: '#ECFDF5',
+    cardBorder: '#A7F3D0',
+    textPrimary: '#022C22',
+    textSecondary: '#3F6B5E',
+    textTertiary: '#86B5A5',
+    accent1: '#10B981', // emerald
+    accent2: '#F59E0B', // amber
+    tabBg: '#F0FDF9',
+    tabBorder: '#A7F3D0',
+    tabActive: '#10B981',
+    tabInactive: '#86B5A5',
+    statCardBg: '#ECFDF5',
+    statCardBorder: '#A7F3D0',
+    barEmpty: '#A7F3D0',
+    barFill: 'linear-gradient(to top, #10B981, #34D399)',
+    actionBtn1: 'linear-gradient(135deg, #10B981, #6EE7B7)',
+    actionBtn2: 'linear-gradient(135deg, #F59E0B, #FBBF24)',
+    workoutIconBg: '#D1FAE5',
+    workoutItemBg: '#F0FDF9',
+    workoutItemBorder: '#A7F3D0',
+    calDotEmpty: '#D1FAE5',
+    calDotFill: '#10B981',
+    calDotToday: '#F59E0B',
+  },
+  {
+    id: 'E',
+    name: 'Soft Lavender',
+    desc: 'Gentle purple tones, calming',
+    bg: '#FAF5FF',
+    cardBg: '#F5F0FF',
+    cardBorder: '#DDD6FE',
+    textPrimary: '#1E1533',
+    textSecondary: '#6B5B8A',
+    textTertiary: '#A394C0',
+    accent1: '#8B5CF6', // violet
+    accent2: '#EC4899', // pink
+    tabBg: '#FAF5FF',
+    tabBorder: '#DDD6FE',
+    tabActive: '#8B5CF6',
+    tabInactive: '#A394C0',
+    statCardBg: '#F5F0FF',
+    statCardBorder: '#DDD6FE',
+    barEmpty: '#DDD6FE',
+    barFill: 'linear-gradient(to top, #8B5CF6, #A78BFA)',
+    actionBtn1: 'linear-gradient(135deg, #EC4899, #F472B6)',
+    actionBtn2: 'linear-gradient(135deg, #14B8A6, #2DD4BF)',
+    workoutIconBg: '#EDE9FE',
+    workoutItemBg: '#FAF5FF',
+    workoutItemBorder: '#DDD6FE',
+    calDotEmpty: '#EDE9FE',
+    calDotFill: '#8B5CF6',
+    calDotToday: '#EC4899',
+  },
+  {
+    id: 'F',
+    name: 'Sunset Coral',
+    desc: 'Bold, warm energy, coral + indigo',
+    bg: '#FFFBF7',
+    cardBg: '#FFF5EE',
+    cardBorder: '#FECACA',
+    textPrimary: '#1C1017',
+    textSecondary: '#7A5A5A',
+    textTertiary: '#B89999',
+    accent1: '#F43F5E', // rose
+    accent2: '#6366F1', // indigo
+    tabBg: '#FFFBF7',
+    tabBorder: '#FECACA',
+    tabActive: '#F43F5E',
+    tabInactive: '#B89999',
+    statCardBg: '#FFF5EE',
+    statCardBorder: '#FECACA',
+    barEmpty: '#FECACA',
+    barFill: 'linear-gradient(to top, #F43F5E, #FB7185)',
+    actionBtn1: 'linear-gradient(135deg, #6366F1, #818CF8)',
+    actionBtn2: 'linear-gradient(135deg, #F97316, #FB923C)',
+    workoutIconBg: '#FFE4E6',
+    workoutItemBg: '#FFFBF7',
+    workoutItemBorder: '#FECACA',
+    calDotEmpty: '#FFE4E6',
+    calDotFill: '#F43F5E',
+    calDotToday: '#6366F1',
+  },
+];
+
+const grid = document.getElementById('grid');
+
+themes.forEach(t => {
+  const barHeights = [15, 30, 0, 45, 0, 80, 10];
+  const days = ['S','M','T','W','T','F','S'];
+  const calDays = [25,26,27,28,29,30,31];
+  
+  const card = document.createElement('div');
+  card.className = 'theme-card';
+  card.onclick = () => {
+    document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  };
+  
+  card.innerHTML = `
+    <div class="theme-label">${t.id}. ${t.name}</div>
+    <div class="theme-desc">${t.desc}</div>
+    <div class="app-mock" style="background:${t.bg}">
+      <div class="mock-header">
+        <h2 style="color:${t.textPrimary}">FitTrack</h2>
+        <p style="color:${t.textSecondary}">Let's crush your goals today</p>
+      </div>
+      
+      <div class="stats-row">
+        <div class="stat-card" style="background:${t.statCardBg};border-color:${t.statCardBorder}">
+          <div class="stat-label" style="color:${t.textSecondary}">Workouts</div>
+          <div class="stat-value" style="color:${t.textPrimary}">3</div>
+          <div class="stat-sub" style="color:${t.accent2}">↑ +2 vs last week</div>
+        </div>
+        <div class="stat-card" style="background:${t.statCardBg};border-color:${t.statCardBorder}">
+          <div class="stat-label" style="color:${t.textSecondary}">Volume</div>
+          <div class="stat-value" style="color:${t.textPrimary}">2.4k</div>
+          <div class="stat-sub" style="color:${t.accent2}">↑ +800 kg</div>
+        </div>
+        <div class="stat-card" style="background:${t.statCardBg};border-color:${t.statCardBorder}">
+          <div class="stat-label" style="color:${t.textSecondary}">Time</div>
+          <div class="stat-value" style="color:${t.textPrimary}">45</div>
+          <div class="stat-sub" style="color:${t.accent2}">↑ +12 min</div>
+        </div>
+      </div>
+      
+      <div class="action-btns">
+        <div class="action-btn" style="background:${t.actionBtn1}">💪 New Workout</div>
+        <div class="action-btn" style="background:${t.actionBtn2}">🎯 Set Goal</div>
+      </div>
+      
+      <div class="chart-card" style="background:${t.cardBg};border-color:${t.cardBorder}">
+        <div class="chart-title" style="color:${t.textPrimary}">This Week</div>
+        <div class="bars-row">
+          ${barHeights.map((h, i) => `
+            <div class="bar-col">
+              <div class="bar" style="height:${Math.max(h, 4)}px;background:${h > 0 ? t.barFill : t.barEmpty};${i === 5 ? 'box-shadow: 0 0 8px ' + t.accent2 + '; border: 2px solid ' + t.accent2 : ''}"></div>
+              <div class="bar-label" style="color:${i === 5 ? t.accent2 : t.textTertiary}">${days[i]}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      
+      <div class="calendar-dots">
+        ${calDays.map((d, i) => {
+          const isFilled = [1, 3, 5].includes(i);
+          const isToday = i === 6;
+          let bg = t.calDotEmpty;
+          let color = t.textTertiary;
+          if (isFilled) { bg = t.calDotFill; color = '#fff'; }
+          if (isToday) { bg = t.calDotToday; color = '#fff'; }
+          return `<div class="cal-dot" style="background:${bg};color:${color}">${d}</div>`;
+        }).join('')}
+      </div>
+      
+      <div class="workout-item" style="background:${t.workoutItemBg};border-color:${t.workoutItemBorder}">
+        <div class="workout-icon" style="background:${t.workoutIconBg}">🏋️</div>
+        <div>
+          <div class="workout-name" style="color:${t.textPrimary}">Push Day</div>
+          <div class="workout-meta" style="color:${t.textSecondary}">Jan 31, 2026 • 45 min</div>
+        </div>
+      </div>
+      <div class="workout-item" style="background:${t.workoutItemBg};border-color:${t.workoutItemBorder}">
+        <div class="workout-icon" style="background:${t.workoutIconBg}">🦵</div>
+        <div>
+          <div class="workout-name" style="color:${t.textPrimary}">Leg Day</div>
+          <div class="workout-meta" style="color:${t.textSecondary}">Jan 29, 2026 • 52 min</div>
+        </div>
+      </div>
+      
+      <div class="tab-bar" style="background:${t.tabBg};border-color:${t.tabBorder}">
+        <div class="tab" style="color:${t.tabActive}"><div class="tab-icon">🏠</div>Home</div>
+        <div class="tab" style="color:${t.tabInactive}"><div class="tab-icon">📅</div>Calendar</div>
+        <div class="tab" style="color:${t.tabInactive}"><div class="tab-icon">📈</div>Progress</div>
+        <div class="tab" style="color:${t.tabInactive}"><div class="tab-icon">👤</div>Profile</div>
+      </div>
+    </div>
+  `;
+  
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>

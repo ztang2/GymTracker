@@ -62,7 +62,7 @@ function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
   }, [scaleAnim]);
 
   return (
-    <Animated.View style={[styles.gradientIconContainer, { transform: [{ scale: scaleAnim }] }]}>
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <LinearGradient
         colors={gradientColors as any}
         style={styles.gradientCircle}
@@ -165,24 +165,18 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       {/* Weekly Stats Cards */}
       <View style={styles.statsRow}>
-        <View style={styles.statCardWrapper}>
-          <GradientIcon iconName="barbell" gradientColors={colors.gradientCyanBlue} />
-          <StatCard
-            title="Workouts"
-            value={weeklyWorkouts.toString()}
-            subtitle="This week"
-            gradientColors={colors.gradientPurplePink}
-          />
-        </View>
-        <View style={styles.statCardWrapper}>
-          <GradientIcon iconName="timer-outline" gradientColors={colors.gradientPinkPurple} />
-          <StatCard
-            title="Minutes"
-            value={weeklyMinutes.toString()}
-            subtitle="This week"
-            gradientColors={[colors.pink, colors.pinkLight]}
-          />
-        </View>
+        <StatCard
+          title="Workouts"
+          value={weeklyWorkouts.toString()}
+          subtitle="This week"
+          icon={<GradientIcon iconName="barbell" gradientColors={colors.gradientCyanBlue} />}
+        />
+        <StatCard
+          title="Minutes"
+          value={weeklyMinutes.toString()}
+          subtitle="This week"
+          icon={<GradientIcon iconName="timer-outline" gradientColors={colors.gradientPinkPurple} />}
+        />
       </View>
 
       {/* Quick Start Section */}
@@ -265,18 +259,11 @@ const styles = StyleSheet.create({
   },
   statCardWrapper: {
     flex: 1,
-    position: 'relative',
-  },
-  gradientIconContainer: {
-    position: 'absolute',
-    top: -12,
-    left: 12,
-    zIndex: 10,
   },
   gradientCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
