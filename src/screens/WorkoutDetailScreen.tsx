@@ -549,7 +549,24 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
             <View key={exercise.id} style={[styles.exerciseCard, isEditMode && styles.exerciseCardEdit]}>
               {/* Exercise header */}
               <View style={styles.exerciseHeader}>
-                <Text style={styles.exerciseName}>{exercise.exercise.name}</Text>
+                {!isEditMode ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      // Navigate to exercise progress in Progress tab
+                      // @ts-ignore - Cross-tab navigation
+                      navigation.navigate('ProgressTab', {
+                        screen: 'ExerciseProgressScreen',
+                        params: { exerciseId: exercise.exercise_id, exerciseName: exercise.exercise.name },
+                      });
+                    }}
+                    style={styles.exerciseNameButton}
+                  >
+                    <Text style={styles.exerciseName}>{exercise.exercise.name}</Text>
+                    <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+                  </TouchableOpacity>
+                ) : (
+                  <Text style={styles.exerciseName}>{exercise.exercise.name}</Text>
+                )}
                 {isEditMode && (
                   <TouchableOpacity onPress={() => handleRemoveExercise(exIdx)}>
                     <Ionicons name="close-circle" size={24} color={colors.error} />
@@ -855,6 +872,12 @@ const createStyles = (colors: any) =>
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 16,
+    },
+    exerciseNameButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
     },
     exerciseName: {
       fontSize: 18,

@@ -39,7 +39,7 @@ export type CalendarStackParamList = {
 // Progress stack params (renamed from Stats)
 export type ProgressStackParamList = {
   ProgressScreen: undefined;
-  ExerciseProgressScreen: { exerciseId: string };
+  ExerciseProgressScreen: { exerciseId: string; exerciseName?: string };
 };
 
 // Profile stack params

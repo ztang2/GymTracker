@@ -42,3 +42,8 @@ export { WorkoutHeader } from './WorkoutHeader';
 export { RestTimerToast } from './RestTimerToast';
 export { ExerciseCard } from './ExerciseCard';
 export { ExerciseSelectionModal } from './ExerciseSelectionModal';
+
+// Exercise search and filtering components
+export { default as SearchBar } from './SearchBar';
+export { default as CategoryFilterChips } from './CategoryFilterChips';
+export { default as ExerciseListItem } from './ExerciseListItem';

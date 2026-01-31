@@ -145,3 +145,64 @@ export async function getExerciseCategoryCounts(): Promise<Record<string, number
 
   return counts;
 }
+
+/**
+ * Get recently used exercises for a user
+ * Returns the last N unique exercises used in workouts, ordered by most recent usage
+ * @param userId - User ID
+ * @param limit - Maximum number of exercises to return (default 10)
+ * @returns Promise<Exercise[]> - Array of recently used exercises
+ * @throws Error if database query fails
+ */
+export async function getRecentExercises(
+  userId: string,
+  limit: number = 10
+): Promise<Exercise[]> {
+  // Query workout_exercises with exercise details, ordered by created_at desc
+  const { data, error } = await supabase
+    .from('workout_exercises')
+    .select(`
+      exercise_id,
+      created_at,
+      workout_session:workout_session_id (
+        user_id
+      ),
+      exercise:exercise_id (
+        id,
+        name,
+        category,
+        description,
+        instructions,
+        created_at,
+        updated_at
+      )
+    `)
+    .eq('workout_session.user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(100); // Get more than needed to ensure we have enough unique exercises
+
+  if (error) {
+    throw new Error(`Failed to fetch recent exercises: ${error.message}`);
+  }
+
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  // Extract unique exercises (first occurrence is most recent)
+  const seenIds = new Set<string>();
+  const uniqueExercises: Exercise[] = [];
+
+  for (const item of data) {
+    if (item.exercise && !seenIds.has(item.exercise_id)) {
+      seenIds.add(item.exercise_id);
+      uniqueExercises.push(item.exercise as any as Exercise);
+
+      if (uniqueExercises.length >= limit) {
+        break;
+      }
+    }
+  }
+
+  return uniqueExercises;
+}

@@ -1,58 +1,133 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StatCard, TimeRangeSelector, WorkoutTrendChart, LoadingState } from '../components';
-import { getExerciseProgress, getDateRangeForTimeRange } from '../services/statsService';
-import { getExerciseById } from '../services/exerciseService';
-import { TimeRange, ExerciseProgress, Exercise } from '../services/types';
-import { useAuth , useTheme } from '../contexts';
-import { typography, spacing, getCategoryColor, borderRadius } from '../constants/theme';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ExerciseProgressScreenProps } from '../navigation/types';
+import type { HomeStackParamList } from '../navigation/types';
+import {
+  ExerciseProgressChart,
+  LoadingState,
+} from '../components';
+import {
+  getExerciseById,
+  getExerciseHistory,
+  getExerciseWeightProgression,
+  getExerciseVolumeProgression,
+  getExercisePRSummary,
+  getExerciseStats,
+  formatSetsForDisplay,
+  calculateFrequencyPerWeek,
+} from '../services';
+import type {
+  Exercise,
+  PersonalRecord,
+} from '../services/types';
+import { useAuth, useTheme } from '../contexts';
+import { typography, spacing, getCategoryColor, borderRadius, colors } from '../constants/theme';
+import { formatDate, parseISODate } from '../utils/dateUtils';
 
-type ExerciseProgressScreenRouteProp = RouteProp<
-  { ExerciseProgressScreen: { exerciseId: string } },
-  'ExerciseProgressScreen'
->;
-
-interface ExerciseProgressScreenProps {
-  route: ExerciseProgressScreenRouteProp;
-}
+type NavigationProp = StackNavigationProp<HomeStackParamList>;
 
 const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }) => {
-  const { colors } = useTheme();
-  const styles = createStyles(colors);
+  const { colors: themeColors } = useTheme();
+  const styles = createStyles(themeColors);
   const { exerciseId } = route.params;
   const { user } = useAuth();
-  const [selectedRange, setSelectedRange] = useState<TimeRange>('3months');
+  const navigation = useNavigation<NavigationProp>();
+
   const [loading, setLoading] = useState(true);
   const [exercise, setExercise] = useState<Exercise | null>(null);
-  const [progressData, setProgressData] = useState<ExerciseProgress[]>([]);
-
-  if (!user) return;
-  const userId = user.id;
+  const [weightData, setWeightData] = useState<Array<{ date: string; value: number }>>([]);
+  const [volumeData, setVolumeData] = useState<Array<{ date: string; value: number }>>([]);
+  const [prs, setPRs] = useState<{
+    maxWeight: PersonalRecord | null;
+    maxReps: PersonalRecord | null;
+    estimated1RM: PersonalRecord | null;
+    maxVolume: PersonalRecord | null;
+  }>({
+    maxWeight: null,
+    maxReps: null,
+    estimated1RM: null,
+    maxVolume: null,
+  });
+  const [stats, setStats] = useState<{
+    timesPerformed: number;
+    totalSets: number;
+    totalReps: number;
+    totalVolume: number;
+    averageWeight: number;
+    averageReps: number;
+    averageSetsPerSession: number;
+    firstPerformed: string | null;
+    lastPerformed: string | null;
+  } | null>(null);
+  const [recentHistory, setRecentHistory] = useState<Array<{
+    workoutId: string;
+    date: string;
+    sets: Array<{
+      setNumber: number;
+      weight: number;
+      reps: number;
+      completed: boolean;
+    }>;
+    maxWeight: number;
+    totalVolume: number;
+    totalReps: number;
+  }>>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
+    loadData();
+  }, [exerciseId]);
 
-        const { startDate, endDate } = getDateRangeForTimeRange(selectedRange);
+  const loadData = async () => {
+    if (!user) return;
 
-        const [exerciseData, progress] = await Promise.all([
-          getExerciseById(exerciseId),
-          getExerciseProgress(userId, exerciseId, startDate, endDate),
-        ]);
+    try {
+      setLoading(true);
 
-        setExercise(exerciseData);
-        setProgressData(progress);
-      } catch (err) {
-        console.error('Failed to load exercise progress:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Fetch all data in parallel
+      const [
+        exerciseData,
+        history,
+        weightProgression,
+        volumeProgression,
+        prSummary,
+        exerciseStats,
+      ] = await Promise.all([
+        getExerciseById(exerciseId),
+        getExerciseHistory(exerciseId, user.id),
+        getExerciseWeightProgression(exerciseId, user.id),
+        getExerciseVolumeProgression(exerciseId, user.id),
+        getExercisePRSummary(exerciseId, user.id),
+        getExerciseStats(exerciseId, user.id),
+      ]);
 
-    fetchData();
-  }, [exerciseId, selectedRange]);
+      setExercise(exerciseData);
+      setWeightData(weightProgression);
+      setVolumeData(volumeProgression);
+      setPRs(prSummary);
+      setStats(exerciseStats);
+      
+      // Get last 10 sessions for recent history
+      setRecentHistory(history.slice(0, 10));
+    } catch (err) {
+      console.error('Failed to load exercise progress:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleHistoryItemPress = (workoutId: string) => {
+    navigation.navigate('WorkoutDetailScreen', { workoutId });
+  };
 
   if (loading) {
     return <LoadingState message="Loading exercise progress..." />;
@@ -66,150 +141,215 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
     );
   }
 
-  // Calculate stats
-  const totalWorkouts = progressData.length;
-  const totalVolume = progressData.reduce((sum, p) => sum + p.total_volume, 0);
-  const totalReps = progressData.reduce((sum, p) => sum + p.total_reps, 0);
-  const maxWeight = Math.max(...progressData.map(p => p.max_weight), 0);
-  const avgWeight = totalWorkouts > 0
-    ? progressData.reduce((sum, p) => sum + p.max_weight, 0) / totalWorkouts
-    : 0;
-
   const categoryColor = getCategoryColor(
     exercise.category.charAt(0).toUpperCase() + exercise.category.slice(1)
   );
 
+  const frequencyPerWeek = stats?.firstPerformed && stats?.lastPerformed
+    ? calculateFrequencyPerWeek(
+        stats.timesPerformed,
+        stats.firstPerformed,
+        stats.lastPerformed
+      )
+    : 0;
+
   return (
     <ScrollView style={styles.container}>
-      {/* Exercise Info */}
-      <View style={styles.infoCard}>
+      {/* Exercise Header */}
+      <View style={styles.header}>
         <View style={styles.headerRow}>
-          <Text style={styles.exerciseName}>{exercise.name}</Text>
-          <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
-            <Text style={styles.categoryText}>
-              {exercise.category.charAt(0).toUpperCase() + exercise.category.slice(1)}
-            </Text>
+          <View style={styles.headerLeft}>
+            <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <View style={[styles.categoryBadge, { backgroundColor: categoryColor }]}>
+              <Text style={styles.categoryText}>
+                {exercise.category.charAt(0).toUpperCase() + exercise.category.slice(1)}
+              </Text>
+            </View>
           </View>
         </View>
-
-        {exercise.description && (
-          <Text style={styles.description}>{exercise.description}</Text>
-        )}
+        <Text style={styles.timesPerformed}>
+          Performed {stats?.timesPerformed || 0} times
+          {frequencyPerWeek > 0 && ` • ${frequencyPerWeek.toFixed(1)}x/week`}
+        </Text>
       </View>
 
-      {/* Time Range Selector */}
+      {/* Weight Progress Chart */}
       <View style={styles.section}>
-        <TimeRangeSelector
-          selectedRange={selectedRange}
-          onSelectRange={setSelectedRange}
-          ranges={['month', '3months', 'year', 'all']}
+        <ExerciseProgressChart
+          data={weightData}
+          title="Weight Progress"
+          unit="kg"
+          color={colors.teal}
         />
       </View>
 
-      {/* Statistics Grid */}
+      {/* Volume Progress Chart */}
       <View style={styles.section}>
-        <View style={styles.metricsGrid}>
-          <View style={styles.metricRow}>
-            <StatCard
-              title="Total Workouts"
-              value={totalWorkouts}
-              variant="gradient"
-              gradientColors={colors.gradientPurplePink}
-            />
-            <StatCard
-              title="Max Weight"
-              value={`${maxWeight} kg`}
-              subtitle="Personal record"
-              variant="gradient"
-              gradientColors={colors.gradientOrange}
-            />
-          </View>
+        <ExerciseProgressChart
+          data={volumeData}
+          title="Volume Progress"
+          unit="kg"
+          color={colors.purple}
+        />
+      </View>
 
-          <View style={styles.metricRow}>
-            <StatCard
-              title="Total Volume"
-              value={`${Math.round(totalVolume)} kg`}
-              subtitle="All sets combined"
-            />
-            <StatCard
-              title="Total Reps"
-              value={totalReps}
-              subtitle="All time"
-            />
+      {/* Personal Records */}
+      <View style={styles.section}>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="trophy" size={24} color={colors.orange} />
+            <Text style={styles.cardTitle}>Personal Records</Text>
           </View>
+          
+          <View style={styles.prGrid}>
+            {/* Max Weight */}
+            <View style={styles.prItem}>
+              <Text style={styles.prLabel}>Max Weight</Text>
+              {prs.maxWeight ? (
+                <>
+                  <Text style={styles.prValue}>{prs.maxWeight.value.toFixed(1)} kg</Text>
+                  <Text style={styles.prDate}>
+                    {formatDate(parseISODate(prs.maxWeight.achieved_at), 'MMM DD')}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.prEmpty}>—</Text>
+              )}
+            </View>
 
-          <View style={styles.metricRow}>
-            <StatCard
-              title="Avg Weight"
-              value={`${Math.round(avgWeight)} kg`}
-              subtitle="Per workout"
-            />
-            <StatCard
-              title="Frequency"
-              value={`${(totalWorkouts / (selectedRange === 'month' ? 4 : selectedRange === '3months' ? 12 : 52)).toFixed(1)}/wk`}
-              subtitle="Average"
-            />
+            {/* Max Reps */}
+            <View style={styles.prItem}>
+              <Text style={styles.prLabel}>Max Reps</Text>
+              {prs.maxReps ? (
+                <>
+                  <Text style={styles.prValue}>{prs.maxReps.value}</Text>
+                  <Text style={styles.prDate}>
+                    {formatDate(parseISODate(prs.maxReps.achieved_at), 'MMM DD')}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.prEmpty}>—</Text>
+              )}
+            </View>
+
+            {/* Estimated 1RM */}
+            <View style={styles.prItem}>
+              <Text style={styles.prLabel}>Estimated 1RM</Text>
+              {prs.estimated1RM ? (
+                <>
+                  <Text style={styles.prValue}>{prs.estimated1RM.value.toFixed(1)} kg</Text>
+                  <Text style={styles.prDate}>
+                    {formatDate(parseISODate(prs.estimated1RM.achieved_at), 'MMM DD')}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.prEmpty}>—</Text>
+              )}
+            </View>
+
+            {/* Max Volume */}
+            <View style={styles.prItem}>
+              <Text style={styles.prLabel}>Max Volume</Text>
+              {prs.maxVolume ? (
+                <>
+                  <Text style={styles.prValue}>
+                    {prs.maxVolume.value >= 1000
+                      ? `${(prs.maxVolume.value / 1000).toFixed(1)}k`
+                      : prs.maxVolume.value.toFixed(0)} kg
+                  </Text>
+                  <Text style={styles.prDate}>
+                    {formatDate(parseISODate(prs.maxVolume.achieved_at), 'MMM DD')}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.prEmpty}>—</Text>
+              )}
+            </View>
           </View>
         </View>
       </View>
 
-      {/* Progress Chart */}
-      {progressData.length > 0 && (
-        <View style={styles.section}>
-          <View style={styles.card}>
-            <WorkoutTrendChart
-              title="Max Weight Progress"
-              data={progressData.map(p => ({
-                label: p.date.substring(5), // MM-DD
-                value: p.max_weight,
-              }))}
-            />
+      {/* Recent History */}
+      <View style={styles.section}>
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Ionicons name="time-outline" size={24} color={themeColors.textSecondary} />
+            <Text style={styles.cardTitle}>Recent History</Text>
           </View>
-        </View>
-      )}
 
-      {progressData.length === 0 && (
-        <View style={styles.section}>
-          <View style={styles.emptyCard}>
-            <Text style={styles.emptyText}>
-              No workout data for this exercise in the selected time range.
-            </Text>
-          </View>
+          {recentHistory.length > 0 ? (
+            <View style={styles.historyList}>
+              {recentHistory.map((session, index) => (
+                <TouchableOpacity
+                  key={session.workoutId}
+                  style={[
+                    styles.historyItem,
+                    index < recentHistory.length - 1 && styles.historyItemBorder,
+                  ]}
+                  onPress={() => handleHistoryItemPress(session.workoutId)}
+                >
+                  <View style={styles.historyItemLeft}>
+                    <Text style={styles.historyDate}>
+                      {formatDate(parseISODate(session.date), 'MMM DD, YYYY')}
+                    </Text>
+                    <Text style={styles.historySets}>
+                      {formatSetsForDisplay(session.sets)}
+                    </Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={themeColors.textTertiary}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.emptyHistory}>
+              <Text style={styles.emptyText}>No history yet</Text>
+              <Text style={styles.emptySubtext}>
+                Start logging this exercise to see your progress!
+              </Text>
+            </View>
+          )}
         </View>
-      )}
+      </View>
 
       <View style={styles.bottomPadding} />
     </ScrollView>
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (themeColors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: themeColors.background,
   },
-  section: {
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-  },
-  infoCard: {
-    backgroundColor: colors.cardBackground,
+  header: {
+    backgroundColor: 'rgba(26, 26, 26, 0.6)',
     padding: spacing.xl,
     marginHorizontal: spacing.xl,
     marginTop: spacing.xl,
     marginBottom: spacing.md,
     borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  headerLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   exerciseName: {
-    ...typography.title,
+    ...typography.largeTitle,
     flex: 1,
-    marginRight: spacing.md,
   },
   categoryBadge: {
     paddingHorizontal: spacing.md,
@@ -218,40 +358,102 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   categoryText: {
     ...typography.caption,
-    color: colors.textPrimary,
+    color: themeColors.textPrimary,
     fontWeight: '600',
   },
-  description: {
-    ...typography.body,
-    color: colors.textSecondary,
+  timesPerformed: {
+    ...typography.callout,
+    color: themeColors.textSecondary,
   },
-  metricsGrid: {
-    gap: spacing.sm,
-  },
-  metricRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.sm,
+  section: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
   },
   card: {
-    backgroundColor: colors.cardBackground,
+    backgroundColor: 'rgba(26, 26, 26, 0.6)',
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
-  emptyCard: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: borderRadius.lg,
-    padding: spacing.xxxl,
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  cardTitle: {
+    ...typography.title2,
+  },
+  prGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+  },
+  prItem: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+  },
+  prLabel: {
+    ...typography.caption,
+    color: themeColors.textSecondary,
+    marginBottom: spacing.xs,
+  },
+  prValue: {
+    ...typography.title,
+    marginBottom: spacing.xs,
+  },
+  prDate: {
+    ...typography.caption2,
+    color: themeColors.textTertiary,
+  },
+  prEmpty: {
+    ...typography.title,
+    color: themeColors.textTertiary,
+  },
+  historyList: {
+    gap: spacing.xs,
+  },
+  historyItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+  },
+  historyItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  historyItemLeft: {
+    flex: 1,
+  },
+  historyDate: {
+    ...typography.callout,
+    marginBottom: spacing.xs,
+  },
+  historySets: {
+    ...typography.caption,
+    color: themeColors.textSecondary,
+  },
+  emptyHistory: {
+    paddingVertical: spacing.xxl,
     alignItems: 'center',
   },
   emptyText: {
     ...typography.callout,
-    color: colors.textSecondary,
-    textAlign: 'center',
+    color: themeColors.textSecondary,
+  },
+  emptySubtext: {
+    ...typography.caption,
+    color: themeColors.textTertiary,
+    marginTop: spacing.xs,
   },
   errorText: {
     ...typography.headline,
-    color: colors.error,
+    color: themeColors.error,
     textAlign: 'center',
     marginTop: spacing.xxl,
   },
