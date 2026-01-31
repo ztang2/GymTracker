@@ -26,9 +26,17 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please enter both email and password');
+      showAlert('Error', 'Please enter both email and password');
       return;
     }
 
@@ -36,10 +44,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     try {
       const { error } = await signIn(email.trim(), password);
       if (error) {
-        Alert.alert('Sign In Failed', error.message);
+        showAlert('Sign In Failed', error.message);
       }
     } catch (err) {
-      Alert.alert('Error', 'An unexpected error occurred');
+      showAlert('Error', 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }

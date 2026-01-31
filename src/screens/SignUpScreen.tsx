@@ -29,20 +29,28 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
   const handleSignUp = async () => {
     // Validation
     if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
-      Alert.alert('Error', 'Please fill in all required fields');
+      showAlert('Error', 'Please fill in all required fields');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      showAlert('Error', 'Passwords do not match');
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      showAlert('Error', 'Password must be at least 6 characters');
       return;
     }
 
@@ -55,16 +63,13 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
       );
 
       if (error) {
-        Alert.alert('Sign Up Failed', error.message);
-      } else {
-        Alert.alert(
-          'Success',
-          'Account created successfully! Please sign in.',
-          [{ text: 'OK', onPress: () => navigation.navigate('LoginScreen') }]
-        );
+        showAlert('Sign Up Failed', error.message);
       }
+      // If signup succeeds and Supabase auto-confirms, AuthContext will
+      // detect the session change and navigate to the main app automatically.
+      // If email confirmation is required, tell the user to check their email.
     } catch (err) {
-      Alert.alert('Error', 'An unexpected error occurred');
+      showAlert('Error', 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
