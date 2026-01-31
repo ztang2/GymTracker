@@ -26,6 +26,7 @@ import {
 } from '../services/goalService';
 import { colors, typography, spacing, borderRadius, shadows } from '../constants/theme';
 import { ProgressBar, LoadingState } from '../components';
+import { useAuth } from '../contexts';
 
 // Cross-platform alert helper
 type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
@@ -53,7 +54,6 @@ const showAlert = (
   }
 };
 
-const USER_ID = 'test-user-123';
 
 // Goal type configurations
 const GOAL_CONFIGS: Array<{
@@ -99,6 +99,8 @@ const GOAL_CONFIGS: Array<{
 ];
 
 export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps) {
+  const { user } = useAuth();
+
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -127,9 +129,9 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
     setLoading(true);
     try {
       const [goals, progress, goalSuggestions] = await Promise.all([
-        getActiveGoals(USER_ID),
-        calculateAllGoalProgress(USER_ID),
-        getGoalSuggestions(USER_ID),
+        getActiveGoals(user!.id),
+        calculateAllGoalProgress(user!.id),
+        getGoalSuggestions(user!.id),
       ]);
       setActiveGoals(goals);
       setGoalProgress(progress);
@@ -150,7 +152,7 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
 
     setSaving(true);
     try {
-      const newGoal = await createGoal(USER_ID, selectedType, value, selectedPeriod);
+      const newGoal = await createGoal(user!.id, selectedType, value, selectedPeriod);
       if (newGoal) {
         setShowCreateForm(false);
         setTargetValue('');

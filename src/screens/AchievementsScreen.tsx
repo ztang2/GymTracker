@@ -24,10 +24,12 @@ import {
   LevelBadge,
 } from '../components';
 import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useAuth } from '../contexts';
 
-const USER_ID = 'test-user-123';
 
 export default function AchievementsScreen({ navigation }: AchievementsScreenProps) {
+  const { user } = useAuth();
+
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -40,10 +42,11 @@ export default function AchievementsScreen({ navigation }: AchievementsScreenPro
   }, []);
 
   const loadData = async () => {
+    if (!user) return;
     try {
       const [badgesData, profile] = await Promise.all([
-        getBadgesWithStatus(USER_ID),
-        getUserProfile(USER_ID),
+        getBadgesWithStatus(user?.id),
+        getUserProfile(user?.id),
       ]);
 
       setBadges(badgesData);

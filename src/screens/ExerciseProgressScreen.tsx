@@ -5,6 +5,7 @@ import { StatCard, TimeRangeSelector, WorkoutTrendChart, LoadingState } from '..
 import { getExerciseProgress, getDateRangeForTimeRange } from '../services/statsService';
 import { getExerciseById } from '../services/exerciseService';
 import { TimeRange, ExerciseProgress, Exercise } from '../services/types';
+import { useAuth } from '../contexts';
 import { colors, typography, spacing, getCategoryColor, borderRadius } from '../constants/theme';
 
 type ExerciseProgressScreenRouteProp = RouteProp<
@@ -18,12 +19,14 @@ interface ExerciseProgressScreenProps {
 
 const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }) => {
   const { exerciseId } = route.params;
+  const { user } = useAuth();
   const [selectedRange, setSelectedRange] = useState<TimeRange>('3months');
   const [loading, setLoading] = useState(true);
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [progressData, setProgressData] = useState<ExerciseProgress[]>([]);
 
-  const userId = 'test-user-123';
+  if (!user) return;
+  const userId = user.id;
 
   useEffect(() => {
     const fetchData = async () => {

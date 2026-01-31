@@ -13,11 +13,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../contexts';
 import { colors, spacing, typography, borderRadius } from '../constants/theme';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import type { AuthStackParamList } from '../navigation/types';
 
 type LoginScreenProps = {
-  navigation: NativeStackNavigationProp<AuthStackParamList, 'LoginScreen'>;
+  navigation: StackNavigationProp<AuthStackParamList, 'LoginScreen'>;
 };
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {

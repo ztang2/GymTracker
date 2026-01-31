@@ -164,8 +164,9 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
   // Fetch last performance data when an exercise is added
   const fetchLastPerformance = useCallback(async (exerciseId: string) => {
     if (!user) return;
+          
     try {
-      const perf = await getLastPerformance(user.id, exerciseId);
+      const perf = await getLastPerformance(user!.id, exerciseId);
       if (perf) {
         setLastPerformanceData((prev) => {
           const newMap = new Map(prev);
@@ -255,7 +256,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
               notes: '',
             };
 
-            await saveWorkout('test-user-123', workoutState);
+            await saveWorkout(user!.id, workoutState);
 
             // Calculate workout summary
             const duration = Math.floor((Date.now() - startTime.getTime()) / 1000);
@@ -274,14 +275,14 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
             });
 
             // Get current streak and calculate XP
-            const currentStreak = await getCurrentStreak('test-user-123');
+            const currentStreak = await getCurrentStreak(user!.id);
             const xpEarned = calculateWorkoutXP(setCount, currentStreak);
 
             // Award XP to user
-            await awardXP('test-user-123', xpEarned);
+            await awardXP(user!.id, xpEarned);
 
             // Check and award any new badges
-            const newBadges = await checkAndAwardBadges('test-user-123');
+            const newBadges = await checkAndAwardBadges(user!.id);
 
             const summary: WorkoutSummary = {
               duration,

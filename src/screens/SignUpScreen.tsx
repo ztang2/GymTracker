@@ -14,11 +14,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../contexts';
 import { colors, spacing, typography, borderRadius } from '../constants/theme';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import type { AuthStackParamList } from '../navigation/types';
 
 type SignUpScreenProps = {
-  navigation: NativeStackNavigationProp<AuthStackParamList, 'SignUpScreen'>;
+  navigation: StackNavigationProp<AuthStackParamList, 'SignUpScreen'>;
 };
 
 export default function SignUpScreen({ navigation }: SignUpScreenProps) {

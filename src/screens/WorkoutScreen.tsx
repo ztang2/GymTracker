@@ -2,13 +2,16 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import { useState } from 'react';
 import type { WorkoutScreenProps } from '../navigation/types';
 import { createWorkoutSession } from '../services';
+import { useAuth } from '../contexts';
 
 export default function WorkoutScreen({ navigation }: WorkoutScreenProps) {
+  const { user } = useAuth();
+
   const [workoutId, setWorkoutId] = useState<string | null>(null);
 
   const startWorkout = async () => {
     try {
-      const session = await createWorkoutSession('test-user-123', {
+      const session = await createWorkoutSession(user!.id, {
         date: new Date().toISOString().split('T')[0],
         start_time: new Date().toISOString(),
         end_time: null,

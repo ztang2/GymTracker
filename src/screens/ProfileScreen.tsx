@@ -4,13 +4,17 @@ import type { ProfileScreenProps } from '../navigation/types';
 import { UserProfileCard, SettingsMenuItem, XPProgressBar } from '../components';
 import { getUserProfile, getLevelInfo, type LevelInfo } from '../services';
 import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useAuth } from '../contexts';
 
-const USER_ID = 'test-user-123';
 
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
-  // Mock user data (will be replaced with actual user service later)
-  const userName = 'Fitness Enthusiast';
-  const memberSince = 'Jan 2026';
+  const { user, signOut } = useAuth();
+
+  // Get user display name from metadata or email
+  const userName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Fitness Enthusiast';
+  const memberSince = user?.created_at 
+    ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    : 'Recently';
   const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
 
   useEffect(() => {
@@ -18,8 +22,10 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   }, []);
 
   const loadUserData = async () => {
+    if (!user) return;
+    
     try {
-      const profile = await getUserProfile(USER_ID);
+      const profile = await getUserProfile(user.id);
       if (profile) {
         setLevelInfo(getLevelInfo(profile.total_xp));
       }
@@ -48,6 +54,26 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     Alert.alert(
       'About FitTrack',
       'FitTrack - Your personal gym workout tracker.\n\nVersion 1.0.0\n\nBuilt with React Native and Expo.'
+    );
+  };
+
+  const handleSignOut = async () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            const { error } = await signOut();
+            if (error) {
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
+            }
+          },
+        },
+      ]
     );
   };
 
@@ -111,6 +137,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             title="About"
             icon="information-circle"
             onPress={handleAbout}
+          />
+          <SettingsMenuItem
+            title="Sign Out"
+            icon="log-out-outline"
+            onPress={handleSignOut}
             showDivider={false}
           />
         </View>

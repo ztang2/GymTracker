@@ -20,6 +20,7 @@ import {
 } from '../services';
 import { LoadingState, EmptyState } from '../components';
 import { colors, typography, spacing, borderRadius, shadows, getCategoryColor } from '../constants/theme';
+import { useAuth } from '../contexts';
 
 // Cross-platform alert helper
 type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
@@ -47,9 +48,10 @@ const showAlert = (
   }
 };
 
-const USER_ID = 'test-user-123';
 
 export default function TemplateListScreen({ navigation }: TemplateListScreenProps) {
+  const { user } = useAuth();
+
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -60,8 +62,9 @@ export default function TemplateListScreen({ navigation }: TemplateListScreenPro
   }, []);
 
   const loadTemplates = async () => {
+    if (!user) return;
     try {
-      const data = await getUserTemplates(USER_ID);
+      const data = await getUserTemplates(user?.id);
       setTemplates(data);
     } catch (error) {
       console.error('Error loading templates:', error);

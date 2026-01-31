@@ -19,8 +19,11 @@ import {
 } from '../services/statsService';
 import type { TimeRange, WorkoutStats } from '../services/types';
 import { colors, typography, spacing } from '../constants/theme';
+import { useAuth } from '../contexts';
 
 export default function ProgressScreen({ navigation }: ProgressScreenProps) {
+  const { user } = useAuth();
+
   const [selectedRange, setSelectedRange] = useState<TimeRange>('month');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -32,7 +35,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   const [monthlyGoals, setMonthlyGoals] = useState<Goal[]>([]);
   const [totalVolume, setTotalVolume] = useState(0);
 
-  const userId = 'test-user-123';
+  const userId = user!.id;
 
   const fetchData = useCallback(async () => {
     try {

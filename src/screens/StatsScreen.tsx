@@ -20,9 +20,11 @@ import {
   getDateRangeForTimeRange,
 } from '../services/statsService';
 import { TimeRange, WorkoutStats, CalendarData, CategoryDistribution, ExerciseFrequency, WeeklyCount } from '../services/types';
+import { useAuth } from '../contexts';
 import { colors, typography, spacing } from '../constants/theme';
 
 const StatsScreen: React.FC = () => {
+  const { user } = useAuth();
   const [selectedRange, setSelectedRange] = useState<TimeRange>('month');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,7 +38,8 @@ const StatsScreen: React.FC = () => {
   const [frequentExercises, setFrequentExercises] = useState<ExerciseFrequency[]>([]);
   const [weeklyData, setWeeklyData] = useState<WeeklyCount[]>([]);
 
-  const userId = 'test-user-123'; // Hardcoded as per existing screens
+  if (!user) return;
+    const userId = user.id;
 
   const fetchData = useCallback(async () => {
     try {

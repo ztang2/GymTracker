@@ -6,8 +6,11 @@ import type { CalendarScreenProps } from '../navigation/types';
 import { getDailyWorkoutCounts, getCurrentStreak } from '../services/statsService';
 import { MonthCalendar, LoadingState } from '../components';
 import { colors, typography, spacing, borderRadius } from '../constants/theme';
+import { useAuth } from '../contexts';
 
 export default function CalendarScreen({ navigation }: CalendarScreenProps) {
+  const { user } = useAuth();
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [workoutDays, setWorkoutDays] = useState<Set<string>>(new Set());
   const [workoutCounts, setWorkoutCounts] = useState<Map<string, number>>(new Map());
@@ -27,8 +30,8 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
       const startDateStr = startDate.toISOString().split('T')[0];
 
       const [dailyCounts, streak] = await Promise.all([
-        getDailyWorkoutCounts('test-user-123', startDateStr, endDate),
-        getCurrentStreak('test-user-123'),
+        getDailyWorkoutCounts(user!.id, startDateStr, endDate),
+        getCurrentStreak(user!.id),
       ]);
 
       // Convert dailyCounts to Set of ISO date strings and Map for counts

@@ -2,8 +2,11 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import type { WorkoutDetailScreenProps } from '../navigation/types';
 import { getWorkoutSession, type WorkoutSessionWithExercises } from '../services';
+import { useAuth } from '../contexts';
 
 export default function WorkoutDetailScreen({ route }: WorkoutDetailScreenProps) {
+  const { user } = useAuth();
+
   const { workoutId } = route.params;
   const [workout, setWorkout] = useState<WorkoutSessionWithExercises | null>(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +17,7 @@ export default function WorkoutDetailScreen({ route }: WorkoutDetailScreenProps)
 
   const loadWorkout = async () => {
     try {
-      const data = await getWorkoutSession(workoutId, 'test-user-123');
+      const data = await getWorkoutSession(workoutId, user!.id);
       setWorkout(data);
     } catch (error) {
       console.error('Failed to load workout:', error);
