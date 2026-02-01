@@ -3,6 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { typography, spacing, borderRadius } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 interface MonthCalendarProps {
   year: number;
@@ -101,6 +102,7 @@ export default function MonthCalendar({
             styles.todayCircle,
             { backgroundColor: todayColor },
             workout && styles.todayCircleWithWorkout,
+            colorGlow(todayColor, 'sm'),
           ]} />
         )}
 
@@ -219,10 +221,6 @@ const createStyles = (colors: any) => StyleSheet.create({
     width: '80%',
     height: '80%',
     borderRadius: borderRadius.full,
-    shadowColor: colors.pink,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
   },
   // Smaller today circle when overlapping with workout ring
   todayCircleWithWorkout: {

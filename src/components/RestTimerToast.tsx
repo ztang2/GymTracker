@@ -12,6 +12,7 @@ import { formatDuration } from '../services/workoutLogger';
 import { REST_TIMER_OPTIONS } from '../services';
 import { useTheme } from '../contexts';
 import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 interface RestTimerToastProps {
   visible: boolean;
@@ -124,6 +125,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     ...typography.title2,
     color: colors.orange,
     fontVariant: ['tabular-nums'],
+    ...colorGlow(colors.orange, 'sm'),
   },
   skipButton: {
     backgroundColor: colors.backgroundElevated,
@@ -173,6 +175,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   restOptionButtonActive: {
     backgroundColor: colors.orange,
     borderColor: colors.orange,
+    ...colorGlow(colors.orange, 'sm'),
   },
   restOptionText: {
     ...typography.headline,

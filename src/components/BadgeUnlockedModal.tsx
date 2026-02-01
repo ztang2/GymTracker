@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
 import type { Badge } from '../services/types';
+import { colorGlow } from '../utils';
 
 interface BadgeUnlockedModalProps {
   visible: boolean;
@@ -89,7 +90,7 @@ export default function BadgeUnlockedModal({
               colors={rarityGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.badgeGlow}
+              style={[styles.badgeGlow, colorGlow(rarityColor, 'md')]}
             >
               <View style={styles.badgeInner}>
                 <Ionicons name={badge.icon_name as any} size={64} color={colors.textPrimary} />

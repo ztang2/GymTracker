@@ -3,6 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { typography, spacing, borderRadius } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 interface ProgressBarProps {
   // Label mode (original)
@@ -55,6 +56,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 
   const isGradient = Array.isArray(finalColor);
   const isSimpleMode = !label;
+  
+  // Calculate glow style for gradient fills
+  const glowStyle = isGradient ? colorGlow((finalColor as any)[0], 'sm') : {};
 
   // Simple mode - just the bar without labels
   if (isSimpleMode) {
@@ -76,7 +80,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
               colors={barColor as readonly [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={[styles.fill, { height }]}
+              style={[styles.fill, { height }, glowStyle]}
             />
           ) : (
             <View style={[styles.fill, { height, backgroundColor: barColor as string }]} />
@@ -118,7 +122,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
                 colors={barColor as readonly [string, string, ...string[]]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={[styles.fill, { height }]}
+                style={[styles.fill, { height }, glowStyle]}
               />
             ) : (
               <View style={[styles.fill, { height, backgroundColor: barColor as string }]} />

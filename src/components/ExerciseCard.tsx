@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { LocalExercise } from '../services/workoutLogger';
 import type { LastPerformance } from '../services';
 import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 interface ExerciseCardProps {
   exercise: LocalExercise;
@@ -230,6 +231,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   checkboxChecked: {
     backgroundColor: colors.green,
     borderColor: colors.green,
+    ...colorGlow(colors.green, 'sm'),
   },
   addSetButton: {
     flexDirection: 'row',

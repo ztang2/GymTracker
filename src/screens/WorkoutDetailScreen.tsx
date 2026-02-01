@@ -30,6 +30,7 @@ import {
 } from '../services';
 import { detectPRsFromWorkout } from '../services/prService';
 import { useAuth, useTheme } from '../contexts';
+import { colorGlow } from '../utils';
 
 interface EditableSet extends ExerciseSet {
   _isNew?: boolean; // Flag for newly added sets

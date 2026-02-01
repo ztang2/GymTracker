@@ -7,6 +7,7 @@ import { getDailyWorkoutCounts, getCurrentStreak } from '../services/statsServic
 import { MonthCalendar, LoadingState } from '../components';
 import { typography, spacing, borderRadius } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
+import { colorGlow } from '../utils';
 
 export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const { user } = useAuth();
@@ -116,11 +117,11 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
       {/* Legend */}
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: colors.pink }]} />
+          <View style={[styles.legendDot, { backgroundColor: colors.pink }, colorGlow(colors.pink, 'sm')]} />
           <Text style={styles.legendText}>Today</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: colors.teal }]} />
+          <View style={[styles.legendDot, { backgroundColor: colors.teal }, colorGlow(colors.teal, 'sm')]} />
           <Text style={styles.legendText}>Workout Day</Text>
         </View>
       </View>

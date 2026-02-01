@@ -31,6 +31,7 @@ import {
 } from '../components';
 import { useAuth, useTheme } from '../contexts';
 import { typography, spacing } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 // Gradient Icon component with pulse animation
 interface GradientIconProps {
@@ -62,21 +63,11 @@ function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
     return () => pulse.stop();
   }, [scaleAnim]);
 
-  const glowStyle = Platform.OS === 'web'
-    ? { boxShadow: `0 0 24px 10px ${glowColor}99, 0 0 50px 16px ${glowColor}55` } as any
-    : {
-        shadowColor: glowColor,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.9,
-        shadowRadius: 24,
-        elevation: 16,
-      };
-
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <LinearGradient
         colors={gradientColors as any}
-        style={[styles.gradientCircle, glowStyle]}
+        style={[styles.gradientCircle, colorGlow(glowColor, 'md')]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >

@@ -27,6 +27,7 @@ import {
 import { typography, spacing, borderRadius, shadows } from '../constants/theme';
 import { ProgressBar, LoadingState } from '../components';
 import { useAuth , useTheme } from '../contexts';
+import { colorGlow } from '../utils';
 
 // Cross-platform alert helper
 type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
@@ -489,6 +490,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
+    ...colorGlow(colors.purple, 'sm'),
   },
   goalInfo: {
     flex: 1,
@@ -591,6 +593,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   optionButtonActive: {
     backgroundColor: colors.purple,
     borderColor: colors.purple,
+    ...colorGlow(colors.purple, 'sm'),
   },
   optionText: {
     ...typography.callout,
@@ -615,6 +618,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   periodButtonActive: {
     backgroundColor: colors.teal,
     borderColor: colors.teal,
+    ...colorGlow(colors.teal, 'sm'),
   },
   periodButtonDisabled: {
     opacity: 0.5,
@@ -652,6 +656,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginTop: spacing.xl,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    ...colorGlow(colors.gradientTealGreen[0] as string, 'md'),
   },
   createButtonDisabled: {
     opacity: 0.6,

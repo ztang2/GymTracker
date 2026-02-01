@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
 import type { BadgeWithStatus, BadgeRarity } from '../services/types';
 import ProgressBar from './ProgressBar';
+import { colorGlow } from '../utils';
 
 interface BadgeCardProps {
   badge: BadgeWithStatus;
@@ -56,7 +57,7 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
               colors={rarityGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.iconGradient}
+              style={[styles.iconGradient, colorGlow(rarityColor, 'sm')]}
             >
               <Ionicons name={badge.icon_name as any} size={28} color="#FFFFFF" />
             </LinearGradient>

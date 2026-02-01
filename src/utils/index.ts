@@ -1,0 +1,1 @@
+export { colorGlow } from './glowStyle';

@@ -3,6 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 interface StatCardProps {
   title: string;
@@ -38,6 +39,8 @@ const StatCard: React.FC<StatCardProps> = ({
     </View>
   );
 
+  const glowStyle = variant === 'gradient' ? colorGlow(gradColors[0] as string, 'md') : {};
+
   if (onPress) {
     return (
       <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.container}>
@@ -46,7 +49,7 @@ const StatCard: React.FC<StatCardProps> = ({
             colors={gradColors}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={styles.card}
+            style={[styles.card, glowStyle]}
           >
             {content}
           </LinearGradient>
@@ -66,7 +69,7 @@ const StatCard: React.FC<StatCardProps> = ({
           colors={gradColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.card}
+          style={[styles.card, glowStyle]}
         >
           {content}
         </LinearGradient>

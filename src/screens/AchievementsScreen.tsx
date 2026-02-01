@@ -25,6 +25,7 @@ import {
 } from '../components';
 import { typography, spacing, borderRadius } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
+import { colorGlow } from '../utils';
 
 
 export default function AchievementsScreen({ navigation }: AchievementsScreenProps) {
@@ -235,6 +236,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   filterTabActive: {
     backgroundColor: colors.purple,
+    ...colorGlow(colors.purple, 'sm'),
   },
   filterText: {
     ...typography.callout,

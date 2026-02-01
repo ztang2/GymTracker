@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { typography, spacing, borderRadius, xpGradient } from '../constants/theme';
 import type { LevelInfo } from '../services/types';
+import { colorGlow } from '../utils';
 
 interface XPProgressBarProps {
   levelInfo: LevelInfo;
@@ -38,7 +39,7 @@ export default function XPProgressBar({ levelInfo, compact = false }: XPProgress
   return (
     <View style={styles.container}>
       {/* Level Badge */}
-      <View style={[styles.levelBadge, { backgroundColor: levelInfo.tierColor }]}>
+      <View style={[styles.levelBadge, { backgroundColor: levelInfo.tierColor }, colorGlow(levelInfo.tierColor, 'sm')]}>
         <Text style={styles.levelNumber}>{levelInfo.level}</Text>
       </View>
 

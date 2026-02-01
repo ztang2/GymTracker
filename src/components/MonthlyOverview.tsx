@@ -2,6 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { typography, spacing, borderRadius } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 export interface WeekOverviewData {
   label: string; // "This Week", "Last Week", etc.
@@ -120,6 +121,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   dotFilled: {
     backgroundColor: colors.teal,
+    ...colorGlow(colors.teal, 'sm'),
   },
   dotEmpty: {
     backgroundColor: colors.border,
