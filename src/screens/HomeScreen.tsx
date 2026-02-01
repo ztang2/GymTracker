@@ -39,9 +39,10 @@ interface GradientIconProps {
 
 function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  // Use the first gradient color as the glow color
+  const glowColor = gradientColors[0] as string;
 
   useEffect(() => {
-    // Create a looping pulse animation
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(scaleAnim, {
@@ -57,7 +58,6 @@ function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
       ])
     );
     pulse.start();
-
     return () => pulse.stop();
   }, [scaleAnim]);
 
@@ -65,7 +65,12 @@ function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <LinearGradient
         colors={gradientColors as any}
-        style={styles.gradientCircle}
+        style={[styles.gradientCircle, {
+          shadowColor: glowColor,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6,
+          shadowRadius: 16,
+        }]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
@@ -261,16 +266,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gradientCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
   },
   section: {
     paddingHorizontal: spacing.xl,

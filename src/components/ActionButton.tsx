@@ -24,8 +24,19 @@ export default function ActionButton({
   const styles = createStyles(colors);
   
   if (gradientColors) {
+    const glowColor = gradientColors[0] as string;
     return (
-      <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.8}>
+      <TouchableOpacity
+        onPress={onPress}
+        style={[styles.container, {
+          shadowColor: glowColor,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.5,
+          shadowRadius: 16,
+          elevation: 8,
+        }]}
+        activeOpacity={0.8}
+      >
         <LinearGradient
           colors={gradientColors}
           start={{ x: 0, y: 0 }}
