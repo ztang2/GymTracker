@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '../contexts';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { typography, borderRadius, spacing } from '../constants/theme';
@@ -25,16 +25,19 @@ export default function ActionButton({
   
   if (gradientColors) {
     const glowColor = gradientColors[0] as string;
+    const glowStyle = Platform.OS === 'web'
+      ? { boxShadow: `0 0 28px 10px ${glowColor}80, 0 0 56px 18px ${glowColor}40` } as any
+      : {
+          shadowColor: glowColor,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.8,
+          shadowRadius: 28,
+          elevation: 16,
+        };
     return (
       <TouchableOpacity
         onPress={onPress}
-        style={[styles.container, {
-          shadowColor: glowColor,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.5,
-          shadowRadius: 16,
-          elevation: 8,
-        }]}
+        style={[styles.container, glowStyle]}
         activeOpacity={0.8}
       >
         <LinearGradient
@@ -71,13 +74,13 @@ const createStyles = (colors: any) => StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: borderRadius.xl,
-    overflow: 'hidden',
   },
   gradient: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.lg,
+    borderRadius: borderRadius.xl,
   },
   solidButton: {
     justifyContent: 'center',

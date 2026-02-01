@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '../contexts';
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { typography, borderRadius, spacing } from '../constants/theme';
 import type { WorkoutSession, WorkoutSessionWithExercises } from '../services/types';
@@ -39,8 +39,19 @@ export default function WorkoutHistoryCard({
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
-      {/* Left side: Colored circular icon */}
-      <View style={[styles.iconContainer, { backgroundColor: accent }]}>
+      {/* Left side: Colored circular icon with glow */}
+      <View style={[styles.iconContainer, {
+        backgroundColor: accent,
+        ...(Platform.OS === 'web'
+          ? { boxShadow: `0 0 16px 4px ${accent}80` } as any
+          : {
+              shadowColor: accent,
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.7,
+              shadowRadius: 12,
+              elevation: 8,
+            }),
+      }]}>
         <Ionicons name="barbell" size={24} color="#FFFFFF" />
       </View>
 

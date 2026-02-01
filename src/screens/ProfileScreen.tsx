@@ -123,7 +123,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
       {/* Achievements Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Progress</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Progress</Text>
         <View style={styles.settingsCard}>
           <SettingsMenuItem
             title="Achievements"

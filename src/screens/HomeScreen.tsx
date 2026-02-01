@@ -7,6 +7,7 @@ import {
   RefreshControl,
   Alert,
   Animated,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -61,16 +62,21 @@ function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
     return () => pulse.stop();
   }, [scaleAnim]);
 
+  const glowStyle = Platform.OS === 'web'
+    ? { boxShadow: `0 0 24px 10px ${glowColor}99, 0 0 50px 16px ${glowColor}55` } as any
+    : {
+        shadowColor: glowColor,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.9,
+        shadowRadius: 24,
+        elevation: 16,
+      };
+
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <LinearGradient
         colors={gradientColors as any}
-        style={[styles.gradientCircle, {
-          shadowColor: glowColor,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.6,
-          shadowRadius: 16,
-        }]}
+        style={[styles.gradientCircle, glowStyle]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
