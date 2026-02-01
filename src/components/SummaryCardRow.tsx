@@ -98,6 +98,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   value: {
     ...typography.title,
     fontSize: 28,
+    color: colors.textPrimary,
   },
   unit: {
     ...typography.callout,

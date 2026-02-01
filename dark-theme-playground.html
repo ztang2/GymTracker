@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack Dark Theme Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            padding: 20px 0;
+        }
+        
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .design-card {
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .design-label {
+            background: #1a1a1a;
+            padding: 16px 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .design-label h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .design-label p {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .phone-screen {
+            background: #000;
+            padding: 24px 20px;
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ==================== DESIGN A: NEON PULSE ==================== */
+        .neon-pulse {
+            background: #000;
+            position: relative;
+        }
+        
+        .neon-pulse::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: radial-gradient(ellipse at top, rgba(0, 255, 255, 0.15), transparent);
+            pointer-events: none;
+        }
+        
+        .neon-pulse .app-header {
+            margin-bottom: 32px;
+        }
+        
+        .neon-pulse .app-name {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.4));
+        }
+        
+        .neon-pulse .tagline {
+            font-size: 12px;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 4px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+        
+        .neon-pulse .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .neon-pulse .stat-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #00ffff, #ff00ff) 1;
+            padding: 20px;
+            position: relative;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        
+        .neon-pulse .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            box-shadow: 0 0 10px currentColor;
+        }
+        
+        .neon-pulse .stat-label {
+            font-size: 11px;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .neon-pulse .stat-value {
+            font-size: 36px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+        }
+        
+        .neon-pulse .section-title {
+            font-size: 14px;
+            color: #00ff88;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+        }
+        
+        .neon-pulse .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .neon-pulse .btn {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 0;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .neon-pulse .btn:last-child {
+            border-color: #ff00ff;
+            color: #ff00ff;
+            background: rgba(255, 0, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+        }
+        
+        .neon-pulse .activity-item {
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 4px solid #00ff88;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: -4px 0 12px rgba(0, 255, 136, 0.3);
+        }
+        
+        .neon-pulse .activity-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        
+        .neon-pulse .activity-meta {
+            font-size: 12px;
+            color: #00ffff;
+        }
+        
+        .neon-pulse .tab-bar {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 2px solid;
+            border-image: linear-gradient(90deg, #00ffff, #ff00ff, #00ff88) 1;
+        }
+        
+        .neon-pulse .tab {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .neon-pulse .tab.active {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        /* ==================== DESIGN B: MIDNIGHT GRADIENT ==================== */
+        .midnight-gradient {
+            background: linear-gradient(180deg, #1a0033 0%, #0a0015 50%, #000 100%);
+            position: relative;
+        }
+        
+        .midnight-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 20%, rgba(138, 43, 226, 0.2), transparent 60%);
+            pointer-events: none;
+        }
+        
+        .midnight-gradient .app-name {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #9d50ff, #4a90ff, #50e3c2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+        
+        .midnight-gradient .tagline {
+            font-size: 13px;
+            color: #9d50ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .midnight-gradient .app-header {
+            margin-bottom: 40px;
+        }
+        
+        .midnight-gradient .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        
+        .midnight-gradient .stat-card {
+            background: linear-gradient(135deg, rgba(157, 80, 255, 0.15), rgba(74, 144, 255, 0.1));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            padding: 24px 20px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .midnight-gradient .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #9d50ff, #4a90ff);
+            border-radius: 20px;
+            z-index: -1;
+        }
+        
+        .midnight-gradient .stat-label {
+            font-size: 12px;
+            color: #b8a3ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .midnight-gradient .stat-value {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff, #9d50ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .midnight-gradient .section-title {
+            font-size: 16px;
+            color: #b8a3ff;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        .midnight-gradient .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+        
+        .midnight-gradient .btn {
+            flex: 1;
+            padding: 18px;
+            background: linear-gradient(135deg, #9d50ff, #4a90ff);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 8px 24px rgba(157, 80, 255, 0.4);
+        }
+        
+        .midnight-gradient .btn:last-child {
+            background: linear-gradient(135deg, #4a90ff, #50e3c2);
+            box-shadow: 0 8px 24px rgba(74, 144, 255, 0.4);
+        }
+        
+        .midnight-gradient .activity-item {
+            background: linear-gradient(135deg, rgba(157, 80, 255, 0.1), rgba(74, 144, 255, 0.05));
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(157, 80, 255, 0.2);
+        }
+        
+        .midnight-gradient .activity-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .midnight-gradient .activity-meta {
+            font-size: 13px;
+            color: #9d50ff;
+            font-weight: 500;
+        }
+        
+        .midnight-gradient .tab-bar {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 24px;
+        }
+        
+        .midnight-gradient .tab {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .midnight-gradient .tab.active {
+            color: #9d50ff;
+        }
+        
+        /* ==================== DESIGN C: CARBON FIBER ==================== */
+        .carbon-fiber {
+            background: 
+                repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px),
+                linear-gradient(180deg, #1a1a1a, #0d0d0d);
+        }
+        
+        .carbon-fiber .app-name {
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 2px;
+            font-family: 'Arial Black', sans-serif;
+        }
+        
+        .carbon-fiber .tagline {
+            font-size: 10px;
+            color: #ff4500;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+        
+        .carbon-fiber .app-header {
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #ff4500;
+        }
+        
+        .carbon-fiber .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .carbon-fiber .stat-card {
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            padding: 20px 16px;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            border: 1px solid #333;
+            position: relative;
+        }
+        
+        .carbon-fiber .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60%;
+            height: 3px;
+            background: linear-gradient(90deg, #ff4500, transparent);
+        }
+        
+        .carbon-fiber .stat-label {
+            font-size: 10px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .carbon-fiber .stat-value {
+            font-size: 38px;
+            font-weight: 900;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .carbon-fiber .section-title {
+            font-size: 12px;
+            color: #ff4500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+            font-weight: 900;
+        }
+        
+        .carbon-fiber .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+        
+        .carbon-fiber .btn {
+            flex: 1;
+            padding: 16px 12px;
+            background: #1a1a1a;
+            color: #ff4500;
+            font-size: 12px;
+            font-weight: 900;
+            text-align: center;
+            border: 2px solid #ff4500;
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .carbon-fiber .btn:last-child {
+            background: #ff4500;
+            color: #000;
+            border-color: #ff4500;
+        }
+        
+        .carbon-fiber .activity-item {
+            background: linear-gradient(90deg, #2a2a2a, #1a1a1a);
+            padding: 16px;
+            margin-bottom: 10px;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+            border-left: 4px solid #ff4500;
+        }
+        
+        .carbon-fiber .activity-name {
+            font-size: 15px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .carbon-fiber .activity-meta {
+            font-size: 11px;
+            color: #999;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .carbon-fiber .tab-bar {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 2px solid #333;
+        }
+        
+        .carbon-fiber .tab {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+        
+        .carbon-fiber .tab.active {
+            color: #ff4500;
+        }
+        
+        /* ==================== DESIGN D: AURORA ==================== */
+        .aurora {
+            background: radial-gradient(ellipse at top, #0a1628, #000);
+            position: relative;
+        }
+        
+        .aurora::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            right: -50%;
+            height: 300px;
+            background: 
+                radial-gradient(ellipse at 30% 0%, rgba(0, 255, 200, 0.15), transparent 40%),
+                radial-gradient(ellipse at 70% 0%, rgba(138, 43, 226, 0.12), transparent 40%),
+                radial-gradient(ellipse at 50% 0%, rgba(74, 144, 255, 0.1), transparent 50%);
+            pointer-events: none;
+        }
+        
+        .aurora .app-name {
+            font-size: 38px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00ffc8, #4a90ff, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 4px 12px rgba(0, 255, 200, 0.3));
+        }
+        
+        .aurora .tagline {
+            font-size: 13px;
+            color: #00ffc8;
+            font-weight: 500;
+            letter-spacing: 2px;
+        }
+        
+        .aurora .app-header {
+            margin-bottom: 36px;
+        }
+        
+        .aurora .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        
+        .aurora .stat-card {
+            background: rgba(0, 255, 200, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 24px 20px;
+            box-shadow: 
+                0 8px 32px rgba(0, 255, 200, 0.15),
+                inset 0 0 0 1px rgba(0, 255, 200, 0.2);
+        }
+        
+        .aurora .stat-card:last-child {
+            background: rgba(138, 43, 226, 0.05);
+            box-shadow: 
+                0 8px 32px rgba(138, 43, 226, 0.15),
+                inset 0 0 0 1px rgba(138, 43, 226, 0.2);
+        }
+        
+        .aurora .stat-label {
+            font-size: 12px;
+            color: #00ffc8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .aurora .stat-card:last-child .stat-label {
+            color: #b89eff;
+        }
+        
+        .aurora .stat-value {
+            font-size: 40px;
+            font-weight: 800;
+            color: #fff;
+            filter: drop-shadow(0 2px 8px rgba(0, 255, 200, 0.4));
+        }
+        
+        .aurora .section-title {
+            font-size: 15px;
+            color: #00ffc8;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        
+        .aurora .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+        
+        .aurora .btn {
+            flex: 1;
+            padding: 18px;
+            background: linear-gradient(135deg, rgba(0, 255, 200, 0.15), rgba(74, 144, 255, 0.15));
+            color: #00ffc8;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 255, 200, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 255, 200, 0.2);
+        }
+        
+        .aurora .btn:last-child {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(74, 144, 255, 0.15));
+            color: #b89eff;
+            border-color: rgba(138, 43, 226, 0.3);
+            box-shadow: 0 4px 20px rgba(138, 43, 226, 0.2);
+        }
+        
+        .aurora .activity-item {
+            background: rgba(0, 255, 200, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 
+                0 4px 16px rgba(0, 255, 200, 0.1),
+                inset 0 0 0 1px rgba(0, 255, 200, 0.15);
+        }
+        
+        .aurora .activity-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .aurora .activity-meta {
+            font-size: 13px;
+            color: #00ffc8;
+            font-weight: 500;
+        }
+        
+        .aurora .tab-bar {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-around;
+            padding-top: 24px;
+        }
+        
+        .aurora .tab {
+            font-size: 12px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .aurora .tab.active {
+            color: #00ffc8;
+            filter: drop-shadow(0 2px 6px rgba(0, 255, 200, 0.4));
+        }
+        
+        /* ==================== DESIGN E: GLASS DARK ==================== */
+        .glass-dark {
+            background: linear-gradient(135deg, #1a0a3e 0%, #0d1b2a 50%, #0a0a0a 100%);
+            position: relative;
+        }
+        
+        .glass-dark::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 140%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(106, 13, 173, 0.15), transparent 30%),
+                radial-gradient(circle at 70% 60%, rgba(13, 110, 253, 0.12), transparent 30%);
+            pointer-events: none;
+        }
+        
+        .glass-dark .app-name {
+            font-size: 34px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        
+        .glass-dark .tagline {
+            font-size: 13px;
+            color: #a78bfa;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        .glass-dark .app-header {
+            margin-bottom: 32px;
+        }
+        
+        .glass-dark .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .glass-dark .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 24px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-dark .stat-label {
+            font-size: 11px;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .glass-dark .stat-value {
+            font-size: 38px;
+            font-weight: 800;
+            color: #fff;
+        }
+        
+        .glass-dark .section-title {
+            font-size: 14px;
+            color: #a78bfa;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        
+        .glass-dark .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        
+        .glass-dark .btn {
+            flex: 1;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 4px 24px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-dark .btn:last-child {
+            background: rgba(167, 139, 250, 0.15);
+            border-color: rgba(167, 139, 250, 0.3);
+        }
+        
+        .glass-dark .activity-item {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        
+        .glass-dark .activity-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        
+        .glass-dark .activity-meta {
+            font-size: 13px;
+            color: #a78bfa;
+            font-weight: 500;
+        }
+        
+        .glass-dark .tab-bar {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-around;
+            padding: 16px 0;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-bottom: -24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-dark .tab {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .glass-dark .tab.active {
+            color: #a78bfa;
+        }
+        
+        /* ==================== DESIGN F: BOLD BLOCKS ==================== */
+        .bold-blocks {
+            background: #000;
+        }
+        
+        .bold-blocks .app-header {
+            margin-bottom: 40px;
+            background: #ff006e;
+            margin-left: -20px;
+            margin-right: -20px;
+            margin-top: -24px;
+            padding: 32px 20px 24px;
+        }
+        
+        .bold-blocks .app-name {
+            font-size: 48px;
+            font-weight: 900;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 0.9;
+        }
+        
+        .bold-blocks .tagline {
+            font-size: 14px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-top: 8px;
+            font-weight: 900;
+        }
+        
+        .bold-blocks .stats {
+            display: block;
+            margin-bottom: 40px;
+        }
+        
+        .bold-blocks .stat-card {
+            background: #fff;
+            padding: 28px 24px;
+            margin-bottom: 16px;
+        }
+        
+        .bold-blocks .stat-card:last-child {
+            background: #000;
+            border: 4px solid #00f0ff;
+            padding: 24px 20px;
+        }
+        
+        .bold-blocks .stat-label {
+            font-size: 14px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            font-weight: 900;
+        }
+        
+        .bold-blocks .stat-card:last-child .stat-label {
+            color: #00f0ff;
+        }
+        
+        .bold-blocks .stat-value {
+            font-size: 88px;
+            font-weight: 900;
+            color: #000;
+            line-height: 0.9;
+            letter-spacing: -3px;
+        }
+        
+        .bold-blocks .stat-card:last-child .stat-value {
+            color: #00f0ff;
+        }
+        
+        .bold-blocks .section-title {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            font-weight: 900;
+        }
+        
+        .bold-blocks .actions {
+            display: block;
+            margin-bottom: 40px;
+        }
+        
+        .bold-blocks .btn {
+            width: 100%;
+            padding: 24px;
+            background: #ff006e;
+            color: #000;
+            font-size: 18px;
+            font-weight: 900;
+            text-align: left;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        
+        .bold-blocks .btn:last-child {
+            background: #000;
+            color: #00f0ff;
+            border: 4px solid #00f0ff;
+            padding: 20px;
+        }
+        
+        .bold-blocks .activity-item {
+            background: #1a1a1a;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-left: 8px solid #ff006e;
+        }
+        
+        .bold-blocks .activity-item:last-child {
+            border-left-color: #00f0ff;
+        }
+        
+        .bold-blocks .activity-name {
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+        
+        .bold-blocks .activity-meta {
+            font-size: 14px;
+            color: #666;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .bold-blocks .tab-bar {
+            margin-top: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding-top: 24px;
+        }
+        
+        .bold-blocks .tab {
+            font-size: 10px;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+            padding: 12px 8px;
+            background: #1a1a1a;
+            text-align: center;
+        }
+        
+        .bold-blocks .tab.active {
+            background: #ff006e;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- DESIGN A: NEON PULSE -->
+        <div class="design-card">
+            <div class="design-label">
+                <h2>A. Neon Pulse</h2>
+                <p>Cyberpunk gaming aesthetic with electric neon glows</p>
+            </div>
+            <div class="phone-screen neon-pulse">
+                <div class="app-header">
+                    <div class="app-name">FITTRACK</div>
+                    <div class="tagline">Level Up Your Gains</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Workouts</div>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Minutes</div>
+                        <div class="stat-value">1.2K</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                <div class="actions">
+                    <div class="btn">New Workout</div>
+                    <div class="btn">Set Goal</div>
+                </div>
+                
+                <div class="section-title">Recent Activity</div>
+                <div>
+                    <div class="activity-item">
+                        <div class="activity-name">Upper Body Blast</div>
+                        <div class="activity-meta">45 min • 2 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-name">Morning Cardio</div>
+                        <div class="activity-meta">30 min • Yesterday</div>
+                    </div>
+                </div>
+                
+                <div class="tab-bar">
+                    <div class="tab active">Home</div>
+                    <div class="tab">Workouts</div>
+                    <div class="tab">Stats</div>
+                    <div class="tab">Profile</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DESIGN B: MIDNIGHT GRADIENT -->
+        <div class="design-card">
+            <div class="design-label">
+                <h2>B. Midnight Gradient</h2>
+                <p>Premium luxury with flowing gradient colors</p>
+            </div>
+            <div class="phone-screen midnight-gradient">
+                <div class="app-header">
+                    <div class="app-name">FitTrack</div>
+                    <div class="tagline">Your Fitness Journey</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Workouts</div>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Minutes</div>
+                        <div class="stat-value">1.2K</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                <div class="actions">
+                    <div class="btn">New Workout</div>
+                    <div class="btn">Set Goal</div>
+                </div>
+                
+                <div class="section-title">Recent Activity</div>
+                <div>
+                    <div class="activity-item">
+                        <div class="activity-name">Upper Body Blast</div>
+                        <div class="activity-meta">45 min • 2 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-name">Morning Cardio</div>
+                        <div class="activity-meta">30 min • Yesterday</div>
+                    </div>
+                </div>
+                
+                <div class="tab-bar">
+                    <div class="tab active">Home</div>
+                    <div class="tab">Workouts</div>
+                    <div class="tab">Stats</div>
+                    <div class="tab">Profile</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DESIGN C: CARBON FIBER -->
+        <div class="design-card">
+            <div class="design-label">
+                <h2>C. Carbon Fiber</h2>
+                <p>Angular sports car dashboard with aggressive edges</p>
+            </div>
+            <div class="phone-screen carbon-fiber">
+                <div class="app-header">
+                    <div class="app-name">FITTRACK</div>
+                    <div class="tagline">Performance Mode</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Workouts</div>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Minutes</div>
+                        <div class="stat-value">1.2K</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                <div class="actions">
+                    <div class="btn">New Workout</div>
+                    <div class="btn">Set Goal</div>
+                </div>
+                
+                <div class="section-title">Recent Activity</div>
+                <div>
+                    <div class="activity-item">
+                        <div class="activity-name">Upper Body Blast</div>
+                        <div class="activity-meta">45 MIN • 2 HOURS AGO</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-name">Morning Cardio</div>
+                        <div class="activity-meta">30 MIN • YESTERDAY</div>
+                    </div>
+                </div>
+                
+                <div class="tab-bar">
+                    <div class="tab active">HOME</div>
+                    <div class="tab">WORKOUTS</div>
+                    <div class="tab">STATS</div>
+                    <div class="tab">PROFILE</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DESIGN D: AURORA -->
+        <div class="design-card">
+            <div class="design-label">
+                <h2>D. Aurora</h2>
+                <p>Ethereal northern lights with soft flowing colors</p>
+            </div>
+            <div class="phone-screen aurora">
+                <div class="app-header">
+                    <div class="app-name">FitTrack</div>
+                    <div class="tagline">Rise and Shine</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Workouts</div>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Minutes</div>
+                        <div class="stat-value">1.2K</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                <div class="actions">
+                    <div class="btn">New Workout</div>
+                    <div class="btn">Set Goal</div>
+                </div>
+                
+                <div class="section-title">Recent Activity</div>
+                <div>
+                    <div class="activity-item">
+                        <div class="activity-name">Upper Body Blast</div>
+                        <div class="activity-meta">45 min • 2 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-name">Morning Cardio</div>
+                        <div class="activity-meta">30 min • Yesterday</div>
+                    </div>
+                </div>
+                
+                <div class="tab-bar">
+                    <div class="tab active">Home</div>
+                    <div class="tab">Workouts</div>
+                    <div class="tab">Stats</div>
+                    <div class="tab">Profile</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DESIGN E: GLASS DARK -->
+        <div class="design-card">
+            <div class="design-label">
+                <h2>E. Glass Dark</h2>
+                <p>Frosted glassmorphism floating on gradient darkness</p>
+            </div>
+            <div class="phone-screen glass-dark">
+                <div class="app-header">
+                    <div class="app-name">FitTrack</div>
+                    <div class="tagline">Train Smarter</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Workouts</div>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Minutes</div>
+                        <div class="stat-value">1.2K</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                <div class="actions">
+                    <div class="btn">New Workout</div>
+                    <div class="btn">Set Goal</div>
+                </div>
+                
+                <div class="section-title">Recent Activity</div>
+                <div>
+                    <div class="activity-item">
+                        <div class="activity-name">Upper Body Blast</div>
+                        <div class="activity-meta">45 min • 2 hours ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-name">Morning Cardio</div>
+                        <div class="activity-meta">30 min • Yesterday</div>
+                    </div>
+                </div>
+                
+                <div class="tab-bar">
+                    <div class="tab active">Home</div>
+                    <div class="tab">Workouts</div>
+                    <div class="tab">Stats</div>
+                    <div class="tab">Profile</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DESIGN F: BOLD BLOCKS -->
+        <div class="design-card">
+            <div class="design-label">
+                <h2>F. Bold Blocks</h2>
+                <p>Brutalist maximalism with huge type and color blocks</p>
+            </div>
+            <div class="phone-screen bold-blocks">
+                <div class="app-header">
+                    <div class="app-name">FIT<br>TRACK</div>
+                    <div class="tagline">No Excuses</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Workouts</div>
+                        <div class="stat-value">24</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Minutes</div>
+                        <div class="stat-value">1.2K</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Quick Actions</div>
+                <div class="actions">
+                    <div class="btn">→ New Workout</div>
+                    <div class="btn">→ Set Goal</div>
+                </div>
+                
+                <div class="section-title">Recent Activity</div>
+                <div>
+                    <div class="activity-item">
+                        <div class="activity-name">Upper Body</div>
+                        <div class="activity-meta">45 Min • 2h Ago</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-name">Cardio</div>
+                        <div class="activity-meta">30 Min • Yesterday</div>
+                    </div>
+                </div>
+                
+                <div class="tab-bar">
+                    <div class="tab active">Home</div>
+                    <div class="tab">Work</div>
+                    <div class="tab">Stats</div>
+                    <div class="tab">You</div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

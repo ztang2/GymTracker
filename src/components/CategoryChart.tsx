@@ -140,6 +140,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.headline,
+    color: colors.textPrimary,
     marginBottom: spacing.md,
   },
   pieOuterContainer: {
@@ -191,6 +192,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   legendText: {
     ...typography.callout,
+    color: colors.textPrimary,
     flex: 1,
   },
   legendValue: {

@@ -5,7 +5,7 @@ export const darkColors = {
   // Background colors (dark theme) - Deep navy-purple
   background: '#0D0B1E',  // Deep navy-purple background (NOT pure black)
   backgroundElevated: '#16133A',  // Slightly lighter purple-navy
-  cardBackground: 'rgba(30, 25, 60, 0.8)',  // Dark translucent with purple tint
+  cardBackground: '#2A2560',  // Clearly elevated from #0D0B1E background
   cardBackgroundHover: 'rgba(40, 35, 80, 0.9)',  // Hovered/pressed cards
 
   // Text colors (dark theme)
@@ -51,7 +51,7 @@ export const darkColors = {
   categoryCardio: '#EF4444',  // Red
 
   // UI element colors
-  border: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted border
+  border: 'rgba(160, 140, 220, 0.4)',  // Visible glassmorphic border
   borderLight: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted subtle border
   borderFocus: '#8B5CF6',  // Purple border for focus states
   success: '#10B981',
@@ -120,7 +120,7 @@ export const lightColors = {
   categoryCardio: '#EF4444',  // Red
 
   // UI element colors
-  border: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted border
+  border: 'rgba(139, 92, 246, 0.18)',  // Purple-tinted border
   borderLight: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted subtle border
   borderFocus: '#8B5CF6',  // Purple border for focus states
   success: '#10B981',

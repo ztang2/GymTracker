@@ -108,6 +108,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.title2,
+    color: colors.textPrimary,
   },
   listContainer: {
     gap: spacing.md,
@@ -128,6 +129,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   exerciseName: {
     ...typography.callout,
     fontWeight: '600',
+    color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   detailsRow: {

@@ -83,6 +83,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.headline,
+    color: colors.textPrimary,
     marginBottom: spacing.md,
   },
   item: {
@@ -113,6 +114,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   exerciseName: {
     ...typography.headline,
+    color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   row: {
@@ -133,6 +135,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   count: {
     ...typography.caption,
+    color: colors.textSecondary,
   },
   chevron: {
     marginLeft: spacing.sm,

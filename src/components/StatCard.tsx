@@ -86,9 +86,16 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginVertical: spacing.sm,
   },
   card: {
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.xl,
     padding: spacing.xl,
-    ...shadows.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.cardBackground,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
     minHeight: 130,
   },
   content: {

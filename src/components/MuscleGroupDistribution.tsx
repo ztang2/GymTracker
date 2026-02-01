@@ -75,6 +75,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.title2,
+    color: colors.textPrimary,
     marginBottom: spacing.lg,
   },
   barsContainer: {
@@ -96,6 +97,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   categoryLabel: {
     ...typography.callout,
+    color: colors.textPrimary,
     flex: 1,
   },
   countText: {

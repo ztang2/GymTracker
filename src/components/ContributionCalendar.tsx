@@ -255,6 +255,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.headline,
+    color: colors.textPrimary,
     marginBottom: spacing.lg,
   },
   scrollView: {
@@ -268,6 +269,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   legendText: {
     ...typography.caption2,
+    color: colors.textTertiary,
     marginHorizontal: spacing.xs,
   },
   legendCell: {
@@ -295,6 +297,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   streakLabel: {
     ...typography.caption,
+    color: colors.textSecondary,
     marginTop: spacing.xs,
   },
   streakDivider: {

@@ -76,6 +76,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.title2,
+    color: colors.textPrimary,
     marginBottom: spacing.lg,
   },
   headerRow: {
