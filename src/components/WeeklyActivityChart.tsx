@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../contexts';
 import { typography, spacing, borderRadius } from '../constants/theme';
+import { colorGlow } from '../utils';
 
 export interface DayActivityData {
   day: string; // "Mon", "Tue", etc.
@@ -48,7 +49,7 @@ export default function WeeklyActivityChart({
                       style={[
                         styles.bar,
                         { height: barHeight },
-                        day.isToday && styles.todayBar,
+                        day.isToday && [styles.todayBar, colorGlow(colors.teal, 'md')],
                       ]}
                     />
                   ) : (
@@ -57,7 +58,7 @@ export default function WeeklyActivityChart({
                         styles.bar,
                         styles.emptyBar,
                         { height: barHeight },
-                        day.isToday && styles.todayBar,
+                        day.isToday && [styles.todayBar, colorGlow(colors.teal, 'md')],
                       ]}
                     />
                   )}
@@ -132,10 +133,6 @@ const createStyles = (colors: any) => StyleSheet.create({
   todayBar: {
     borderWidth: 2,
     borderColor: colors.teal,
-    shadowColor: colors.teal,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
   },
   labelsContainer: {
     flexDirection: 'row',

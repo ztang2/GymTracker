@@ -350,7 +350,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Progress</Text>
+        <Text style={[styles.headerTitle, { color: colors.purple }]}>Progress</Text>
         <Text style={styles.headerSubtitle}>Your fitness journey at a glance</Text>
       </View>
 
@@ -402,7 +402,6 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   headerTitle: {
     ...typography.largeTitle,
-    color: colors.textPrimary,
   },
   headerSubtitle: {
     ...typography.body,

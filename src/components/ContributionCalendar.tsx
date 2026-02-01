@@ -5,6 +5,7 @@ import Svg, { Rect, G, Text as SvgText } from 'react-native-svg';
 import { typography, spacing, borderRadius } from '../constants/theme';
 import { DayData } from '../services/types';
 import { getDayOfWeek, isToday } from '../utils/dateUtils';
+import { colorGlow } from '../utils/glowStyle';
 
 interface ContributionCalendarProps {
   data: DayData[];
@@ -231,12 +232,16 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({
       {/* Streak Card */}
       <View style={styles.streakCard}>
         <View style={styles.streakItem}>
-          <Text style={styles.streakValue}>{currentStreak}</Text>
+          <View style={colorGlow(colors.orange, 'sm')}>
+            <Text style={styles.streakValue}>{currentStreak}</Text>
+          </View>
           <Text style={styles.streakLabel}>Current Streak</Text>
         </View>
         <View style={styles.streakDivider} />
         <View style={styles.streakItem}>
-          <Text style={styles.streakValue}>{longestStreak}</Text>
+          <View style={colorGlow(colors.orange, 'sm')}>
+            <Text style={styles.streakValue}>{longestStreak}</Text>
+          </View>
           <Text style={styles.streakLabel}>Longest Streak</Text>
         </View>
       </View>

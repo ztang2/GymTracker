@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts';
 import { typography, spacing, borderRadius } from '../constants/theme';
+import { colorGlow } from '../utils/glowStyle';
 
 export interface SummaryCardData {
   label: string;
@@ -56,11 +57,13 @@ export default function SummaryCardRow({ cards }: SummaryCardRowProps) {
             </Text>
           </View>
           <View style={styles.comparisonRow}>
-            <Ionicons
-              name={getTrendIcon(card.comparison.trend)}
-              size={14}
-              color={getTrendColor(card.comparison.trend)}
-            />
+            <View style={[styles.iconWrapper, card.comparison.trend !== 'neutral' && colorGlow(getTrendColor(card.comparison.trend), 'sm')]}>
+              <Ionicons
+                name={getTrendIcon(card.comparison.trend)}
+                size={14}
+                color={getTrendColor(card.comparison.trend)}
+              />
+            </View>
             <Text style={[styles.comparisonText, { color: getTrendColor(card.comparison.trend) }]}>
               {card.comparison.value > 0 ? '+' : ''}{card.comparison.value}
             </Text>
@@ -107,6 +110,13 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   comparisonRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconWrapper: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   comparisonText: {

@@ -4,9 +4,9 @@ import { Platform } from 'react-native';
 // size: 'sm' | 'md' | 'lg' for different intensities
 export function colorGlow(color: string, size: 'sm' | 'md' | 'lg' = 'md') {
   const configs = {
-    sm: { spread: 8, blur: 16, opacity: '66', outerBlur: 32, outerOpacity: '33' },
-    md: { spread: 10, blur: 24, opacity: '80', outerBlur: 50, outerOpacity: '44' },
-    lg: { spread: 14, blur: 32, opacity: '99', outerBlur: 60, outerOpacity: '55' },
+    sm: { spread: 5, blur: 10, opacity: '44', outerBlur: 20, outerOpacity: '22' },
+    md: { spread: 7, blur: 16, opacity: '55', outerBlur: 32, outerOpacity: '30' },
+    lg: { spread: 10, blur: 22, opacity: '66', outerBlur: 40, outerOpacity: '35' },
   };
   const c = configs[size];
   if (Platform.OS === 'web') {

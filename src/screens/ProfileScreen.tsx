@@ -101,7 +101,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>Profile</Text>
+        <Text style={[styles.title, { color: colors.purple }]}>Profile</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Manage your account</Text>
       </View>
 

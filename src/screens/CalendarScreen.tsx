@@ -87,7 +87,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Calendar</Text>
+        <Text style={[styles.title, { color: colors.purple }]}>Calendar</Text>
         <Text style={styles.subtitle}>Track your consistency</Text>
       </View>
 
@@ -170,7 +170,6 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.largeTitle,
-    color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
   subtitle: {
