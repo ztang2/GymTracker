@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth, useTheme } from '../contexts';
@@ -62,6 +63,11 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       <View style={styles.content}>
         {/* Logo/Title */}
         <View style={styles.header}>
+          <Image
+            source={require('../../assets/logo.png')}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <LinearGradient
             colors={colors.gradientPurplePink}
             start={{ x: 0, y: 0 }}
@@ -162,6 +168,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: spacing.xxxl * 2,
+  },
+  logoImage: {
+    width: 100,
+    height: 100,
+    marginBottom: spacing.md,
   },
   logoGradient: {
     paddingHorizontal: spacing.xl,

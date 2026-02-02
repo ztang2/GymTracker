@@ -20,7 +20,7 @@ export default {
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#0D0B1E',
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
@@ -32,7 +32,7 @@ export default {
       [
         'expo-notifications',
         {
-          color: '#14B8A6',
+          color: '#8B5CF6',
         },
       ],
       '@react-native-community/datetimepicker',
