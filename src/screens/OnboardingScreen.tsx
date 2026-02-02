@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Dimensions,
   Animated,
+  SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,7 +17,7 @@ import { spacing, typography, borderRadius } from '../constants/theme';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { AuthStackParamList } from '../navigation/types';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// Dimensions no longer needed for horizontal paging
 
 type OnboardingScreenProps = StackScreenProps<AuthStackParamList, 'OnboardingScreen'>;
 
@@ -51,7 +51,6 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedGoal, setSelectedGoal] = useState<FitnessGoal | null>(null);
   const [selectedExperience, setSelectedExperience] = useState<ExperienceLevel | null>(null);
-  const scrollViewRef = useRef<ScrollView>(null);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const handleGoalSelect = (goal: FitnessGoal) => {
@@ -64,18 +63,12 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
 
   const nextPage = () => {
     if (currentPage < 2) {
-      // Fade out animation
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 150,
         useNativeDriver: true,
       }).start(() => {
-        scrollViewRef.current?.scrollTo({
-          x: (currentPage + 1) * SCREEN_WIDTH,
-          animated: false,
-        });
         setCurrentPage(currentPage + 1);
-        // Fade in animation
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 150,
@@ -326,22 +319,39 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView
-        ref={scrollViewRef}
-        horizontal
-        pagingEnabled
-        scrollEnabled={false}
-        showsHorizontalScrollIndicator={false}
-        style={styles.scrollView}
-      >
-        <View style={styles.pageWrapper}>{renderPage1()}</View>
-        <View style={styles.pageWrapper}>{renderPage2()}</View>
-        <View style={styles.pageWrapper}>{renderPage3()}</View>
-      </ScrollView>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={styles.mainContent}>
+        {currentPage === 0 && (
+          <ScrollView 
+            style={styles.pageScroll} 
+            contentContainerStyle={styles.pageScrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {renderPage1()}
+          </ScrollView>
+        )}
+        {currentPage === 1 && (
+          <ScrollView 
+            style={styles.pageScroll} 
+            contentContainerStyle={styles.pageScrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {renderPage2()}
+          </ScrollView>
+        )}
+        {currentPage === 2 && (
+          <ScrollView 
+            style={styles.pageScroll} 
+            contentContainerStyle={styles.pageScrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {renderPage3()}
+          </ScrollView>
+        )}
+      </View>
 
       {renderDots()}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -349,17 +359,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
+  mainContent: {
     flex: 1,
   },
-  pageWrapper: {
-    width: SCREEN_WIDTH,
+  pageScroll: {
+    flex: 1,
+  },
+  pageScrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.xl,
   },
   page: {
     flex: 1,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xxxl * 2,
-    paddingBottom: spacing.xxxl,
   },
   logoContainer: {
     alignItems: 'center',
