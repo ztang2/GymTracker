@@ -793,18 +793,18 @@ export async function seedExercises(): Promise<void> {
       throw new Error(`Failed to check exercises: ${countError.message}`);
     }
 
-    // If exercises already exist, skip seeding
-    if (count && count > 0) {
+    // If all exercises already exist, skip seeding
+    if (count && count >= SEED_EXERCISES.length) {
       console.log(`✓ Exercises already seeded (${count} exercises found)`);
       return;
     }
 
-    console.log('No exercises found. Seeding exercise library...');
+    console.log(`Found ${count || 0} exercises, need ${SEED_EXERCISES.length}. Seeding...`);
 
-    // Insert all seed exercises
+    // Upsert all seed exercises (insert new ones, skip existing)
     const { data, error: insertError } = await supabase
       .from('exercises')
-      .insert(SEED_EXERCISES)
+      .upsert(SEED_EXERCISES, { onConflict: 'name' })
       .select();
 
     if (insertError) {

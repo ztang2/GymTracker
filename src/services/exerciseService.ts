@@ -14,19 +14,12 @@ import type { Exercise, ExerciseCategory } from './types';
  * @throws Error if database query fails
  */
 export async function getAllExercises(userId?: string): Promise<Exercise[]> {
-  let query = supabase
+  // Simple query - fetch all exercises. Custom exercise filtering can be added
+  // once the is_custom column is added to the database schema.
+  const { data, error } = await supabase
     .from('exercises')
-    .select('*');
-
-  // If userId provided, get seed exercises + user's custom exercises
-  // Otherwise just get seed exercises (where is_custom is null/false or user_id is null)
-  if (userId) {
-    query = query.or(`is_custom.is.null,is_custom.eq.false,user_id.eq.${userId}`);
-  } else {
-    query = query.or('is_custom.is.null,is_custom.eq.false');
-  }
-
-  const { data, error } = await query.order('name', { ascending: true });
+    .select('*')
+    .order('name', { ascending: true });
 
   if (error) {
     throw new Error(`Failed to fetch exercises: ${error.message}`);
@@ -47,17 +40,12 @@ export async function getExercisesByCategory(
   category: ExerciseCategory,
   userId?: string
 ): Promise<Exercise[]> {
-  let query = supabase
+  // Simple query by category. Custom exercise filtering can be added
+  // once the is_custom column is added to the database schema.
+  const query = supabase
     .from('exercises')
     .select('*')
     .eq('category', category);
-
-  // If userId provided, get seed exercises + user's custom exercises
-  if (userId) {
-    query = query.or(`is_custom.is.null,is_custom.eq.false,user_id.eq.${userId}`);
-  } else {
-    query = query.or('is_custom.is.null,is_custom.eq.false');
-  }
 
   const { data, error } = await query.order('name', { ascending: true });
 
