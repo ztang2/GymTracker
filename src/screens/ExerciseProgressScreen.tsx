@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useWeightUnit } from '../hooks';
 import {
   View,
   Text,
@@ -41,6 +42,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
   const styles = createStyles(colors);
   const { exerciseId } = route.params;
   const { user } = useAuth();
+  const { unit } = useWeightUnit();
   const navigation = useNavigation<NavigationProp>();
 
   const [loading, setLoading] = useState(true);
@@ -178,7 +180,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
         <ExerciseProgressChart
           data={weightData}
           title="Weight Progress"
-          unit="kg"
+          unit={unit}
           color={colors.teal}
         />
       </View>
@@ -188,7 +190,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
         <ExerciseProgressChart
           data={volumeData}
           title="Volume Progress"
-          unit="kg"
+          unit={unit}
           color={colors.purple}
         />
       </View>

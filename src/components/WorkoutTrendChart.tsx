@@ -72,6 +72,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.headline,
+    color: colors.textPrimary,
     marginBottom: spacing.md,
   },
   chartContainer: {

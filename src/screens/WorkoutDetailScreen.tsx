@@ -23,14 +23,17 @@ import {
   addWorkoutExercise,
   deleteWorkoutExercise,
   getAllExercises,
+  createTemplateFromWorkout,
   type WorkoutSessionWithExercises,
   type WorkoutExerciseWithDetails,
   type ExerciseSet,
   type Exercise,
 } from '../services';
+import { SaveAsTemplateModal } from '../components';
 import { detectPRsFromWorkout } from '../services/prService';
 import { useAuth, useTheme } from '../contexts';
-import { colorGlow } from '../utils';
+import { useWeightUnit } from '../hooks';
+import { colorGlow, buildShareTextFromWorkout, shareWorkoutText } from '../utils';
 
 interface EditableSet extends ExerciseSet {
   _isNew?: boolean; // Flag for newly added sets
@@ -44,6 +47,7 @@ interface EditableExercise extends WorkoutExerciseWithDetails {
 export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetailScreenProps) {
   const { user } = useAuth();
   const { colors } = useTheme();
+  const { unit, convert, toKg } = useWeightUnit();
   const styles = createStyles(colors);
 
   const { workoutId } = route.params;
@@ -58,6 +62,8 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   useEffect(() => {
     loadWorkout();
@@ -434,6 +440,42 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
     setShowDatePicker(false);
   };
 
+  // Handle share workout
+  const handleShareWorkout = () => {
+    if (!workout) return;
+    const text = buildShareTextFromWorkout(workout);
+    shareWorkoutText(text);
+  };
+
+  // Handle save as template
+  const handleSaveAsTemplate = async (name: string, description: string | null) => {
+    if (!user || !workout) return;
+    setSavingTemplate(true);
+    try {
+      const workoutExercises = workout.exercises.map((ex) => ({
+        exerciseId: ex.exercise_id,
+        sets: ex.sets
+          .filter((s) => s.completed)
+          .map((s) => ({ weight: s.weight_kg || 0, reps: s.reps })),
+      }));
+
+      await createTemplateFromWorkout(
+        user.id,
+        name,
+        workoutExercises,
+        workout.duration_minutes
+      );
+
+      setShowSaveTemplateModal(false);
+      showAlert('Template Saved', `"${name}" has been saved as a template.`);
+    } catch (error) {
+      console.error('Failed to save template:', error);
+      showAlert('Error', 'Failed to save template. Please try again.');
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
   // Render loading state
   if (loading) {
     return (
@@ -465,14 +507,32 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
         <Text style={styles.title} accessibilityRole="header">Workout Details</Text>
         <View style={styles.headerButtons}>
           {!isEditMode ? (
-            <TouchableOpacity 
-              onPress={handleEnterEditMode} 
-              style={styles.editButton}
-              accessibilityRole="button"
-              accessibilityLabel="Edit workout"
-            >
-              <Ionicons name="pencil" size={24} color={colors.purple} />
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                onPress={handleShareWorkout}
+                style={styles.editButton}
+                accessibilityRole="button"
+                accessibilityLabel="Share workout"
+              >
+                <Ionicons name="share-social-outline" size={24} color={colors.green} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowSaveTemplateModal(true)}
+                style={styles.editButton}
+                accessibilityRole="button"
+                accessibilityLabel="Save as template"
+              >
+                <Ionicons name="bookmark-outline" size={24} color={colors.teal} />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={handleEnterEditMode} 
+                style={styles.editButton}
+                accessibilityRole="button"
+                accessibilityLabel="Edit workout"
+              >
+                <Ionicons name="pencil" size={24} color={colors.purple} />
+              </TouchableOpacity>
+            </>
           ) : (
             <>
               <TouchableOpacity 
@@ -596,7 +656,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
               <View style={styles.setsContainer}>
                 <View style={styles.setsHeader}>
                   <Text style={styles.setsHeaderText}>Set</Text>
-                  <Text style={styles.setsHeaderText}>Weight (kg)</Text>
+                  <Text style={styles.setsHeaderText}>Weight ({unit})</Text>
                   <Text style={styles.setsHeaderText}>Reps</Text>
                   {isEditMode && <Text style={styles.setsHeaderText}>   </Text>}
                 </View>
@@ -612,10 +672,11 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
                             styles.setInput,
                             errors[`exercise_${exIdx}_set_${setIdx}_weight`] && styles.setInputError
                           ]}
-                          value={set.weight_kg?.toString() || '0'}
+                          value={convert(set.weight_kg || 0).toString()}
                           onChangeText={(text) => {
-                            const value = parseFloat(text) || 0;
-                            handleUpdateSet(exIdx, setIdx, 'weight_kg', value);
+                            const displayVal = parseFloat(text) || 0;
+                            const kgVal = toKg(displayVal);
+                            handleUpdateSet(exIdx, setIdx, 'weight_kg', Math.round(kgVal * 10) / 10);
                           }}
                           keyboardType="numeric"
                           selectTextOnFocus
@@ -639,7 +700,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
                       </>
                     ) : (
                       <>
-                        <Text style={styles.setValue}>{set.weight_kg || 0} kg</Text>
+                        <Text style={styles.setValue}>{convert(set.weight_kg || 0)} {unit}</Text>
                         <Text style={styles.setValue}>{set.reps}</Text>
                       </>
                     )}
@@ -720,6 +781,14 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
           </View>
         </View>
       </Modal>
+
+      {/* Save As Template Modal */}
+      <SaveAsTemplateModal
+        visible={showSaveTemplateModal}
+        onClose={() => setShowSaveTemplateModal(false)}
+        onSave={handleSaveAsTemplate}
+        loading={savingTemplate}
+      />
     </View>
   );
 }

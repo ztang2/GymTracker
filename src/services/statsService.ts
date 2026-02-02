@@ -705,3 +705,143 @@ export async function getLastPerformanceBatch(
   await Promise.all(promises);
   return results;
 }
+
+// ============================================================================
+// BADGE-RELATED STAT HELPERS
+// ============================================================================
+
+/**
+ * Get total number of personal records set by user
+ */
+export async function getTotalPRCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('personal_records')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error getting PR count:', error);
+    return 0;
+  }
+  return count || 0;
+}
+
+/**
+ * Get max weight for a specific exercise by name (e.g. 'Bench Press')
+ */
+export async function getExerciseMaxWeight(userId: string, exerciseName: string): Promise<number> {
+  // First get the exercise id
+  const { data: exercise } = await supabase
+    .from('exercises')
+    .select('id')
+    .ilike('name', exerciseName)
+    .single();
+
+  if (!exercise) return 0;
+
+  const { data, error } = await supabase
+    .from('personal_records')
+    .select('value')
+    .eq('user_id', userId)
+    .eq('exercise_id', exercise.id)
+    .eq('record_type', 'max_weight')
+    .single();
+
+  if (error || !data) return 0;
+  return Number(data.value);
+}
+
+/**
+ * Get count of unique exercises ever performed
+ */
+export async function getUniqueExerciseCount(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('workout_exercises')
+    .select('exercise_id, workout_session_id!inner(user_id)')
+    .eq('workout_session_id.user_id', userId);
+
+  if (error || !data) return 0;
+
+  const unique = new Set(data.map((d: any) => d.exercise_id));
+  return unique.size;
+}
+
+/**
+ * Check if user trained all muscle groups in the current week
+ * Returns 1 if all groups were hit, 0 otherwise
+ */
+export async function getAllMuscleGroupsThisWeek(userId: string): Promise<number> {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((dayOfWeek + 6) % 7));
+  const startDate = formatISODate(monday);
+  const endDate = formatISODate(today);
+
+  const { data, error } = await supabase
+    .from('workout_exercises')
+    .select('exercise:exercises(category), workout_session_id!inner(user_id, date)')
+    .eq('workout_session_id.user_id', userId)
+    .gte('workout_session_id.date', startDate)
+    .lte('workout_session_id.date', endDate);
+
+  if (error || !data) return 0;
+
+  const categories = new Set(data.map((d: any) => d.exercise?.category).filter(Boolean));
+  const allGroups = ['chest', 'back', 'legs', 'shoulders', 'arms', 'core'];
+  const hitAll = allGroups.every(g => categories.has(g));
+  return hitAll ? 1 : 0;
+}
+
+/**
+ * Get count of workouts started before 7 AM
+ */
+export async function getEarlyWorkoutCount(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('start_time')
+    .eq('user_id', userId)
+    .not('start_time', 'is', null);
+
+  if (error || !data) return 0;
+
+  return data.filter((w: any) => {
+    const hour = new Date(w.start_time).getHours();
+    return hour < 7;
+  }).length;
+}
+
+/**
+ * Get count of workouts started after 10 PM
+ */
+export async function getNightWorkoutCount(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('start_time')
+    .eq('user_id', userId)
+    .not('start_time', 'is', null);
+
+  if (error || !data) return 0;
+
+  return data.filter((w: any) => {
+    const hour = new Date(w.start_time).getHours();
+    return hour >= 22;
+  }).length;
+}
+
+/**
+ * Get count of workouts on weekends (Saturday/Sunday)
+ */
+export async function getWeekendWorkoutCount(userId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select('date')
+    .eq('user_id', userId);
+
+  if (error || !data) return 0;
+
+  return data.filter((w: any) => {
+    const day = new Date(w.date + 'T12:00:00').getDay();
+    return day === 0 || day === 6;
+  }).length;
+}

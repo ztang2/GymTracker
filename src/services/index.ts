@@ -13,4 +13,5 @@ export * from './prService';
 export * from './templateService';
 export * from './exerciseStatsService';
 export * from './exportService';
+export * from './avatarService';
 export * from './types';

@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import type { ProgressScreenProps } from '../navigation/types';
@@ -24,9 +25,10 @@ import {
   getCategoryDistribution,
 } from '../services/statsService';
 import { getUserPRs } from '../services/prService';
-import { getWorkoutsByDateRange, getWorkoutSession } from '../services/workoutService';
+import { getWorkoutsByDateRange, batchGetWorkoutSessions } from '../services/workoutService';
 import { typography, spacing } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
+import { useWeightUnit } from '../hooks';
 import {
   formatISODate,
   parseISODate,
@@ -39,6 +41,7 @@ import {
 export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   const { user } = useAuth();
   const { colors } = useTheme();
+  const { unit, convert, formatWeight } = useWeightUnit();
   const styles = createStyles(colors);
 
   const [loading, setLoading] = useState(true);
@@ -55,6 +58,34 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   const [hasAnyData, setHasAnyData] = useState(false);
 
   const userId = user!.id;
+  const cacheKey = `@liftarc_progress_${userId}`;
+  const cacheLoaded = useRef(false);
+
+  // Restore cached data on first mount (instant display)
+  useEffect(() => {
+    (async () => {
+      try {
+        const cached = await AsyncStorage.getItem(cacheKey);
+        if (cached) {
+          const data = JSON.parse(cached);
+          setSummaryCards(data.summaryCards || []);
+          setWeeklyActivity(data.weeklyActivity || []);
+          setMonthlyOverview(data.monthlyOverview || []);
+          setVolumeTrend(data.volumeTrend || []);
+          setRecentPRs(data.recentPRs || []);
+          setMuscleGroups(data.muscleGroups || []);
+          setHasAnyData(data.hasAnyData || false);
+          // Show cached data immediately, skip loading spinner
+          if (data.hasAnyData) {
+            setLoading(false);
+          }
+          cacheLoaded.current = true;
+        }
+      } catch (e) {
+        // Cache miss is fine, just show loading
+      }
+    })();
+  }, [cacheKey]);
 
   const fetchData = useCallback(async () => {
     try {
@@ -74,48 +105,49 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       const allWorkouts = await getWorkoutsByDateRange(userId, monthStart, todayStr);
       setHasAnyData(allWorkouts.length > 0);
 
+      // ========== BATCH LOAD all workout details in 3 queries ==========
+      const workoutDetailsMap = await batchGetWorkoutSessions(
+        allWorkouts.map(w => w.id),
+        userId
+      );
+
+      // Helper: get volume and time from cached details
+      const getStatsForWorkouts = (workouts: typeof allWorkouts) => {
+        let volume = 0;
+        let time = 0;
+        for (const w of workouts) {
+          const full = workoutDetailsMap.get(w.id);
+          if (full) {
+            time += full.duration_minutes || 0;
+            for (const exercise of full.exercises) {
+              for (const set of exercise.sets) {
+                volume += set.reps * (set.weight_kg || 0);
+              }
+            }
+          }
+        }
+        return { volume, time };
+      };
+
       // ========== SUMMARY CARDS ==========
       const thisWeekWorkouts = allWorkouts.filter(w => w.date >= thisWeekStart);
       const lastWeekWorkouts = allWorkouts.filter(
         w => w.date >= lastWeekStart && w.date <= lastWeekEnd
       );
 
-      // Calculate this week's stats
-      let thisWeekVolume = 0;
-      let thisWeekTime = 0;
-      for (const workout of thisWeekWorkouts) {
-        const fullWorkout = await getWorkoutSession(workout.id, userId);
-        if (fullWorkout) {
-          thisWeekTime += fullWorkout.duration_minutes || 0;
-          for (const exercise of fullWorkout.exercises) {
-            for (const set of exercise.sets) {
-              thisWeekVolume += set.reps * (set.weight_kg || 0);
-            }
-          }
-        }
-      }
-
-      // Calculate last week's stats
-      let lastWeekVolume = 0;
-      let lastWeekTime = 0;
-      for (const workout of lastWeekWorkouts) {
-        const fullWorkout = await getWorkoutSession(workout.id, userId);
-        if (fullWorkout) {
-          lastWeekTime += fullWorkout.duration_minutes || 0;
-          for (const exercise of fullWorkout.exercises) {
-            for (const set of exercise.sets) {
-              lastWeekVolume += set.reps * (set.weight_kg || 0);
-            }
-          }
-        }
-      }
+      const thisWeekStats = getStatsForWorkouts(thisWeekWorkouts);
+      const lastWeekStats = getStatsForWorkouts(lastWeekWorkouts);
+      const thisWeekVolume = thisWeekStats.volume;
+      const thisWeekTime = thisWeekStats.time;
+      const lastWeekVolume = lastWeekStats.volume;
+      const lastWeekTime = lastWeekStats.time;
 
       // Build summary cards
       const workoutComparison = thisWeekWorkouts.length - lastWeekWorkouts.length;
       const volumeComparison = Math.round(thisWeekVolume - lastWeekVolume);
       const timeComparison = thisWeekTime - lastWeekTime;
 
-      setSummaryCards([
+      const summaryCards_new: SummaryCardData[] = [
         {
           label: 'Workouts',
           value: thisWeekWorkouts.length,
@@ -126,10 +158,10 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
         },
         {
           label: 'Volume',
-          value: Math.round(thisWeekVolume),
-          unit: 'kg',
+          value: Math.round(convert(thisWeekVolume)),
+          unit,
           comparison: {
-            value: volumeComparison,
+            value: Math.round(convert(volumeComparison)),
             trend: volumeComparison > 0 ? 'up' : volumeComparison < 0 ? 'down' : 'neutral',
           },
         },
@@ -142,7 +174,8 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
             trend: timeComparison > 0 ? 'up' : timeComparison < 0 ? 'down' : 'neutral',
           },
         },
-      ]);
+      ];
+      setSummaryCards(summaryCards_new);
 
       // ========== WEEKLY ACTIVITY CHART ==========
       const weeklyData: DayActivityData[] = [];
@@ -150,23 +183,12 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
         const date = subtractDays(today, i);
         const dateStr = formatISODate(date);
         const dayWorkouts = allWorkouts.filter(w => w.date === dateStr);
-
-        let dayVolume = 0;
-        for (const workout of dayWorkouts) {
-          const fullWorkout = await getWorkoutSession(workout.id, userId);
-          if (fullWorkout) {
-            for (const exercise of fullWorkout.exercises) {
-              for (const set of exercise.sets) {
-                dayVolume += set.reps * (set.weight_kg || 0);
-              }
-            }
-          }
-        }
+        const dayStats = getStatsForWorkouts(dayWorkouts);
 
         weeklyData.push({
           day: getDayOfWeek(date),
           date: date.getDate(),
-          volume: Math.round(dayVolume),
+          volume: Math.round(convert(dayStats.volume)),
           workoutCount: dayWorkouts.length,
           isToday: i === 0,
         });
@@ -200,6 +222,21 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       setMonthlyOverview(weeks);
 
       // ========== VOLUME TREND (last 12 weeks) ==========
+      // Fetch older workouts (weeks 2-12) that aren't in allWorkouts (which only covers 30 days)
+      const allWorkoutsForTrend = twelveWeeksStart < monthStart
+        ? await getWorkoutsByDateRange(userId, twelveWeeksStart, monthStart)
+        : [];
+      // Batch-load any missing older workout details
+      const olderMissing = allWorkoutsForTrend.filter(w => !workoutDetailsMap.has(w.id));
+      if (olderMissing.length > 0) {
+        const olderDetails = await batchGetWorkoutSessions(
+          olderMissing.map(w => w.id),
+          userId
+        );
+        olderDetails.forEach((v, k) => workoutDetailsMap.set(k, v));
+      }
+      const combinedWorkouts = [...allWorkoutsForTrend, ...allWorkouts];
+
       const volumeData: WeekVolumeData[] = [];
       for (let weekNum = 11; weekNum >= 0; weekNum--) {
         const weekEnd = subtractDays(today, weekNum * 7);
@@ -207,23 +244,14 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
         const weekStartStr = formatISODate(weekStart);
         const weekEndStr = formatISODate(weekEnd);
 
-        const weekWorkouts = await getWorkoutsByDateRange(userId, weekStartStr, weekEndStr);
-        
-        let weekVolume = 0;
-        for (const workout of weekWorkouts) {
-          const fullWorkout = await getWorkoutSession(workout.id, userId);
-          if (fullWorkout) {
-            for (const exercise of fullWorkout.exercises) {
-              for (const set of exercise.sets) {
-                weekVolume += set.reps * (set.weight_kg || 0);
-              }
-            }
-          }
-        }
+        const weekWorkouts = combinedWorkouts.filter(
+          w => w.date >= weekStartStr && w.date <= weekEndStr
+        );
+        const weekStats = getStatsForWorkouts(weekWorkouts);
 
         volumeData.push({
           week: formatDate(weekStart, 'MMM DD'),
-          volume: Math.round(weekVolume),
+          volume: Math.round(convert(weekStats.volume)),
           weekNumber: 11 - weekNum,
         });
       }
@@ -248,7 +276,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
         switch (pr.record_type) {
           case 'max_weight':
             recordType = 'Max Weight';
-            value = `${pr.value.toFixed(1)} kg`;
+            value = formatWeight(pr.value);
             break;
           case 'max_reps':
             recordType = 'Max Reps';
@@ -256,11 +284,11 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
             break;
           case 'estimated_1rm':
             recordType = 'Est. 1RM';
-            value = `${pr.value.toFixed(1)} kg`;
+            value = formatWeight(pr.value);
             break;
           case 'max_volume':
             recordType = 'Max Volume';
-            value = `${pr.value.toLocaleString()} kg`;
+            value = `${Math.round(convert(pr.value)).toLocaleString()} ${unit}`;
             break;
         }
 
@@ -284,6 +312,20 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       }));
       setMuscleGroups(muscleData);
 
+      // Save to cache for instant next load
+      try {
+        await AsyncStorage.setItem(cacheKey, JSON.stringify({
+          summaryCards: summaryCards_new,
+          weeklyActivity: weeklyData,
+          monthlyOverview: weeks,
+          volumeTrend: volumeData,
+          recentPRs: prsWithRecency,
+          muscleGroups: muscleData,
+          hasAnyData: allWorkouts.length > 0,
+          cachedAt: Date.now(),
+        }));
+      } catch (_) { /* cache write failure is non-critical */ }
+
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load progress data');
       console.error('Progress fetch error:', err);
@@ -291,12 +333,15 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [userId]);
+  }, [userId, cacheKey]);
 
   // Use useFocusEffect to refresh data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
+      // If we have cached data already showing, don't show loading spinner
+      if (!cacheLoaded.current) {
+        setLoading(true);
+      }
       fetchData();
     }, [fetchData])
   );

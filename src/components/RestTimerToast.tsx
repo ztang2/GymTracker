@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal,
 } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDuration } from '../services/workoutLogger';
 import { REST_TIMER_OPTIONS } from '../services';
@@ -21,6 +22,7 @@ interface RestTimerToastProps {
   bottomOffset: number;
   onSkip: () => void;
   onLongPress: () => void;
+  onAdjustTime: (deltaSeconds: number) => void;
   showOptions: boolean;
   onCloseOptions: () => void;
   onSelectDuration: (seconds: number) => void;
@@ -33,6 +35,7 @@ export const RestTimerToast: React.FC<RestTimerToastProps> = ({
   bottomOffset,
   onSkip,
   onLongPress,
+  onAdjustTime,
   showOptions,
   onCloseOptions,
   onSelectDuration,
@@ -42,24 +45,74 @@ export const RestTimerToast: React.FC<RestTimerToastProps> = ({
 
   if (!visible) return null;
 
+  // Progress ring calculations
+  const size = 64;
+  const strokeWidth = 4;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const progress = restTimerDuration > 0 ? restSeconds / restTimerDuration : 0;
+  const strokeDashoffset = circumference * (1 - progress);
+
   return (
     <>
-      <View style={[styles.restTimerToast, { bottom: bottomOffset }]}>
-        <Pressable
-          style={styles.restTimerContent}
-          onLongPress={onLongPress}
-          delayLongPress={500}
+      <Pressable
+        style={[styles.container, { bottom: bottomOffset }]}
+        onLongPress={onLongPress}
+        delayLongPress={500}
+      >
+        {/* -30s button */}
+        <TouchableOpacity
+          onPress={() => onAdjustTime(-30)}
+          style={styles.adjustButton}
+          activeOpacity={0.7}
         >
-          <Ionicons name="timer-outline" size={24} color={colors.orange} />
-          <View style={styles.restTimerInfo}>
-            <Text style={styles.restTimerLabel}>Rest Timer (hold to change)</Text>
-            <Text style={styles.restTimerValue}>{formatDuration(restSeconds)}</Text>
+          <Text style={styles.adjustText}>−30</Text>
+        </TouchableOpacity>
+
+        {/* Circular timer */}
+        <View style={styles.timerRing}>
+          <Svg width={size} height={size} style={styles.svgRing}>
+            <Circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke={colors.border}
+              strokeWidth={strokeWidth}
+              fill="none"
+              opacity={0.3}
+            />
+            <Circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke={colors.orange}
+              strokeWidth={strokeWidth}
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray={`${circumference}`}
+              strokeDashoffset={strokeDashoffset}
+              transform={`rotate(-90, ${size / 2}, ${size / 2})`}
+            />
+          </Svg>
+          <View style={styles.timerTextContainer}>
+            <Text style={styles.timerValue}>{formatDuration(restSeconds)}</Text>
           </View>
-          <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-            <Text style={styles.skipButtonText}>Skip</Text>
-          </TouchableOpacity>
-        </Pressable>
-      </View>
+        </View>
+
+        {/* +30s button */}
+        <TouchableOpacity
+          onPress={() => onAdjustTime(30)}
+          style={styles.adjustButton}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.adjustText}>+30</Text>
+        </TouchableOpacity>
+
+        {/* Skip */}
+        <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
+          <Ionicons name="play-forward" size={16} color={colors.textPrimary} />
+        </TouchableOpacity>
+      </Pressable>
 
       {/* Rest Timer Options Modal */}
       <Modal
@@ -100,42 +153,63 @@ export const RestTimerToast: React.FC<RestTimerToastProps> = ({
 };
 
 const createStyles = (colors: any) => StyleSheet.create({
-  restTimerToast: {
+  container: {
     position: 'absolute',
-    left: spacing.xl,
-    right: spacing.xl,
-    backgroundColor: colors.cardBackground,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    ...shadows.md,
-  },
-  restTimerContent: {
+    left: spacing.lg,
+    right: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    justifyContent: 'center',
+    backgroundColor: colors.cardBackground,
+    borderRadius: borderRadius.full,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.orange + '30',
+    ...shadows.md,
   },
-  restTimerInfo: {
-    flex: 1,
+  adjustButton: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.backgroundElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  restTimerLabel: {
+  adjustText: {
     ...typography.caption,
-    color: colors.textSecondary,
+    color: colors.orange,
+    fontWeight: '700',
+    fontSize: 12,
   },
-  restTimerValue: {
-    ...typography.title2,
+  timerRing: {
+    width: 64,
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  svgRing: {
+    position: 'absolute',
+  },
+  timerTextContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timerValue: {
+    ...typography.headline,
     color: colors.orange,
     fontVariant: ['tabular-nums'],
-    ...colorGlow(colors.orange, 'sm'),
+    fontSize: 16,
+    fontWeight: '700',
   },
   skipButton: {
-    backgroundColor: colors.backgroundElevated,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.sm,
-  },
-  skipButtonText: {
-    ...typography.callout,
-    color: colors.textSecondary,
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.full,
+    backgroundColor: colors.orange + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Rest Timer Options Modal
   restOptionsOverlay: {
@@ -146,7 +220,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   restOptionsContainer: {
     backgroundColor: colors.cardBackground,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.xl,
     padding: spacing.xl,
     width: '80%',
     maxWidth: 300,
@@ -155,6 +229,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     ...typography.headline,
     textAlign: 'center',
     marginBottom: spacing.lg,
+    color: colors.textPrimary,
   },
   restOptionsGrid: {
     flexDirection: 'row',
@@ -166,7 +241,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.backgroundElevated,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.full,
     borderWidth: 1,
     borderColor: colors.border,
     minWidth: 80,

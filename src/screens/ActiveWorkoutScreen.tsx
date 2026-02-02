@@ -16,6 +16,7 @@ import {
   calculateWorkoutXP,
   checkAndAwardBadges,
   getCurrentStreak,
+  createTemplateFromWorkout,
   type LastPerformance,
   type Exercise,
 } from '../services';
@@ -31,6 +32,8 @@ import {
   RestTimerToast,
   ExerciseCard,
   ExerciseSelectionModal,
+  RestTimerOptionsModal,
+  SaveAsTemplateModal,
 } from '../components';
 import type { WorkoutSummary } from '../services/types';
 import { useWorkoutTimer, useRestTimer, useWorkoutState } from '../hooks';
@@ -82,6 +85,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
     updateSet,
     toggleSetComplete,
     updateExerciseNotes,
+    moveExercise,
   } = useWorkoutState();
 
   // Timer hooks
@@ -101,16 +105,27 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
     restTimerVisible,
     restSeconds,
     restTimerDuration,
+    exerciseRestTimers,
     startRestTimer,
     skipRestTimer,
     setRestTimerDuration,
+    adjustRestTime,
+    getExerciseRestDuration,
+    setExerciseRestDuration,
   } = useRestTimer(initialRestDuration);
 
   // Modal state
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Rest timer options modal
+  // Rest timer options modal (global)
   const [showRestTimerOptions, setShowRestTimerOptions] = useState(false);
+
+  // Per-exercise rest timer modal state
+  const [exerciseTimerModal, setExerciseTimerModal] = useState<{
+    visible: boolean;
+    exerciseId: string;
+    exerciseName: string;
+  }>({ visible: false, exerciseId: '', exerciseName: '' });
 
   // Last performance data (previous weights)
   const [lastPerformanceData, setLastPerformanceData] = useState<
@@ -126,6 +141,10 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
   // Workout summary modal state
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [workoutSummary, setWorkoutSummary] = useState<WorkoutSummary | null>(null);
+
+  // Save as template modal state
+  const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   // Hide tab bar when this screen is active
   useLayoutEffect(() => {
@@ -219,8 +238,25 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
           console.log('Haptics not available');
         }
       }
-      startRestTimer();
+
+      // Find the exercise to pass its ID and name for per-exercise rest timer
+      const exercise = exercises.find((ex) => ex.id === exerciseLocalId);
+      if (exercise) {
+        startRestTimer(exercise.exerciseId, exercise.exerciseName);
+      } else {
+        startRestTimer();
+      }
     }
+  };
+
+  // Handle per-exercise rest timer configuration
+  const handleConfigureExerciseRestTimer = (exerciseId: string, exerciseName: string) => {
+    setExerciseTimerModal({ visible: true, exerciseId, exerciseName });
+  };
+
+  const handleExerciseRestTimerSelect = async (seconds: number) => {
+    await setExerciseRestDuration(exerciseTimerModal.exerciseId, seconds);
+    setExerciseTimerModal({ visible: false, exerciseId: '', exerciseName: '' });
   };
 
   // Handle rest timer duration change
@@ -327,6 +363,51 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
     navigation.goBack();
   };
 
+  // Handle save as template from summary
+  const handleSaveAsTemplate = () => {
+    setShowSummaryModal(false);
+    setShowSaveTemplateModal(true);
+  };
+
+  // Handle template save
+  const handleTemplateSave = async (name: string, description: string | null) => {
+    if (!user) return;
+    setSavingTemplate(true);
+    try {
+      const workoutExercises = exercises
+        .filter((ex) => ex.sets.some((s) => s.completed && s.reps > 0))
+        .map((ex) => ({
+          exerciseId: ex.exerciseId,
+          sets: ex.sets
+            .filter((s) => s.completed && s.reps > 0)
+            .map((s) => ({ weight: s.weight, reps: s.reps })),
+        }));
+
+      const durationMinutes = Math.floor(
+        (Date.now() - startTime.getTime()) / 60000
+      );
+
+      await createTemplateFromWorkout(
+        user.id,
+        name,
+        workoutExercises,
+        durationMinutes
+      );
+
+      setShowSaveTemplateModal(false);
+      showAlert('Template Saved', `"${name}" has been saved as a template.`, [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
+    } catch (error) {
+      console.error('Failed to save template:', error);
+      showAlert('Error', 'Failed to save template. Please try again.', [
+        { text: 'OK' },
+      ]);
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
   // Handle cancel workout
   const handleCancelWorkout = () => {
     showAlert(
@@ -344,12 +425,18 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <View style={styles.container}>
       {/* Header with Timer */}
       <WorkoutHeader elapsedSeconds={elapsedSeconds} onCancel={handleCancelWorkout} />
 
       {/* Exercise List */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <View style={styles.scrollContainer}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={true}
+          nestedScrollEnabled={true}
+        >
         {/* Workout Notes */}
         <View style={styles.workoutNotesContainer}>
           <TouchableOpacity
@@ -404,11 +491,17 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
             </Typography>
           </View>
         ) : (
-          exercises.map((exercise) => (
+          exercises.map((exercise, index) => (
             <ExerciseCard
               key={exercise.id}
               exercise={exercise}
               lastPerformance={lastPerformanceData.get(exercise.exerciseId)}
+              restDuration={getExerciseRestDuration(
+                exercise.exerciseId,
+                exercise.exerciseName
+              )}
+              isFirst={index === 0}
+              isLast={index === exercises.length - 1}
               onRemove={() => handleRemoveExercise(exercise.id)}
               onAddSet={() => addSet(exercise.id)}
               onRemoveSet={(setId) => removeSet(exercise.id, setId)}
@@ -417,13 +510,26 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
               }
               onToggleComplete={(setId) => handleToggleSetComplete(exercise.id, setId)}
               onUpdateNotes={(notes) => updateExerciseNotes(exercise.id, notes)}
+              onConfigureRestTimer={() =>
+                handleConfigureExerciseRestTimer(
+                  exercise.exerciseId,
+                  exercise.exerciseName
+                )
+              }
+              onMoveUp={() => moveExercise(exercise.id, 'up')}
+              onMoveDown={() => moveExercise(exercise.id, 'down')}
             />
           ))
         )}
-        <View style={{ height: 150 }} />
-      </ScrollView>
+        </ScrollView>
+      </View>
 
-      {/* Footer Buttons */}
+      {/* Footer fade gradient + Buttons */}
+      <LinearGradient
+        colors={['transparent', colors.background]}
+        style={styles.footerFade}
+        pointerEvents="none"
+      />
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
         <TouchableOpacity
           style={styles.addExerciseButton}
@@ -463,9 +569,10 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
         visible={restTimerVisible}
         restSeconds={restSeconds}
         restTimerDuration={restTimerDuration}
-        bottomOffset={180 + insets.bottom}
+        bottomOffset={150 + Math.max(insets.bottom, spacing.lg)}
         onSkip={skipRestTimer}
         onLongPress={() => setShowRestTimerOptions(true)}
+        onAdjustTime={adjustRestTime}
         showOptions={showRestTimerOptions}
         onCloseOptions={() => setShowRestTimerOptions(false)}
         onSelectDuration={handleRestTimerDurationChange}
@@ -476,6 +583,18 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
         visible={showSummaryModal}
         summary={workoutSummary}
         onClose={handleSummaryClose}
+        onSaveAsTemplate={handleSaveAsTemplate}
+      />
+
+      {/* Save As Template Modal */}
+      <SaveAsTemplateModal
+        visible={showSaveTemplateModal}
+        onClose={() => {
+          setShowSaveTemplateModal(false);
+          navigation.goBack();
+        }}
+        onSave={handleTemplateSave}
+        loading={savingTemplate}
       />
 
       {/* Add Exercise Modal */}
@@ -484,6 +603,24 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
         onClose={() => setModalVisible(false)}
         onSelectExercise={handleAddExercise}
         topInset={insets.top}
+      />
+
+      {/* Per-Exercise Rest Timer Options Modal */}
+      <RestTimerOptionsModal
+        visible={exerciseTimerModal.visible}
+        exerciseName={exerciseTimerModal.exerciseName}
+        currentDuration={
+          exerciseTimerModal.exerciseId
+            ? getExerciseRestDuration(
+                exerciseTimerModal.exerciseId,
+                exerciseTimerModal.exerciseName
+              )
+            : 60
+        }
+        onClose={() =>
+          setExerciseTimerModal({ visible: false, exerciseId: '', exerciseName: '' })
+        }
+        onSelectDuration={handleExerciseRestTimerSelect}
       />
     </View>
   );
@@ -503,10 +640,25 @@ const createStyles = (colors: any) => StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
+  scrollContainer: {
     flex: 1,
+    position: 'relative',
+  },
+  scrollView: {
+    ...(Platform.OS === 'web' ? {
+      position: 'absolute' as any,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    } : {
+      flex: 1,
+    }),
+  },
+  scrollContent: {
     paddingHorizontal: spacing.xl,
     paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   emptyState: {
     alignItems: 'center',
@@ -515,23 +667,23 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   emptyTitle: {
     ...typography.title2,
+    color: colors.textPrimary,
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
   },
   emptyMessage: {
     ...typography.bodySecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
+  footerFade: {
+    height: 24,
+    marginTop: -24,
+  },
   footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: colors.background,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
+    paddingTop: spacing.sm,
     gap: spacing.md,
   },
   addExerciseButton: {

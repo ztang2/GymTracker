@@ -316,6 +316,7 @@ export const badgeCategoryIcons = {
   milestone: 'ribbon',
   consistency: 'calendar',
   variety: 'grid',
+  dedication: 'time',
 } as const;
 
 // PR celebration colors

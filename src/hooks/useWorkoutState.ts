@@ -21,6 +21,7 @@ interface UseWorkoutStateReturn {
   ) => void;
   toggleSetComplete: (exerciseLocalId: string, setId: string) => boolean;
   updateExerciseNotes: (exerciseLocalId: string, notes: string) => void;
+  moveExercise: (exerciseLocalId: string, direction: 'up' | 'down') => void;
 }
 
 /**
@@ -140,6 +141,24 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
     );
   }, []);
 
+  /**
+   * Move an exercise up or down in the list
+   */
+  const moveExercise = useCallback(
+    (exerciseLocalId: string, direction: 'up' | 'down') => {
+      setExercises((prev) => {
+        const index = prev.findIndex((ex) => ex.id === exerciseLocalId);
+        if (index === -1) return prev;
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex < 0 || newIndex >= prev.length) return prev;
+        const next = [...prev];
+        [next[index], next[newIndex]] = [next[newIndex], next[index]];
+        return next;
+      });
+    },
+    []
+  );
+
   return {
     exercises,
     addExercise,
@@ -149,5 +168,6 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
     updateSet,
     toggleSetComplete,
     updateExerciseNotes,
+    moveExercise,
   };
 };

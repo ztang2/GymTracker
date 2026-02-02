@@ -276,6 +276,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   modalTitle: {
     ...typography.headline,
+    color: colors.textPrimary,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -294,12 +295,15 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingVertical: spacing.md,
   },
   categoryScroll: {
-    maxHeight: 50,
-    marginTop: spacing.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    flexGrow: 0,
+    flexShrink: 0,
   },
   categoryContainer: {
     paddingHorizontal: spacing.xl,
     gap: spacing.sm,
+    alignItems: 'center',
   },
   categoryChip: {
     paddingHorizontal: spacing.lg,
@@ -308,6 +312,9 @@ const createStyles = (colors: any) => StyleSheet.create({
     backgroundColor: colors.cardBackground,
     borderWidth: 1,
     borderColor: colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 36,
   },
   categoryChipActive: {
     backgroundColor: colors.teal,
@@ -316,6 +323,9 @@ const createStyles = (colors: any) => StyleSheet.create({
   categoryChipText: {
     ...typography.callout,
     color: colors.textSecondary,
+    lineHeight: 20,
+    textAlignVertical: 'center',
+    includeFontPadding: false,
   },
   categoryChipTextActive: {
     color: colors.textPrimary,
@@ -327,6 +337,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   loadingText: {
     ...typography.bodySecondary,
+    color: colors.textSecondary,
   },
   exerciseList: {
     paddingHorizontal: spacing.xl,
@@ -342,6 +353,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   exerciseListName: {
     ...typography.body,
     marginBottom: spacing.xs,
+    color: colors.textPrimary,
   },
   exerciseListCategory: {
     ...typography.caption,
@@ -357,5 +369,6 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   noResultsText: {
     ...typography.bodySecondary,
+    color: colors.textSecondary,
   },
 });

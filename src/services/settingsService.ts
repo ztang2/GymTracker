@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   HAPTIC_FEEDBACK_ENABLED: '@fittrack/haptic_feedback_enabled',
   NOTIFICATIONS_ENABLED: '@fittrack/notifications_enabled',
   THEME_MODE: '@fittrack/theme_mode',
+  EXERCISE_REST_TIMERS: '@fittrack/exercise_rest_timers',
 } as const;
 
 // Default settings values
@@ -18,6 +19,84 @@ export const DEFAULT_SETTINGS = {
 
 // Available rest timer options
 export const REST_TIMER_OPTIONS = [60, 90, 120, 180] as const;
+
+// Per-exercise rest timer options (expanded set for the modal)
+export const PER_EXERCISE_REST_TIMER_OPTIONS = [30, 60, 90, 120, 180, 300] as const;
+
+// Compound exercise names that default to longer rest (120s)
+const COMPOUND_EXERCISE_PATTERNS = [
+  'bench press', 'squat', 'deadlift', 'front squat', 'overhead press',
+  'barbell row', 'pendlay row', 'leg press', 'romanian deadlift',
+  'rack pull', 'military press', 'clean', 'snatch', 'hip thrust',
+  'dips', 'pull-ups', 'chin-ups', 't-bar row',
+];
+
+/**
+ * Get the smart default rest timer for an exercise based on its name/category.
+ * Compound movements default to 120s, isolation exercises to 60s.
+ */
+export function getSmartDefaultRestSeconds(exerciseName: string): number {
+  const lowerName = exerciseName.toLowerCase();
+  const isCompound = COMPOUND_EXERCISE_PATTERNS.some((pattern) =>
+    lowerName.includes(pattern)
+  );
+  return isCompound ? 120 : 60;
+}
+
+/**
+ * Get all stored per-exercise rest timer preferences
+ */
+export async function getExerciseRestTimers(): Promise<Record<string, number>> {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEYS.EXERCISE_REST_TIMERS);
+    if (value !== null) {
+      return JSON.parse(value);
+    }
+    return {};
+  } catch (error) {
+    console.error('Error reading exercise rest timers:', error);
+    return {};
+  }
+}
+
+/**
+ * Get the rest timer duration for a specific exercise
+ * Falls back to smart default if no preference is stored
+ */
+export async function getExerciseRestTimer(
+  exerciseId: string,
+  exerciseName: string
+): Promise<number> {
+  try {
+    const timers = await getExerciseRestTimers();
+    if (exerciseId in timers) {
+      return timers[exerciseId];
+    }
+    return getSmartDefaultRestSeconds(exerciseName);
+  } catch (error) {
+    console.error('Error reading exercise rest timer:', error);
+    return getSmartDefaultRestSeconds(exerciseName);
+  }
+}
+
+/**
+ * Set the rest timer duration for a specific exercise
+ */
+export async function setExerciseRestTimer(
+  exerciseId: string,
+  seconds: number
+): Promise<void> {
+  try {
+    const timers = await getExerciseRestTimers();
+    timers[exerciseId] = seconds;
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.EXERCISE_REST_TIMERS,
+      JSON.stringify(timers)
+    );
+  } catch (error) {
+    console.error('Error saving exercise rest timer:', error);
+  }
+}
 
 /**
  * Settings Service

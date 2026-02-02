@@ -336,6 +336,7 @@ const createStyles = (colors: any) =>
     },
     chipText: {
       ...typography.body,
+      color: colors.textPrimary,
       fontWeight: '500',
     },
     saveButton: {
@@ -349,6 +350,7 @@ const createStyles = (colors: any) =>
     },
     saveButtonText: {
       ...typography.headline,
+      color: colors.textPrimary,
       fontWeight: '600',
     },
   });

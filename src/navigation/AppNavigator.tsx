@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets, CardStyleInterpolators } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform, View, ActivityIndicator } from 'react-native';
@@ -34,6 +34,7 @@ import {
   GoalSettingScreen,
   AchievementsScreen,
   TemplateListScreen,
+  ActiveWorkoutFromTemplateScreen,
   PrivacyPolicyScreen,
   DeleteAccountScreen,
   ExportDataScreen,
@@ -61,17 +62,23 @@ function AuthNavigator() {
   );
 }
 
+// Shared stack screen options with slide-from-right transition
+const getStackScreenOptions = (colors: any) => ({
+  headerStyle: {
+    backgroundColor: colors.background,
+  },
+  headerTintColor: colors.textPrimary,
+  headerTitleStyle: {
+    color: colors.textPrimary,
+  },
+  cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+  gestureEnabled: true,
+  gestureDirection: 'horizontal' as const,
+});
+
 function HomeNavigator() {
   const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: {
-      backgroundColor: colors.background,
-    },
-    headerTintColor: colors.textPrimary,
-    headerTitleStyle: {
-      color: colors.textPrimary,
-    },
-  };
+  const screenOptions = getStackScreenOptions(colors);
   
   return (
     <HomeStack.Navigator screenOptions={screenOptions}>
@@ -126,21 +133,18 @@ function HomeNavigator() {
         component={TemplateListScreen}
         options={{ headerShown: false }}
       />
+      <HomeStack.Screen
+        name="ActiveWorkoutFromTemplateScreen"
+        component={ActiveWorkoutFromTemplateScreen}
+        options={{ headerShown: false }}
+      />
     </HomeStack.Navigator>
   );
 }
 
 function CalendarNavigator() {
   const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: {
-      backgroundColor: colors.background,
-    },
-    headerTintColor: colors.textPrimary,
-    headerTitleStyle: {
-      color: colors.textPrimary,
-    },
-  };
+  const screenOptions = getStackScreenOptions(colors);
   
   return (
     <CalendarStack.Navigator screenOptions={screenOptions}>
@@ -155,15 +159,7 @@ function CalendarNavigator() {
 
 function ProgressNavigator() {
   const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: {
-      backgroundColor: colors.background,
-    },
-    headerTintColor: colors.textPrimary,
-    headerTitleStyle: {
-      color: colors.textPrimary,
-    },
-  };
+  const screenOptions = getStackScreenOptions(colors);
   
   return (
     <ProgressStack.Navigator screenOptions={screenOptions}>
@@ -183,15 +179,7 @@ function ProgressNavigator() {
 
 function ProfileNavigator() {
   const { colors } = useTheme();
-  const screenOptions = {
-    headerStyle: {
-      backgroundColor: colors.background,
-    },
-    headerTintColor: colors.textPrimary,
-    headerTitleStyle: {
-      color: colors.textPrimary,
-    },
-  };
+  const screenOptions = getStackScreenOptions(colors);
   
   return (
     <ProfileStack.Navigator screenOptions={screenOptions}>
@@ -241,6 +229,7 @@ function MainTabNavigator() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
+          animation: 'fade' as const,
           tabBarActiveTintColor: activeTabColor,
           tabBarInactiveTintColor: colors.textTertiary,
           tabBarStyle: {

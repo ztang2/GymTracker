@@ -67,8 +67,8 @@ export default function ActionButton({
 
 const createStyles = (colors: any) => StyleSheet.create({
   container: {
-    width: 160,
-    height: 160,
+    flex: 1,
+    aspectRatio: 1,
     borderRadius: borderRadius.xl,
   },
   gradient: {

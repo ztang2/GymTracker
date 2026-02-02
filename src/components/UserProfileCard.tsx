@@ -1,14 +1,17 @@
 import React from 'react';
 import { useTheme } from '../contexts';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { typography, borderRadius, spacing } from '../constants/theme';
 
 interface UserProfileCardProps {
   userName: string;
-  userAvatar?: string; // URL to avatar image
+  userAvatar?: string | null; // URL to avatar image
   memberSince: string; // e.g., "Jan 2026"
   gradientColors?: readonly [string, string, ...string[]];
+  onAvatarPress?: () => void;
+  avatarLoading?: boolean;
 }
 
 export default function UserProfileCard({
@@ -16,6 +19,8 @@ export default function UserProfileCard({
   userAvatar,
   memberSince,
   gradientColors,
+  onAvatarPress,
+  avatarLoading,
 }: UserProfileCardProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
@@ -39,8 +44,19 @@ export default function UserProfileCard({
     >
       <View style={styles.content}>
         {/* Avatar */}
-        <View style={styles.avatarContainer}>
-          {userAvatar ? (
+        <TouchableOpacity
+          style={styles.avatarContainer}
+          onPress={onAvatarPress}
+          disabled={!onAvatarPress || avatarLoading}
+          activeOpacity={0.7}
+          accessibilityLabel="Change profile picture"
+          accessibilityRole="button"
+        >
+          {avatarLoading ? (
+            <View style={styles.avatarPlaceholder}>
+              <ActivityIndicator size="large" color="#FFFFFF" />
+            </View>
+          ) : userAvatar ? (
             <Image 
               source={{ uri: userAvatar }} 
               style={styles.avatar}
@@ -51,7 +67,12 @@ export default function UserProfileCard({
               <Text style={styles.initialsText}>{getInitials(userName)}</Text>
             </View>
           )}
-        </View>
+          {onAvatarPress && !avatarLoading && (
+            <View style={styles.cameraIconBadge}>
+              <Ionicons name="camera" size={14} color="#FFFFFF" />
+            </View>
+          )}
+        </TouchableOpacity>
 
         {/* User info */}
         <View style={styles.infoContainer}>
@@ -90,6 +111,19 @@ const createStyles = (colors: any) => StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  cameraIconBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   initialsText: {
     fontSize: 32,

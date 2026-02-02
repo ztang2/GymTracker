@@ -8,7 +8,18 @@ import type {
   XPRewards,
 } from './types';
 import { getLevelTier } from '../constants/theme';
-import { getCurrentStreak, getTotalVolume, getWorkoutStatsByRange } from './statsService';
+import {
+  getCurrentStreak,
+  getTotalVolume,
+  getWorkoutStatsByRange,
+  getTotalPRCount,
+  getExerciseMaxWeight,
+  getUniqueExerciseCount,
+  getAllMuscleGroupsThisWeek,
+  getEarlyWorkoutCount,
+  getNightWorkoutCount,
+  getWeekendWorkoutCount,
+} from './statsService';
 
 /**
  * Gamification Service
@@ -279,11 +290,17 @@ export async function checkAndAwardBadges(userId: string): Promise<Badge[]> {
     const earnedBadgeIds = new Set(earnedBadges.map(ub => ub.badge_id));
 
     // Get user stats for checking eligibility
-    const [weekStats, monthStats, allStats, currentStreak] = await Promise.all([
+    const [weekStats, _monthStats, allStats, currentStreak, totalPRs, uniqueExercises, allMuscleGroups, earlyCount, nightCount, weekendCount] = await Promise.all([
       getWorkoutStatsByRange(userId, 'week'),
       getWorkoutStatsByRange(userId, 'month'),
       getWorkoutStatsByRange(userId, 'all'),
       getCurrentStreak(userId),
+      getTotalPRCount(userId),
+      getUniqueExerciseCount(userId),
+      getAllMuscleGroupsThisWeek(userId),
+      getEarlyWorkoutCount(userId),
+      getNightWorkoutCount(userId),
+      getWeekendWorkoutCount(userId),
     ]);
 
     // Check each unearned badge
@@ -302,11 +319,44 @@ export async function checkAndAwardBadges(userId: string): Promise<Badge[]> {
         case 'weekly_workouts':
           isEligible = weekStats.total_workouts >= badge.requirement_value;
           break;
-        case 'total_volume':
+        case 'total_volume': {
           const volume = await getTotalVolume(userId, '2020-01-01', new Date().toISOString().split('T')[0]);
           isEligible = volume >= badge.requirement_value;
           break;
-        // Add more requirement types as needed
+        }
+        case 'total_prs':
+          isEligible = totalPRs >= badge.requirement_value;
+          break;
+        case 'bench_max': {
+          const benchMax = await getExerciseMaxWeight(userId, 'Bench Press');
+          isEligible = benchMax >= badge.requirement_value;
+          break;
+        }
+        case 'squat_max': {
+          const squatMax = await getExerciseMaxWeight(userId, 'Squat');
+          isEligible = squatMax >= badge.requirement_value;
+          break;
+        }
+        case 'deadlift_max': {
+          const dlMax = await getExerciseMaxWeight(userId, 'Deadlift');
+          isEligible = dlMax >= badge.requirement_value;
+          break;
+        }
+        case 'unique_exercises':
+          isEligible = uniqueExercises >= badge.requirement_value;
+          break;
+        case 'all_muscle_groups_week':
+          isEligible = allMuscleGroups >= badge.requirement_value;
+          break;
+        case 'early_workouts':
+          isEligible = earlyCount >= badge.requirement_value;
+          break;
+        case 'night_workouts':
+          isEligible = nightCount >= badge.requirement_value;
+          break;
+        case 'weekend_workouts':
+          isEligible = weekendCount >= badge.requirement_value;
+          break;
       }
 
       if (isEligible) {
@@ -327,13 +377,41 @@ export async function checkAndAwardBadges(userId: string): Promise<Badge[]> {
  * Get all badges with unlock status for achievements screen
  */
 export async function getBadgesWithStatus(userId: string): Promise<BadgeWithStatus[]> {
-  const [allBadges, earnedBadges, weekStats, allStats, currentStreak] = await Promise.all([
+  const [allBadges, earnedBadges, weekStats, allStats, currentStreak, totalPRs, uniqueExercises, allMuscleGroups, earlyCount, nightCount, weekendCount] = await Promise.all([
     getAllBadges(),
     getUserBadges(userId),
     getWorkoutStatsByRange(userId, 'week'),
     getWorkoutStatsByRange(userId, 'all'),
     getCurrentStreak(userId),
+    getTotalPRCount(userId),
+    getUniqueExerciseCount(userId),
+    getAllMuscleGroupsThisWeek(userId),
+    getEarlyWorkoutCount(userId),
+    getNightWorkoutCount(userId),
+    getWeekendWorkoutCount(userId),
   ]);
+
+  // Pre-fetch specific exercise maxes (only if needed)
+  let benchMax = 0;
+  let squatMax = 0;
+  let deadliftMax = 0;
+  const needsSpecific = allBadges.some(b =>
+    ['bench_max', 'squat_max', 'deadlift_max'].includes(b.requirement_type)
+  );
+  if (needsSpecific) {
+    [benchMax, squatMax, deadliftMax] = await Promise.all([
+      getExerciseMaxWeight(userId, 'Bench Press'),
+      getExerciseMaxWeight(userId, 'Squat'),
+      getExerciseMaxWeight(userId, 'Deadlift'),
+    ]);
+  }
+
+  // Pre-fetch total volume
+  let totalVolume = 0;
+  const needsVolume = allBadges.some(b => b.requirement_type === 'total_volume');
+  if (needsVolume) {
+    totalVolume = await getTotalVolume(userId, '2020-01-01', new Date().toISOString().split('T')[0]);
+  }
 
   const earnedMap = new Map(earnedBadges.map(ub => [ub.badge_id, ub]));
 
@@ -352,7 +430,36 @@ export async function getBadgesWithStatus(userId: string): Promise<BadgeWithStat
       case 'weekly_workouts':
         currentValue = weekStats.total_workouts;
         break;
-      // Add more as needed
+      case 'total_volume':
+        currentValue = totalVolume;
+        break;
+      case 'total_prs':
+        currentValue = totalPRs;
+        break;
+      case 'bench_max':
+        currentValue = benchMax;
+        break;
+      case 'squat_max':
+        currentValue = squatMax;
+        break;
+      case 'deadlift_max':
+        currentValue = deadliftMax;
+        break;
+      case 'unique_exercises':
+        currentValue = uniqueExercises;
+        break;
+      case 'all_muscle_groups_week':
+        currentValue = allMuscleGroups;
+        break;
+      case 'early_workouts':
+        currentValue = earlyCount;
+        break;
+      case 'night_workouts':
+        currentValue = nightCount;
+        break;
+      case 'weekend_workouts':
+        currentValue = weekendCount;
+        break;
     }
 
     const progress = Math.min(currentValue / badge.requirement_value, 1);

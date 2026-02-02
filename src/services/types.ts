@@ -154,7 +154,7 @@ export interface WeeklyCount {
 export type BadgeRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
 // Badge categories
-export type BadgeCategory = 'streak' | 'volume' | 'strength' | 'milestone' | 'consistency' | 'variety';
+export type BadgeCategory = 'streak' | 'volume' | 'strength' | 'milestone' | 'consistency' | 'variety' | 'dedication';
 
 // Badge definition (from badges table)
 export interface Badge {

@@ -190,6 +190,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   title: {
     ...typography.title2,
+    color: colors.textPrimary,
   },
   form: {
     padding: spacing.xl,

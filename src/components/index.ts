@@ -12,6 +12,7 @@ export { default as EmptyState } from './EmptyState';
 // LiftArc UI components
 export { default as ActionButton } from './ActionButton';
 export { default as WorkoutHistoryCard } from './WorkoutHistoryCard';
+export { default as RecentWorkoutCard } from './RecentWorkoutCard';
 export { default as MonthCalendar } from './MonthCalendar';
 export { default as DailyProgressBar } from './DailyProgressBar';
 export { default as GoalProgressCard } from './GoalProgressCard';
@@ -42,6 +43,7 @@ export { WorkoutHeader } from './WorkoutHeader';
 export { RestTimerToast } from './RestTimerToast';
 export { ExerciseCard } from './ExerciseCard';
 export { ExerciseSelectionModal } from './ExerciseSelectionModal';
+export { RestTimerOptionsModal } from './RestTimerOptionsModal';
 
 // Exercise search and filtering components
 export { default as SearchBar } from './SearchBar';
@@ -50,3 +52,6 @@ export { default as ExerciseListItem } from './ExerciseListItem';
 
 // Network state components
 export { default as OfflineBanner } from './OfflineBanner';
+
+// Animation components
+export { default as AnimatedCard } from './AnimatedCard';

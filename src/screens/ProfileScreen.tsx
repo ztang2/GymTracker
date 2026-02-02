@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActionSheetIOS, Platform } from 'react-native';
 import { showAlert } from '../utils/alert';
 import { Ionicons } from '@expo/vector-icons';
 import type { ProfileScreenProps } from '../navigation/types';
 import { UserProfileCard, SettingsMenuItem, XPProgressBar } from '../components';
-import { getUserProfile, getLevelInfo, type LevelInfo } from '../services';
+import { getUserProfile, getLevelInfo, uploadAvatar, type LevelInfo } from '../services';
 import { typography, spacing, borderRadius } from '../constants/theme';
 import { useAuth, useTheme, type ThemeMode } from '../contexts';
+import { useWeightUnit, type WeightUnit } from '../hooks';
 
 
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
@@ -19,7 +20,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     ? new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     : 'Recently';
   const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
+  const [showWeightUnitModal, setShowWeightUnitModal] = useState(false);
+  const { unit: weightUnit, setUnit: setWeightUnit } = useWeightUnit();
 
   useEffect(() => {
     loadUserData();
@@ -32,11 +37,49 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
       const profile = await getUserProfile(user.id);
       if (profile) {
         setLevelInfo(getLevelInfo(profile.total_xp));
+        setAvatarUrl(profile.avatar_url);
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
     }
   };
+
+  const handleAvatarPress = useCallback(() => {
+    if (!user) return;
+
+    const pickAndUpload = async (source: 'camera' | 'library') => {
+      setAvatarLoading(true);
+      try {
+        const url = await uploadAvatar(user.id, source);
+        if (url) {
+          setAvatarUrl(url);
+        }
+      } catch (error: any) {
+        showAlert('Error', error.message || 'Failed to update avatar.');
+      } finally {
+        setAvatarLoading(false);
+      }
+    };
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Take Photo', 'Choose from Library'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) pickAndUpload('camera');
+          else if (buttonIndex === 2) pickAndUpload('library');
+        }
+      );
+    } else {
+      showAlert('Change Profile Photo', 'Choose an option', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Take Photo', onPress: () => pickAndUpload('camera') },
+        { text: 'Choose from Library', onPress: () => pickAndUpload('library') },
+      ]);
+    }
+  }, [user]);
 
   const handleAchievements = () => {
     navigation.navigate('AchievementsScreen');
@@ -118,8 +161,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
       <View style={styles.section}>
         <UserProfileCard
           userName={userName}
+          userAvatar={avatarUrl}
           memberSince={memberSince}
           gradientColors={colors.gradientPurplePink}
+          onAvatarPress={handleAvatarPress}
+          avatarLoading={avatarLoading}
         />
       </View>
 
@@ -152,6 +198,12 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             icon="color-palette-outline"
             onPress={handleTheme}
             rightText={getThemeLabel(themeMode)}
+          />
+          <SettingsMenuItem
+            title="Weight Unit"
+            icon="scale-outline"
+            onPress={() => setShowWeightUnitModal(true)}
+            rightText={weightUnit.toUpperCase()}
           />
           <SettingsMenuItem
             title="Notifications"
@@ -263,6 +315,78 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
               onPress={() => setShowThemeModal(false)}
               accessibilityRole="button"
               accessibilityLabel="Done selecting theme"
+            >
+              <Text style={styles.modalCloseButtonText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+      {/* Weight Unit Selection Modal */}
+      <Modal
+        visible={showWeightUnitModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowWeightUnitModal(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={() => setShowWeightUnitModal(false)}
+          accessibilityLabel="Close weight unit selection modal"
+          accessibilityRole="button"
+        >
+          <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
+            <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Weight Unit</Text>
+            <Text style={[styles.modalSubtitle, { color: colors.textSecondary }]}>
+              Choose your preferred weight unit
+            </Text>
+
+            <View style={styles.themeOptions}>
+              {(['kg', 'lbs'] as WeightUnit[]).map((u) => (
+                <TouchableOpacity
+                  key={u}
+                  style={[
+                    styles.themeOption,
+                    { 
+                      backgroundColor: weightUnit === u ? colors.purple + '20' : 'transparent',
+                      borderColor: weightUnit === u ? colors.purple : colors.border,
+                    }
+                  ]}
+                  onPress={() => {
+                    setWeightUnit(u);
+                    setShowWeightUnitModal(false);
+                  }}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${u === 'kg' ? 'Kilograms' : 'Pounds'}`}
+                  accessibilityState={{ checked: weightUnit === u, selected: weightUnit === u }}
+                >
+                  <View style={styles.themeOptionLeft}>
+                    <Ionicons 
+                      name={u === 'kg' ? 'barbell-outline' : 'fitness-outline'}
+                      size={24}
+                      color={weightUnit === u ? colors.purple : colors.textSecondary}
+                    />
+                    <View style={styles.themeOptionText}>
+                      <Text style={[styles.themeOptionTitle, { color: colors.textPrimary }]}>
+                        {u === 'kg' ? 'Kilograms (kg)' : 'Pounds (lbs)'}
+                      </Text>
+                      <Text style={[styles.themeOptionDesc, { color: colors.textSecondary }]}>
+                        {u === 'kg' ? 'Metric system' : 'Imperial system'}
+                      </Text>
+                    </View>
+                  </View>
+                  {weightUnit === u && (
+                    <Ionicons name="checkmark-circle" size={24} color={colors.purple} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.modalCloseButton, { backgroundColor: colors.purple }]}
+              onPress={() => setShowWeightUnitModal(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Done selecting weight unit"
             >
               <Text style={styles.modalCloseButtonText}>Done</Text>
             </TouchableOpacity>

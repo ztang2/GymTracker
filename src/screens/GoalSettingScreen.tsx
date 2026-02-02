@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useWeightUnit } from '../hooks';
 import {
   View,
   Text,
@@ -102,6 +103,7 @@ const GOAL_CONFIGS: Array<{
 export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps) {
   const { user } = useAuth();
   const { colors } = useTheme();
+  const { unit: weightUnit } = useWeightUnit();
   const styles = createStyles(colors);
 
   const insets = useSafeAreaInsets();
@@ -412,7 +414,7 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
                 placeholderTextColor={colors.textMuted}
               />
               <Text style={styles.unitText}>
-                {getConfig(selectedType)?.unit || ''}
+                {getConfig(selectedType)?.unit === 'kg' ? weightUnit : getConfig(selectedType)?.unit || ''}
               </Text>
             </View>
 

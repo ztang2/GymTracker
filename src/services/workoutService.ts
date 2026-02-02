@@ -125,6 +125,80 @@ export async function getWorkoutSession(
 }
 
 /**
+ * Batch load all workout sessions with exercises and sets in just 3 queries total.
+ * Much faster than calling getWorkoutSession() per workout.
+ */
+export async function batchGetWorkoutSessions(
+  sessionIds: string[],
+  userId: string
+): Promise<Map<string, WorkoutSessionWithExercises>> {
+  const result = new Map<string, WorkoutSessionWithExercises>();
+  if (sessionIds.length === 0) return result;
+
+  // Query 1: All sessions
+  const { data: sessions, error: sessionsError } = await supabase
+    .from('workout_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .in('id', sessionIds);
+
+  if (sessionsError) throw new Error(`Batch sessions error: ${sessionsError.message}`);
+  if (!sessions || sessions.length === 0) return result;
+
+  // Query 2: All workout_exercises with exercise details
+  const validIds = sessions.map(s => s.id);
+  const { data: allWorkoutExercises, error: exError } = await supabase
+    .from('workout_exercises')
+    .select(`*, exercise:exercises(*)`)
+    .in('workout_session_id', validIds)
+    .order('order_index', { ascending: true });
+
+  if (exError) throw new Error(`Batch exercises error: ${exError.message}`);
+
+  // Query 3: All sets
+  const weIds = (allWorkoutExercises || []).map(we => we.id);
+  let allSets: ExerciseSet[] = [];
+  if (weIds.length > 0) {
+    const { data: sets, error: setsError } = await supabase
+      .from('exercise_sets')
+      .select('*')
+      .in('workout_exercise_id', weIds)
+      .order('set_number', { ascending: true });
+
+    if (setsError) throw new Error(`Batch sets error: ${setsError.message}`);
+    allSets = sets || [];
+  }
+
+  // Assemble: group sets by workout_exercise_id, then exercises by session_id
+  const setsByWeId = new Map<string, ExerciseSet[]>();
+  for (const set of allSets) {
+    const arr = setsByWeId.get(set.workout_exercise_id) || [];
+    arr.push(set);
+    setsByWeId.set(set.workout_exercise_id, arr);
+  }
+
+  const exercisesBySessionId = new Map<string, WorkoutExerciseWithDetails[]>();
+  for (const we of (allWorkoutExercises || [])) {
+    const arr = exercisesBySessionId.get(we.workout_session_id) || [];
+    arr.push({
+      ...we,
+      exercise: we.exercise,
+      sets: setsByWeId.get(we.id) || [],
+    });
+    exercisesBySessionId.set(we.workout_session_id, arr);
+  }
+
+  for (const session of sessions) {
+    result.set(session.id, {
+      ...session,
+      exercises: exercisesBySessionId.get(session.id) || [],
+    });
+  }
+
+  return result;
+}
+
+/**
  * Get a basic workout session (no exercises/sets)
  * @param sessionId - Workout session ID
  * @param userId - User ID for authorization

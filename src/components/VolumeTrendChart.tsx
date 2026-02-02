@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTheme } from '../contexts';
-import { View, Text, StyleSheet } from 'react-native';
-import Svg, { Path, Circle, Line as SvgLine } from 'react-native-svg';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import Svg, { Path, Circle, Line as SvgLine, Rect } from 'react-native-svg';
 import { typography, spacing, borderRadius } from '../constants/theme';
+import { useWeightUnit } from '../hooks';
 
 export interface WeekVolumeData {
   week: string; // Week label like "W1", "W2" or "Jan 6"
-  volume: number; // Total volume in kg
+  volume: number; // Total volume in display unit
   weekNumber: number; // For x-axis positioning
 }
 
@@ -20,7 +21,18 @@ export default function VolumeTrendChart({
   title = 'Volume Trend',
 }: VolumeTrendChartProps) {
   const { colors } = useTheme();
+  const { unit } = useWeightUnit();
   const styles = createStyles(colors);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const handleDismiss = useCallback(() => {
+    setSelectedIndex(null);
+  }, []);
+
+  const handlePointPress = useCallback((index: number) => {
+    setSelectedIndex(prev => (prev === index ? null : index));
+  }, []);
+
   // Handle empty data
   if (data.length === 0) {
     return (
@@ -50,8 +62,8 @@ export default function VolumeTrendChart({
                 </View>
                 <Text style={styles.volumeText}>
                   {week.volume >= 1000
-                    ? `${(week.volume / 1000).toFixed(1)}k kg`
-                    : `${week.volume} kg`}
+                    ? `${(week.volume / 1000).toFixed(1)}k ${unit}`
+                    : `${week.volume} ${unit}`}
                 </Text>
               </View>
             );
@@ -82,17 +94,26 @@ export default function VolumeTrendChart({
   // Create SVG path
   let pathData = `M ${points[0].x} ${points[0].y}`;
   for (let i = 1; i < points.length; i++) {
-    // Simple line segments (no curves for simplicity)
     pathData += ` L ${points[i].x} ${points[i].y}`;
   }
 
   // Show every nth label based on data length
   const labelInterval = data.length > 8 ? 2 : 1;
 
+  // Tooltip positioning
+  const selectedPoint = selectedIndex !== null ? points[selectedIndex] : null;
+  const selectedWeek = selectedIndex !== null ? data[selectedIndex] : null;
+
+  // Calculate tooltip position relative to chart container
+  const tooltipLeft = selectedPoint
+    ? Math.max(10, Math.min(selectedPoint.x - 50, chartWidth - 110))
+    : 0;
+  const tooltipAbove = selectedPoint ? selectedPoint.y > chartHeight / 2 : true;
+
   return (
-    <View style={styles.container}>
+    <Pressable onPress={handleDismiss} style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      
+
       <View style={styles.chartContainer}>
         <Svg width={chartWidth} height={chartHeight}>
           {/* Grid lines */}
@@ -121,36 +142,72 @@ export default function VolumeTrendChart({
             strokeLinejoin="round"
           />
 
-          {/* Data points */}
-          {points.map((point, index) => (
-            <Circle
-              key={index}
-              cx={point.x}
-              cy={point.y}
-              r={4}
-              fill={colors.purple}
-              stroke={colors.purpleLight}
-              strokeWidth={2}
-            />
-          ))}
+          {/* Tap targets (larger invisible rects) + visible dots */}
+          {points.map((point, index) => {
+            const isSelected = selectedIndex === index;
+            return (
+              <React.Fragment key={index}>
+                <Circle
+                  cx={point.x}
+                  cy={point.y}
+                  r={isSelected ? 6 : 4}
+                  fill={isSelected ? colors.purpleLight : colors.purple}
+                  stroke={isSelected ? colors.textPrimary : colors.purpleLight}
+                  strokeWidth={isSelected ? 3 : 2}
+                />
+                {/* Invisible larger tap target */}
+                <Rect
+                  x={point.x - 16}
+                  y={point.y - 16}
+                  width={32}
+                  height={32}
+                  fill="transparent"
+                  onPress={() => handlePointPress(index)}
+                />
+              </React.Fragment>
+            );
+          })}
         </Svg>
+
+        {/* Tooltip overlay */}
+        {selectedPoint !== null && selectedWeek !== null && (
+          <View style={[
+            styles.tooltip,
+            {
+              left: tooltipLeft,
+              ...(tooltipAbove ? { top: selectedPoint.y - 60 } : { top: selectedPoint.y + 14 }),
+            },
+          ]}>
+            <Text style={styles.tooltipLabel}>{selectedWeek.week}</Text>
+            <Text style={styles.tooltipValue}>
+              {selectedWeek.volume >= 1000
+                ? `${(selectedWeek.volume / 1000).toFixed(1)}k ${unit}`
+                : `${selectedWeek.volume} ${unit}`}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Week labels */}
       <View style={styles.labelsContainer}>
         {data.map((week, index) => {
-          // Show every nth label to avoid crowding
           if (index % labelInterval !== 0 && index !== data.length - 1) {
             return <View key={index} style={styles.labelSpacer} />;
           }
           return (
-            <Text key={index} style={styles.weekLabelBottom}>
+            <Text
+              key={index}
+              style={[
+                styles.weekLabelBottom,
+                selectedIndex === index && styles.selectedLabelText,
+              ]}
+            >
               {week.week}
             </Text>
           );
         })}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -170,6 +227,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
     marginBottom: spacing.sm,
+    position: 'relative',
   },
   labelsContainer: {
     flexDirection: 'row',
@@ -184,6 +242,10 @@ const createStyles = (colors: any) => StyleSheet.create({
     color: colors.textTertiary,
     flex: 1,
     textAlign: 'center',
+  },
+  selectedLabelText: {
+    color: colors.purpleLight,
+    fontWeight: '600',
   },
   emptyContainer: {
     height: 180,
@@ -230,5 +292,26 @@ const createStyles = (colors: any) => StyleSheet.create({
     color: colors.textPrimary,
     width: 70,
     textAlign: 'right',
+  },
+  tooltip: {
+    position: 'absolute',
+    backgroundColor: colors.backgroundElevated,
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.purpleLight,
+    zIndex: 10,
+    minWidth: 80,
+  },
+  tooltipLabel: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  tooltipValue: {
+    ...typography.headline,
+    color: colors.textPrimary,
+    marginTop: 2,
   },
 });

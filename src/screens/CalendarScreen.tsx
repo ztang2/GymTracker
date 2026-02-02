@@ -370,6 +370,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   emptyDateText: {
     ...typography.headline,
+    color: colors.textPrimary,
     marginTop: spacing.md,
     marginBottom: spacing.xs,
   },

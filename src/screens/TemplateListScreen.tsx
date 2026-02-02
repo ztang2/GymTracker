@@ -82,8 +82,6 @@ export default function TemplateListScreen({ navigation }: TemplateListScreenPro
   }, []);
 
   const handleStartTemplate = (template: WorkoutTemplate) => {
-    // Navigate to ActiveWorkoutScreen with template data
-    // For now, show alert
     showAlert(
       'Start Workout',
       `Start workout from "${template.name}" template?`,
@@ -92,8 +90,9 @@ export default function TemplateListScreen({ navigation }: TemplateListScreenPro
         {
           text: 'Start',
           onPress: () => {
-            // TODO: Navigate with template data
-            navigation.navigate('ActiveWorkoutScreen');
+            navigation.navigate('ActiveWorkoutFromTemplateScreen', {
+              templateId: template.id,
+            });
           },
         },
       ]
