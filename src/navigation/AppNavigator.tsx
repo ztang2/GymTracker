@@ -39,6 +39,7 @@ import {
   ExportDataScreen,
 } from '../screens';
 import { useAuth, useTheme } from '../contexts';
+import { seedExercises } from '../services';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { OfflineBanner } from '../components';
 
@@ -309,9 +310,12 @@ export default function AppNavigator() {
   const { colors } = useTheme();
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
 
-  // Check onboarding status when user logs in
+  // Check onboarding status and seed exercises when user logs in
   useEffect(() => {
     checkOnboardingStatus();
+    if (user) {
+      seedExercises().catch((err) => console.warn('Exercise seed skipped:', err));
+    }
   }, [user]);
 
   const checkOnboardingStatus = async () => {
