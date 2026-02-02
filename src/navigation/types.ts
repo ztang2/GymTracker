@@ -8,7 +8,7 @@ export type AuthStackParamList = {
   SignUpScreen: undefined;
 };
 
-// Main bottom tab navigator params (FitTrack UI: Home, Calendar, Progress, Profile)
+// Main bottom tab navigator params (LiftArc UI: Home, Calendar, Progress, Profile)
 export type MainTabParamList = {
   HomeTab: undefined;
   CalendarTab: undefined;

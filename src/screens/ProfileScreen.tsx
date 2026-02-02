@@ -72,8 +72,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
 
   const handleAbout = () => {
     Alert.alert(
-      'About FitTrack',
-      'FitTrack - Your personal gym workout tracker.\n\nVersion 1.0.0\n\nBuilt with React Native and Expo.'
+      'About LiftArc',
+      'LiftArc - Your personal gym workout tracker.\n\nVersion 1.0.0\n\nBuilt with React Native and Expo.'
     );
   };
 

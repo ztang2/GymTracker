@@ -94,7 +94,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
             end={{ x: 1, y: 0 }}
             style={styles.logoGradient}
           >
-            <Text style={styles.logoText}>FitTrack</Text>
+            <Text style={styles.logoText}>LiftArc</Text>
           </LinearGradient>
           <Text style={styles.subtitle}>Create your account</Text>
         </View>

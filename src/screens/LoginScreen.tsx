@@ -68,7 +68,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             end={{ x: 1, y: 0 }}
             style={styles.logoGradient}
           >
-            <Text style={[styles.logoText, { color: colors.textPrimary }]}>FitTrack</Text>
+            <Text style={[styles.logoText, { color: colors.textPrimary }]}>LiftArc</Text>
           </LinearGradient>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Track your fitness journey</Text>
         </View>

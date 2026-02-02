@@ -9,7 +9,7 @@ export { default as ExerciseFrequencyList } from './ExerciseFrequencyList';
 export { default as LoadingState } from './LoadingState';
 export { default as EmptyState } from './EmptyState';
 
-// FitTrack UI components
+// LiftArc UI components
 export { default as ActionButton } from './ActionButton';
 export { default as WorkoutHistoryCard } from './WorkoutHistoryCard';
 export { default as MonthCalendar } from './MonthCalendar';

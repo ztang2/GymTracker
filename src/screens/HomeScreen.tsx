@@ -154,7 +154,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.appTitle, { color: colors.purple }]}>FitTrack</Text>
+        <Text style={[styles.appTitle, { color: colors.purple }]}>LiftArc</Text>
         <Text style={[styles.tagline, { color: colors.textSecondary }]}>Let's crush your goals today</Text>
       </View>
 

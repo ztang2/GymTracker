@@ -2,8 +2,8 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'GymTracker',
-    slug: 'GymTracker',
+    name: 'LiftArc',
+    slug: 'LiftArc',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -12,7 +12,7 @@ export default {
     splash: {
       image: './assets/splash-icon.png',
       resizeMode: 'contain',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#0D0B1E',
     },
     ios: {
       supportsTablet: true,

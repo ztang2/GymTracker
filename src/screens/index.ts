@@ -12,7 +12,7 @@ export { default as ExerciseListScreen } from './ExerciseListScreen';
 export { default as ExerciseDetailScreen } from './ExerciseDetailScreen';
 export { default as ExerciseProgressScreen } from './ExerciseProgressScreen';
 
-// FitTrack UI screens
+// LiftArc UI screens
 export { default as CalendarScreen } from './CalendarScreen';
 export { default as ProgressScreen } from './ProgressScreen';
 export { default as ProfileScreen } from './ProfileScreen';
