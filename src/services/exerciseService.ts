@@ -183,8 +183,7 @@ export async function getRecentExercises(
         category,
         description,
         instructions,
-        created_at,
-        updated_at
+        created_at
       )
     `)
     .eq('workout_session.user_id', userId)
