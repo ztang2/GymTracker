@@ -130,3 +130,117 @@ export function onAuthStateChange(
   const { data: { subscription } } = supabase.auth.onAuthStateChange(callback);
   return subscription;
 }
+
+/**
+ * Delete user account and all associated data
+ * NOTE: In production, user deletion should be handled server-side via a Supabase Edge Function
+ * with proper admin access. This client-side approach deletes all user data but leaves the
+ * auth user record (orphaned). Consider implementing proper cascade deletion with RLS policies.
+ */
+export async function deleteUserAccount(userId: string): Promise<{ error: Error | null }> {
+  try {
+    // Delete data in order to respect foreign key constraints
+    // Note: Some tables may have ON DELETE CASCADE set up, but we do explicit deletes for safety
+    
+    // First, get all workout session IDs for this user
+    const { data: workoutSessions } = await supabase
+      .from('workout_sessions')
+      .select('id')
+      .eq('user_id', userId);
+    
+    const workoutIds = workoutSessions?.map(w => w.id) || [];
+
+    if (workoutIds.length > 0) {
+      // Get all workout exercise IDs
+      const { data: workoutExercises } = await supabase
+        .from('workout_exercises')
+        .select('id')
+        .in('workout_id', workoutIds);
+      
+      const workoutExerciseIds = workoutExercises?.map(we => we.id) || [];
+
+      // 1. Delete exercise_sets
+      if (workoutExerciseIds.length > 0) {
+        const { error: setsError } = await supabase
+          .from('exercise_sets')
+          .delete()
+          .in('workout_exercise_id', workoutExerciseIds);
+        if (setsError) console.warn('Error deleting exercise_sets:', setsError);
+      }
+
+      // 2. Delete workout_exercises
+      const { error: workoutExercisesError } = await supabase
+        .from('workout_exercises')
+        .delete()
+        .in('workout_id', workoutIds);
+      if (workoutExercisesError) console.warn('Error deleting workout_exercises:', workoutExercisesError);
+    }
+
+    // 3. Delete personal_records
+    const { error: prsError } = await supabase
+      .from('personal_records')
+      .delete()
+      .eq('user_id', userId);
+    if (prsError) console.warn('Error deleting personal_records:', prsError);
+
+    // 4. Delete user_badges
+    const { error: badgesError } = await supabase
+      .from('user_badges')
+      .delete()
+      .eq('user_id', userId);
+    if (badgesError) console.warn('Error deleting user_badges:', badgesError);
+
+    // 5. Delete user_goals
+    const { error: goalsError } = await supabase
+      .from('user_goals')
+      .delete()
+      .eq('user_id', userId);
+    if (goalsError) console.warn('Error deleting user_goals:', goalsError);
+
+    // Get all template IDs for this user
+    const { data: templates } = await supabase
+      .from('workout_templates')
+      .select('id')
+      .eq('user_id', userId);
+    
+    const templateIds = templates?.map(t => t.id) || [];
+
+    // 6. Delete template_exercises
+    if (templateIds.length > 0) {
+      const { error: templateExercisesError } = await supabase
+        .from('template_exercises')
+        .delete()
+        .in('template_id', templateIds);
+      if (templateExercisesError) console.warn('Error deleting template_exercises:', templateExercisesError);
+    }
+
+    // 7. Delete workout_templates
+    const { error: templatesError } = await supabase
+      .from('workout_templates')
+      .delete()
+      .eq('user_id', userId);
+    if (templatesError) console.warn('Error deleting workout_templates:', templatesError);
+
+    // 8. Delete workout_sessions
+    const { error: workoutsError } = await supabase
+      .from('workout_sessions')
+      .delete()
+      .eq('user_id', userId);
+    if (workoutsError) console.warn('Error deleting workout_sessions:', workoutsError);
+
+    // 9. Delete user_profiles
+    const { error: profileError } = await supabase
+      .from('user_profiles')
+      .delete()
+      .eq('user_id', userId);
+    if (profileError) console.warn('Error deleting user_profiles:', profileError);
+
+    // Sign out the user (auth user record remains in database)
+    await signOut();
+
+    return { error: null };
+  } catch (err) {
+    console.error('Error deleting user account:', err);
+    return { error: err as Error };
+  }
+}

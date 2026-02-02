@@ -7,6 +7,7 @@ export type AuthStackParamList = {
   LoginScreen: undefined;
   SignUpScreen: undefined;
   ForgotPasswordScreen: undefined;
+  OnboardingScreen: undefined;
 };
 
 // Main bottom tab navigator params (LiftArc UI: Home, Calendar, Progress, Profile)
@@ -27,6 +28,7 @@ export type HomeStackParamList = {
   ExerciseSelectionScreen: { workoutId: string };
   ExerciseListScreen: undefined;
   ExerciseDetailScreen: { exerciseId: string };
+  CreateExerciseScreen: undefined;
   GoalSettingScreen: undefined;
   TemplateListScreen: undefined;
   AchievementsScreen: undefined;
@@ -48,6 +50,8 @@ export type ProfileStackParamList = {
   ProfileScreen: undefined;
   AchievementsScreen: undefined;
   PrivacyPolicyScreen: undefined;
+  DeleteAccountScreen: undefined;
+  ExportDataScreen: undefined;
 };
 
 // Navigation prop types for each screen
@@ -81,6 +85,11 @@ export type ExerciseListScreenProps = StackScreenProps<
 export type ExerciseDetailScreenProps = StackScreenProps<
   HomeStackParamList,
   'ExerciseDetailScreen'
+>;
+
+export type CreateExerciseScreenProps = StackScreenProps<
+  HomeStackParamList,
+  'CreateExerciseScreen'
 >;
 
 export type ActiveWorkoutScreenProps = StackScreenProps<

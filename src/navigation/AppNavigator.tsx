@@ -4,6 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform, View, ActivityIndicator } from 'react-native';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
   AuthStackParamList,
   MainTabParamList,
@@ -16,6 +18,7 @@ import {
   LoginScreen,
   SignUpScreen,
   ForgotPasswordScreen,
+  OnboardingScreen,
   HomeScreen,
   WorkoutDetailScreen,
   WorkoutScreen,
@@ -23,6 +26,7 @@ import {
   ExerciseSelectionScreen,
   ExerciseListScreen,
   ExerciseDetailScreen,
+  CreateExerciseScreen,
   CalendarScreen,
   ProgressScreen,
   ExerciseProgressScreen,
@@ -31,6 +35,8 @@ import {
   AchievementsScreen,
   TemplateListScreen,
   PrivacyPolicyScreen,
+  DeleteAccountScreen,
+  ExportDataScreen,
 } from '../screens';
 import { useAuth, useTheme } from '../contexts';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -49,6 +55,7 @@ function AuthNavigator() {
       <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
       <AuthStack.Screen name="SignUpScreen" component={SignUpScreen} />
       <AuthStack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
+      <AuthStack.Screen name="OnboardingScreen" component={OnboardingScreen} />
     </AuthStack.Navigator>
   );
 }
@@ -97,6 +104,11 @@ function HomeNavigator() {
         name="ExerciseDetailScreen"
         component={ExerciseDetailScreen}
         options={{ title: 'Exercise Details' }}
+      />
+      <HomeStack.Screen
+        name="CreateExerciseScreen"
+        component={CreateExerciseScreen}
+        options={{ headerShown: false }}
       />
       <HomeStack.Screen
         name="GoalSettingScreen"
@@ -197,6 +209,16 @@ function ProfileNavigator() {
         component={PrivacyPolicyScreen}
         options={{ headerShown: false }}
       />
+      <ProfileStack.Screen
+        name="DeleteAccountScreen"
+        component={DeleteAccountScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="ExportDataScreen"
+        component={ExportDataScreen}
+        options={{ headerShown: false }}
+      />
     </ProfileStack.Navigator>
   );
 }
@@ -285,9 +307,25 @@ function MainTabNavigator() {
 export default function AppNavigator() {
   const { user, loading } = useAuth();
   const { colors } = useTheme();
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
 
-  // Show loading screen while checking auth state
-  if (loading) {
+  // Check onboarding status when user logs in
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, [user]);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const completed = await AsyncStorage.getItem('@liftarc_onboarding_complete');
+      setOnboardingComplete(completed === 'true');
+    } catch (error) {
+      console.error('Error checking onboarding status:', error);
+      setOnboardingComplete(false);
+    }
+  };
+
+  // Show loading screen while checking auth state or onboarding status
+  if (loading || (user && onboardingComplete === null)) {
     return (
       <View style={{ flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={colors.purple} />
@@ -297,8 +335,25 @@ export default function AppNavigator() {
 
   return (
     <ErrorBoundary>
-      <NavigationContainer>
-        {user ? <MainTabNavigator /> : <AuthNavigator />}
+      <NavigationContainer
+        onStateChange={() => {
+          // Re-check onboarding status when navigation changes
+          if (user) {
+            checkOnboardingStatus();
+          }
+        }}
+      >
+        {user ? (
+          onboardingComplete ? (
+            <MainTabNavigator />
+          ) : (
+            <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+              <AuthStack.Screen name="OnboardingScreen" component={OnboardingScreen} />
+            </AuthStack.Navigator>
+          )
+        ) : (
+          <AuthNavigator />
+        )}
         <OfflineBanner />
       </NavigationContainer>
     </ErrorBoundary>

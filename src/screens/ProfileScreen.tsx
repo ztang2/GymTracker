@@ -71,6 +71,14 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     showAlert('Account', 'Account settings coming soon!');
   };
 
+  const handleExportData = () => {
+    navigation.navigate('ExportDataScreen');
+  };
+
+  const handleDeleteAccount = () => {
+    navigation.navigate('DeleteAccountScreen');
+  };
+
   const handleAbout = () => {
     showAlert(
       'About LiftArc',
@@ -161,6 +169,11 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             onPress={handleAccount}
           />
           <SettingsMenuItem
+            title="Export Data"
+            icon="download-outline"
+            onPress={handleExportData}
+          />
+          <SettingsMenuItem
             title="About"
             icon="information-circle"
             onPress={handleAbout}
@@ -169,7 +182,14 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             title="Sign Out"
             icon="log-out-outline"
             onPress={handleSignOut}
+          />
+          <SettingsMenuItem
+            title="Delete Account"
+            icon="trash-outline"
+            onPress={handleDeleteAccount}
             showDivider={false}
+            textColor="#FF3B30"
+            iconColor="#FF3B30"
           />
         </View>
       </View>

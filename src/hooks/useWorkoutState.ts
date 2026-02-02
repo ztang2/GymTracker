@@ -20,6 +20,7 @@ interface UseWorkoutStateReturn {
     value: string
   ) => void;
   toggleSetComplete: (exerciseLocalId: string, setId: string) => boolean;
+  updateExerciseNotes: (exerciseLocalId: string, notes: string) => void;
 }
 
 /**
@@ -125,6 +126,20 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
     []
   );
 
+  /**
+   * Update notes for a specific exercise
+   */
+  const updateExerciseNotes = useCallback((exerciseLocalId: string, notes: string) => {
+    setExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id === exerciseLocalId) {
+          return { ...ex, notes };
+        }
+        return ex;
+      })
+    );
+  }, []);
+
   return {
     exercises,
     addExercise,
@@ -133,5 +148,6 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
     removeSet,
     updateSet,
     toggleSetComplete,
+    updateExerciseNotes,
   };
 };

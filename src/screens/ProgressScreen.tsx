@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import type { ProgressScreenProps } from '../navigation/types';
 import {
@@ -326,12 +327,17 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
     return (
       <View style={styles.container}>
         <EmptyState
-          title="No Workout Data"
-          message="Start tracking your workouts to see your progress here."
+          title="No Progress Data Yet"
+          message="Complete a few workouts to see your trends and analytics"
           actionLabel="Start Your First Workout"
           onAction={() => {
             navigation.navigate('HomeTab' as any);
           }}
+          icon={
+            <View style={styles.emptyIcon}>
+              <Ionicons name="bar-chart" size={64} color={colors.purple} />
+            </View>
+          }
         />
       </View>
     );
@@ -414,5 +420,13 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   bottomPadding: {
     height: spacing.xxl,
+  },
+  emptyIcon: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.cardBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

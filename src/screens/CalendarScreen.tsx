@@ -4,10 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { CalendarScreenProps } from '../navigation/types';
 import { getDailyWorkoutCounts, getCurrentStreak } from '../services/statsService';
-import { MonthCalendar, LoadingState } from '../components';
+import { getWorkoutsByDateRange } from '../services/workoutService';
+import { MonthCalendar, LoadingState, EmptyState } from '../components';
 import { typography, spacing, borderRadius } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
 import { colorGlow } from '../utils';
+import { formatISODate } from '../utils/dateUtils';
 
 export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const { user } = useAuth();
@@ -19,6 +21,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   const [workoutCounts, setWorkoutCounts] = useState<Map<string, number>>(new Map());
   const [currentStreak, setCurrentStreak] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [selectedDateWorkouts, setSelectedDateWorkouts] = useState<any[]>([]);
 
   useEffect(() => {
     loadData();
@@ -54,6 +57,11 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
       setWorkoutDays(workoutDaysSet);
       setWorkoutCounts(countsMap);
       setCurrentStreak(streak);
+
+      // Load workouts for the selected date (today by default)
+      const selectedDateStr = formatISODate(selectedDate);
+      const workoutsOnDate = await getWorkoutsByDateRange(user!.id, selectedDateStr, selectedDateStr);
+      setSelectedDateWorkouts(workoutsOnDate);
     } catch (error) {
       console.error('Failed to load calendar data:', error);
     } finally {
@@ -163,6 +171,60 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
             </View>
           </View>
         </LinearGradient>
+      </View>
+
+      {/* Selected Date Workouts */}
+      <View style={styles.selectedDateSection}>
+        <Text style={[styles.selectedDateTitle, { color: colors.textPrimary }]}>
+          {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </Text>
+        
+        {selectedDateWorkouts.length === 0 ? (
+          <View style={styles.emptyDateContainer}>
+            <Ionicons name="calendar-outline" size={48} color={colors.textTertiary} />
+            <Text style={[styles.emptyDateText, { color: colors.textSecondary }]}>
+              No workouts on this date
+            </Text>
+            <Text style={[styles.emptyDateSubtext, { color: colors.textTertiary }]}>
+              Tap + to start a new workout
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.workoutsList}>
+            {selectedDateWorkouts.map((workout) => (
+              <TouchableOpacity
+                key={workout.id}
+                style={[styles.workoutCard, { backgroundColor: colors.cardBackground }]}
+                onPress={() => {
+                  // Navigate to HomeTab first, then to WorkoutDetailScreen
+                  navigation.navigate('HomeTab', {
+                    screen: 'WorkoutDetailScreen',
+                    params: { workoutId: workout.id },
+                  } as any);
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={`View workout from ${workout.date}`}
+              >
+                <View style={styles.workoutCardContent}>
+                  <View style={styles.workoutCardIcon}>
+                    <Ionicons name="barbell" size={24} color={colors.purple} />
+                  </View>
+                  <View style={styles.workoutCardInfo}>
+                    <Text style={[styles.workoutCardTitle, { color: colors.textPrimary }]}>
+                      {workout.name || 'Workout'}
+                    </Text>
+                    {workout.duration_minutes && (
+                      <Text style={[styles.workoutCardMeta, { color: colors.textSecondary }]}>
+                        {workout.duration_minutes} minutes
+                      </Text>
+                    )}
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -286,5 +348,64 @@ const createStyles = (colors: any) => StyleSheet.create({
   streakMessage: {
     ...typography.callout,
     color: 'rgba(255, 255, 255, 0.8)',
+  },
+  selectedDateSection: {
+    paddingHorizontal: spacing.xl,
+    marginTop: spacing.xl,
+    marginBottom: spacing.xxl,
+  },
+  selectedDateTitle: {
+    ...typography.title2,
+    marginBottom: spacing.lg,
+    fontWeight: '600',
+  },
+  emptyDateContainer: {
+    paddingVertical: spacing.xxxl,
+    alignItems: 'center',
+    backgroundColor: colors.cardBackground,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderStyle: 'dashed',
+  },
+  emptyDateText: {
+    ...typography.headline,
+    marginTop: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  emptyDateSubtext: {
+    ...typography.body,
+  },
+  workoutsList: {
+    gap: spacing.md,
+  },
+  workoutCard: {
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  workoutCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  workoutCardIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.purpleLight + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  workoutCardInfo: {
+    flex: 1,
+  },
+  workoutCardTitle: {
+    ...typography.headline,
+    marginBottom: spacing.xs,
+  },
+  workoutCardMeta: {
+    ...typography.caption,
   },
 });

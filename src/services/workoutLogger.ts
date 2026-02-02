@@ -21,6 +21,7 @@ export interface LocalExercise {
   exerciseName: string;
   category: string;
   sets: LocalSet[];
+  notes: string;
 }
 
 export interface ActiveWorkoutState {
@@ -62,6 +63,7 @@ export function createLocalExercise(
     exerciseName,
     category,
     sets: [createEmptySet()],
+    notes: '',
   };
 }
 
@@ -136,7 +138,7 @@ export async function saveWorkout(
     workout_session_id: sessionId,
     exercise_id: ex.exerciseId,
     order_index: index,
-    notes: null,
+    notes: ex.notes ? ex.notes.trim() : null,
   }));
 
   const { data: exerciseData, error: exerciseError } = await supabase

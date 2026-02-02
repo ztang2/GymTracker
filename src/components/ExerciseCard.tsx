@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +15,7 @@ interface ExerciseCardProps {
   onRemoveSet: (setId: string) => void;
   onUpdateSet: (setId: string, field: 'weight' | 'reps', value: string) => void;
   onToggleComplete: (setId: string) => void;
+  onUpdateNotes?: (notes: string) => void;
 }
 
 // Format date for display (e.g., "Jan 15")
@@ -35,9 +36,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   onRemoveSet,
   onUpdateSet,
   onToggleComplete,
+  onUpdateNotes,
 }) => {
   const { colors } = useTheme();
   const styles = createStyles(colors);
+  const [notesExpanded, setNotesExpanded] = useState(false);
+
   return (
     <View style={styles.exerciseCard}>
       {/* Exercise Header */}
@@ -70,6 +74,53 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             <Text style={styles.maxPerfText}>
               • Best: {lastPerformance.maxWeight}kg
             </Text>
+          )}
+        </View>
+      )}
+
+      {/* Exercise Notes */}
+      {onUpdateNotes && (
+        <View style={styles.notesContainer}>
+          <TouchableOpacity
+            style={styles.notesHeader}
+            onPress={() => setNotesExpanded(!notesExpanded)}
+            accessibilityRole="button"
+            accessibilityLabel={`${notesExpanded ? 'Collapse' : 'Expand'} exercise notes`}
+          >
+            <View style={styles.notesHeaderLeft}>
+              <Ionicons
+                name="document-text-outline"
+                size={16}
+                color={colors.textSecondary}
+              />
+              <Text style={[styles.notesHeaderText, { color: colors.textSecondary }]}>
+                Notes {exercise.notes ? `(${exercise.notes.length})` : ''}
+              </Text>
+            </View>
+            <Ionicons
+              name={notesExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+          {notesExpanded && (
+            <TextInput
+              style={[
+                styles.notesInput,
+                {
+                  backgroundColor: colors.backgroundElevated,
+                  color: colors.textPrimary,
+                  borderColor: colors.border,
+                },
+              ]}
+              placeholder="Add notes for this exercise..."
+              placeholderTextColor={colors.textTertiary}
+              value={exercise.notes}
+              onChangeText={onUpdateNotes}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+            />
           )}
         </View>
       )}
@@ -260,5 +311,31 @@ const createStyles = (colors: any) => StyleSheet.create({
   addSetText: {
     ...typography.callout,
     color: colors.teal,
+  },
+  notesContainer: {
+    marginBottom: spacing.md,
+  },
+  notesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+  },
+  notesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  notesHeaderText: {
+    ...typography.callout,
+  },
+  notesInput: {
+    ...typography.body,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    marginTop: spacing.xs,
+    minHeight: 80,
   },
 });

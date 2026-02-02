@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -71,6 +71,8 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
 
   // Workout state
   const [startTime] = useState(new Date());
+  const [workoutNotes, setWorkoutNotes] = useState('');
+  const [workoutNotesExpanded, setWorkoutNotesExpanded] = useState(false);
   const {
     exercises,
     addExercise,
@@ -79,6 +81,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
     removeSet,
     updateSet,
     toggleSetComplete,
+    updateExerciseNotes,
   } = useWorkoutState();
 
   // Timer hooks
@@ -255,7 +258,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
             const workoutState: ActiveWorkoutState = {
               exercises,
               startTime,
-              notes: '',
+              notes: workoutNotes,
             };
 
             await saveWorkout(user!.id, workoutState);
@@ -347,6 +350,51 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
 
       {/* Exercise List */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Workout Notes */}
+        <View style={styles.workoutNotesContainer}>
+          <TouchableOpacity
+            style={styles.workoutNotesHeader}
+            onPress={() => setWorkoutNotesExpanded(!workoutNotesExpanded)}
+            accessibilityRole="button"
+            accessibilityLabel={`${workoutNotesExpanded ? 'Collapse' : 'Expand'} workout notes`}
+          >
+            <View style={styles.notesHeaderLeft}>
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color={colors.textSecondary}
+              />
+              <Typography style={[styles.workoutNotesTitle, { color: colors.textSecondary }]}>
+                Workout Notes {workoutNotes ? `(${workoutNotes.length})` : ''}
+              </Typography>
+            </View>
+            <Ionicons
+              name={workoutNotesExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+          {workoutNotesExpanded && (
+            <TextInput
+              style={[
+                styles.workoutNotesInput,
+                {
+                  backgroundColor: colors.cardBackground,
+                  color: colors.textPrimary,
+                  borderColor: colors.border,
+                },
+              ]}
+              placeholder="Add notes about this workout..."
+              placeholderTextColor={colors.textTertiary}
+              value={workoutNotes}
+              onChangeText={setWorkoutNotes}
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          )}
+        </View>
+
         {exercises.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="barbell-outline" size={64} color={colors.textTertiary} />
@@ -368,6 +416,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
                 updateSet(exercise.id, setId, field, value)
               }
               onToggleComplete={(setId) => handleToggleSetComplete(exercise.id, setId)}
+              onUpdateNotes={(notes) => updateExerciseNotes(exercise.id, notes)}
             />
           ))
         )}
@@ -512,5 +561,34 @@ const createStyles = (colors: any) => StyleSheet.create({
   finishButtonText: {
     ...typography.headline,
     color: colors.textPrimary,
+  },
+  workoutNotesContainer: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  workoutNotesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  notesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  workoutNotesTitle: {
+    ...typography.headline,
+    fontWeight: '600',
+  },
+  workoutNotesInput: {
+    ...typography.body,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    marginTop: spacing.md,
+    minHeight: 100,
   },
 });

@@ -1,8 +1,13 @@
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { WorkoutScreenProps } from '../navigation/types';
 import { createWorkoutSession } from '../services';
-import { useAuth , useTheme } from '../contexts';
+import { EmptyState } from '../components';
+import { useAuth, useTheme } from '../contexts';
+import { typography, spacing, borderRadius } from '../constants/theme';
+import { showAlert } from '../utils/alert';
 
 export default function WorkoutScreen({ navigation }: WorkoutScreenProps) {
   const { user } = useAuth();
@@ -21,34 +26,64 @@ export default function WorkoutScreen({ navigation }: WorkoutScreenProps) {
         notes: null,
       });
       setWorkoutId(session.id);
+      navigation.navigate('ActiveWorkoutScreen');
     } catch (error) {
       console.error('Failed to start workout:', error);
+      showAlert('Error', 'Failed to start workout. Please try again.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Active Workout</Text>
-      {!workoutId ? (
-        <View>
-          <Text style={styles.subtitle}>No active workout</Text>
-          <Button title="Start Workout" onPress={startWorkout} />
-        </View>
-      ) : (
-        <View>
-          <Text style={styles.subtitle}>Workout in progress</Text>
-          <Button
-            title="Add Exercise"
-            onPress={() => navigation.navigate('ExerciseSelectionScreen', { workoutId })}
-          />
-        </View>
-      )}
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.purple }]} accessibilityRole="header">
+          Workouts
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          Your workout history
+        </Text>
+      </View>
+
+      {/* Empty State */}
+      <EmptyState
+        title="No Workouts Yet"
+        message="Your workout history will appear here"
+        actionLabel="Start First Workout"
+        onAction={startWorkout}
+        icon={
+          <View style={styles.emptyIcon}>
+            <Ionicons name="barbell" size={64} color={colors.purple} />
+          </View>
+        }
+      />
     </View>
   );
 }
 
 const createStyles = (colors: any) => StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: colors.background },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: colors.textPrimary },
-  subtitle: { fontSize: 16, marginBottom: 20, color: colors.textSecondary },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.lg,
+  },
+  title: {
+    ...typography.largeTitle,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    ...typography.body,
+  },
+  emptyIcon: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.cardBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

@@ -8,14 +8,25 @@ import type { Exercise, ExerciseCategory } from './types';
 
 /**
  * Get all exercises ordered alphabetically by name
+ * Includes both seed exercises and user's custom exercises if userId is provided
+ * @param userId - Optional user ID to include custom exercises
  * @returns Promise<Exercise[]> - Array of all exercises
  * @throws Error if database query fails
  */
-export async function getAllExercises(): Promise<Exercise[]> {
-  const { data, error } = await supabase
+export async function getAllExercises(userId?: string): Promise<Exercise[]> {
+  let query = supabase
     .from('exercises')
-    .select('*')
-    .order('name', { ascending: true });
+    .select('*');
+
+  // If userId provided, get seed exercises + user's custom exercises
+  // Otherwise just get seed exercises (where is_custom is null/false or user_id is null)
+  if (userId) {
+    query = query.or(`is_custom.is.null,is_custom.eq.false,user_id.eq.${userId}`);
+  } else {
+    query = query.or('is_custom.is.null,is_custom.eq.false');
+  }
+
+  const { data, error } = await query.order('name', { ascending: true });
 
   if (error) {
     throw new Error(`Failed to fetch exercises: ${error.message}`);
@@ -26,18 +37,29 @@ export async function getAllExercises(): Promise<Exercise[]> {
 
 /**
  * Get exercises filtered by category, ordered alphabetically
+ * Includes both seed exercises and user's custom exercises if userId is provided
  * @param category - Exercise category to filter by
+ * @param userId - Optional user ID to include custom exercises
  * @returns Promise<Exercise[]> - Array of exercises in the specified category
  * @throws Error if database query fails
  */
 export async function getExercisesByCategory(
-  category: ExerciseCategory
+  category: ExerciseCategory,
+  userId?: string
 ): Promise<Exercise[]> {
-  const { data, error } = await supabase
+  let query = supabase
     .from('exercises')
     .select('*')
-    .eq('category', category)
-    .order('name', { ascending: true });
+    .eq('category', category);
+
+  // If userId provided, get seed exercises + user's custom exercises
+  if (userId) {
+    query = query.or(`is_custom.is.null,is_custom.eq.false,user_id.eq.${userId}`);
+  } else {
+    query = query.or('is_custom.is.null,is_custom.eq.false');
+  }
+
+  const { data, error } = await query.order('name', { ascending: true });
 
   if (error) {
     throw new Error(`Failed to fetch exercises by category: ${error.message}`);
@@ -205,4 +227,67 @@ export async function getRecentExercises(
   }
 
   return uniqueExercises;
+}
+
+/**
+ * Create a custom exercise for a user
+ * @param exercise - Exercise data including name, category, equipment_type, description
+ * @param userId - User ID who created the exercise
+ * @returns Promise<Exercise> - The created exercise
+ * @throws Error if database operation fails or validation fails
+ */
+export async function createCustomExercise(
+  exercise: {
+    name: string;
+    category: ExerciseCategory;
+    equipment_type?: string;
+    description?: string;
+    instructions?: string;
+  },
+  userId: string
+): Promise<Exercise> {
+  // Validate required fields
+  if (!exercise.name || !exercise.name.trim()) {
+    throw new Error('Exercise name is required');
+  }
+  if (!exercise.category) {
+    throw new Error('Exercise category is required');
+  }
+
+  // Check if exercise name already exists for this user
+  const { data: existing, error: checkError } = await supabase
+    .from('exercises')
+    .select('id')
+    .eq('user_id', userId)
+    .ilike('name', exercise.name.trim())
+    .single();
+
+  if (checkError && checkError.code !== 'PGRST116') {
+    throw new Error(`Failed to check existing exercises: ${checkError.message}`);
+  }
+
+  if (existing) {
+    throw new Error('You already have a custom exercise with this name');
+  }
+
+  // Insert the custom exercise
+  const { data, error } = await supabase
+    .from('exercises')
+    .insert({
+      name: exercise.name.trim(),
+      category: exercise.category,
+      equipment_type: exercise.equipment_type || null,
+      description: exercise.description?.trim() || null,
+      instructions: exercise.instructions?.trim() || null,
+      is_custom: true,
+      user_id: userId,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create custom exercise: ${error.message}`);
+  }
+
+  return data as Exercise;
 }

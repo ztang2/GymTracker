@@ -11,6 +11,8 @@ interface SettingsMenuItemProps {
   showChevron?: boolean;
   showDivider?: boolean;
   rightText?: string;
+  textColor?: string;
+  iconColor?: string;
 }
 
 export default function SettingsMenuItem({
@@ -20,8 +22,13 @@ export default function SettingsMenuItem({
   showChevron = true,
   showDivider = true,
   rightText,
+  textColor,
+  iconColor,
 }: SettingsMenuItemProps) {
   const { colors } = useTheme();
+  
+  const finalTextColor = textColor || colors.textPrimary;
+  const finalIconColor = iconColor || colors.textPrimary;
   
   return (
     <View>
@@ -34,11 +41,11 @@ export default function SettingsMenuItem({
       >
         {/* Icon */}
         <View style={styles.iconContainer}>
-          <Ionicons name={icon} size={24} color={colors.textPrimary} />
+          <Ionicons name={icon} size={24} color={finalIconColor} />
         </View>
 
         {/* Title */}
-        <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
+        <Text style={[styles.title, { color: finalTextColor }]}>{title}</Text>
 
         {/* Right Text */}
         {rightText && (

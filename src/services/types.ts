@@ -8,6 +8,9 @@ export interface Exercise {
   instructions: string | null;
   created_at: string;
   updated_at: string;
+  is_custom?: boolean;
+  user_id?: string | null;
+  equipment_type?: string | null;
 }
 
 export interface WorkoutSession {

@@ -86,6 +86,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [levelInfo, setLevelInfo] = useState<LevelInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [hasAnyWorkouts, setHasAnyWorkouts] = useState(true);
 
   // Reload data every time the screen comes into focus
   useFocusEffect(
@@ -110,6 +111,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       setWorkouts(recent);
       setWeeklyWorkouts(stats.total_workouts);
       setWeeklyMinutes(stats.total_duration_minutes);
+      setHasAnyWorkouts(recent.length > 0 || stats.total_workouts > 0);
 
       // Calculate level info from profile
       if (profile) {
@@ -147,6 +149,67 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     return <LoadingState />;
   }
 
+  // Show welcoming empty state for brand new users
+  if (!hasAnyWorkouts) {
+    return (
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={[styles.appTitle, { color: colors.purple }]} accessibilityRole="header">LiftArc</Text>
+          <Text style={[styles.tagline, { color: colors.textSecondary }]}>Welcome to your fitness journey!</Text>
+        </View>
+
+        {/* Welcoming Empty State */}
+        <EmptyState
+          title="Start Your Journey"
+          message="Log your first workout to see your stats here"
+          actionLabel="Start Workout"
+          onAction={handleNewWorkout}
+          icon={<GradientIcon iconName="barbell" gradientColors={colors.gradientPurplePink} />}
+        />
+
+        {/* Quick Actions for New Users */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="flash" size={20} color={colors.orange} accessible={false} />
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">Quick Actions</Text>
+          </View>
+          <View style={styles.quickActionsGrid}>
+            <ActionButton
+              title="Quick Start"
+              icon="flash"
+              onPress={handleNewWorkout}
+              gradientColors={colors.gradientTealGreen}
+            />
+            <ActionButton
+              title="Browse Exercises"
+              icon="list"
+              onPress={() => navigation.navigate('ExerciseListScreen')}
+              gradientColors={colors.gradientPurplePink}
+            />
+          </View>
+          <View style={styles.quickActionsGridRow}>
+            <ActionButton
+              title="Use Template"
+              icon="document-text"
+              onPress={() => navigation.navigate('TemplateListScreen')}
+              gradientColors={colors.gradientOrange}
+            />
+            <ActionButton
+              title="Set Goal"
+              icon="flag"
+              onPress={handleSetGoal}
+              gradientColors={colors.gradientCyanBlue}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -181,24 +244,38 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         />
       </View>
 
-      {/* Quick Start Section */}
+      {/* Quick Actions Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Ionicons name="flash" size={20} color={colors.orange} accessible={false} />
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">Quick Actions</Text>
         </View>
-        <View style={styles.quickStartRow}>
+        <View style={styles.quickActionsGrid}>
           <ActionButton
-            title="New Workout"
-            icon="barbell"
+            title="Quick Start"
+            icon="flash"
             onPress={handleNewWorkout}
             gradientColors={colors.gradientTealGreen}
+          />
+          <ActionButton
+            title="Browse Exercises"
+            icon="list"
+            onPress={() => navigation.navigate('ExerciseListScreen')}
+            gradientColors={colors.gradientPurplePink}
+          />
+        </View>
+        <View style={styles.quickActionsGridRow}>
+          <ActionButton
+            title="Use Template"
+            icon="document-text"
+            onPress={() => navigation.navigate('TemplateListScreen')}
+            gradientColors={colors.gradientOrange}
           />
           <ActionButton
             title="Set Goal"
             icon="flag"
             onPress={handleSetGoal}
-            gradientColors={colors.gradientOrange}
+            gradientColors={colors.gradientCyanBlue}
           />
         </View>
       </View>
@@ -210,12 +287,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">Recent Workouts</Text>
         </View>
         {workouts.length === 0 ? (
-          <EmptyState
-            title="No Workouts"
-            message="No workouts yet. Start your first workout!"
-            actionLabel="New Workout"
-            onAction={handleNewWorkout}
-          />
+          <View style={styles.emptyWorkoutsContainer}>
+            <Text style={[styles.emptyWorkoutsText, { color: colors.textSecondary }]}>
+              No workouts this week yet. Start one to see it here!
+            </Text>
+          </View>
         ) : (
           <View style={styles.workoutsList}>
             {workouts.map((workout, index) => (
@@ -286,7 +362,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
   },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
+  quickActionsGridRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
   workoutsList: {
     gap: spacing.md,
+  },
+  emptyWorkoutsContainer: {
+    paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+    alignItems: 'center',
+  },
+  emptyWorkoutsText: {
+    ...typography.body,
+    textAlign: 'center',
   },
 });

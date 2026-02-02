@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, SectionList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SectionList, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts';
 import { useAuth } from '../contexts/AuthContext';
 import type { ExerciseListScreenProps } from '../navigation/types';
@@ -65,10 +66,22 @@ export default function ExerciseListScreen({ navigation }: ExerciseListScreenPro
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.textPrimary }]} accessibilityRole="header">Exercise Library</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Browse and discover exercises
-          </Text>
+          <View style={styles.headerContent}>
+            <View style={styles.headerText}>
+              <Text style={[styles.title, { color: colors.textPrimary }]} accessibilityRole="header">Exercise Library</Text>
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                Browse and discover exercises
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.addButton, { backgroundColor: colors.purple }]}
+              onPress={() => navigation.navigate('CreateExerciseScreen')}
+              accessibilityRole="button"
+              accessibilityLabel="Create custom exercise"
+            >
+              <Ionicons name="add" size={24} color={colors.textPrimary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.searchSection}>
@@ -102,10 +115,22 @@ export default function ExerciseListScreen({ navigation }: ExerciseListScreenPro
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>Exercise Library</Text>
-        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Browse and discover exercises
-        </Text>
+        <View style={styles.headerContent}>
+          <View style={styles.headerText}>
+            <Text style={[styles.title, { color: colors.textPrimary }]}>Exercise Library</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+              Browse and discover exercises
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={[styles.addButton, { backgroundColor: colors.purple }]}
+            onPress={() => navigation.navigate('CreateExerciseScreen')}
+            accessibilityRole="button"
+            accessibilityLabel="Create custom exercise"
+          >
+            <Ionicons name="add" size={24} color={colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.searchSection}>
@@ -152,12 +177,28 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.lg,
   },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerText: {
+    flex: 1,
+    marginRight: spacing.md,
+  },
   title: {
     ...typography.largeTitle,
     marginBottom: spacing.xs,
   },
   subtitle: {
     ...typography.body,
+  },
+  addButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchSection: {
     paddingHorizontal: spacing.xl,
