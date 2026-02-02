@@ -6,11 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Alert,
   Platform,
   Modal,
   Pressable,
 } from 'react-native';
+import { showAlert } from '../utils/alert';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import type { WorkoutDetailScreenProps } from '../navigation/types';
@@ -73,7 +73,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
       }
     } catch (error) {
       console.error('Failed to load workout:', error);
-      Alert.alert('Error', 'Failed to load workout details');
+      showAlert('Error', 'Failed to load workout details');
     } finally {
       setLoading(false);
     }
@@ -100,7 +100,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
     const hasChanges = JSON.stringify(workout) !== JSON.stringify(editedWorkout);
     
     if (hasChanges) {
-      Alert.alert(
+      showAlert(
         'Discard Changes?',
         'You have unsaved changes. Are you sure you want to discard them?',
         [
@@ -166,7 +166,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
 
     // Validate
     if (!validateInputs()) {
-      Alert.alert('Validation Error', 'Please fix the errors before saving');
+      showAlert('Validation Error', 'Please fix the errors before saving');
       return;
     }
 
@@ -275,13 +275,13 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
       await detectPRsFromWorkout(user!.id, workoutId, exerciseSets);
 
       // Success!
-      Alert.alert('Success', 'Workout updated successfully');
+      showAlert('Success', 'Workout updated successfully');
       setIsEditMode(false);
       await loadWorkout(); // Reload fresh data
 
     } catch (error) {
       console.error('Failed to save workout:', error);
-      Alert.alert('Error', 'Failed to save changes. Please try again.');
+      showAlert('Error', 'Failed to save changes. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -336,7 +336,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
 
     // Don't allow removing the last set
     if (exercise.sets.length <= 1) {
-      Alert.alert('Cannot Remove', 'Each exercise must have at least one set');
+      showAlert('Cannot Remove', 'Each exercise must have at least one set');
       return;
     }
 
@@ -392,11 +392,11 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
 
     // Don't allow removing the last exercise
     if (editedWorkout.exercises.length <= 1) {
-      Alert.alert('Cannot Remove', 'Workout must have at least one exercise');
+      showAlert('Cannot Remove', 'Workout must have at least one exercise');
       return;
     }
 
-    Alert.alert(
+    showAlert(
       'Remove Exercise?',
       'Are you sure you want to remove this exercise and all its sets?',
       [

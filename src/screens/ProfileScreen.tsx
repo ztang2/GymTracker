@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { showAlert } from '../utils/alert';
 import { Ionicons } from '@expo/vector-icons';
 import type { ProfileScreenProps } from '../navigation/types';
 import { UserProfileCard, SettingsMenuItem, XPProgressBar } from '../components';
@@ -59,7 +60,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   };
 
   const handleNotifications = () => {
-    Alert.alert('Notifications', 'Notification settings coming soon!');
+    showAlert('Notifications', 'Notification settings coming soon!');
   };
 
   const handlePrivacy = () => {
@@ -67,18 +68,18 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   };
 
   const handleAccount = () => {
-    Alert.alert('Account', 'Account settings coming soon!');
+    showAlert('Account', 'Account settings coming soon!');
   };
 
   const handleAbout = () => {
-    Alert.alert(
+    showAlert(
       'About LiftArc',
       'LiftArc - Your personal gym workout tracker.\n\nVersion 1.0.0\n\nBuilt with React Native and Expo.'
     );
   };
 
   const handleSignOut = async () => {
-    Alert.alert(
+    showAlert(
       'Sign Out',
       'Are you sure you want to sign out?',
       [
@@ -89,7 +90,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           onPress: async () => {
             const { error } = await signOut();
             if (error) {
-              Alert.alert('Error', 'Failed to sign out. Please try again.');
+              showAlert('Error', 'Failed to sign out. Please try again.');
             }
           },
         },
