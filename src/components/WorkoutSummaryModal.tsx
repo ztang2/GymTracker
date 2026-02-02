@@ -57,8 +57,9 @@ export default function WorkoutSummaryModal({
       animationType="fade"
       transparent
       onRequestClose={onClose}
+      accessibilityViewIsModal={true}
     >
-      <View style={styles.overlay}>
+      <View style={styles.overlay} accessible={false}>
         <View style={styles.container}>
           {/* Header with gradient */}
           <LinearGradient
@@ -175,7 +176,12 @@ export default function WorkoutSummaryModal({
 
           {/* Close Button */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <TouchableOpacity 
+              style={styles.closeButton} 
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Close workout summary"
+            >
               <LinearGradient
                 colors={colors.gradientTealGreen}
                 start={{ x: 0, y: 0 }}

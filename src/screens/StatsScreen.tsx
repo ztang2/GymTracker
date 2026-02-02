@@ -140,7 +140,7 @@ const StatsScreen: React.FC = () => {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Progress</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">Progress</Text>
         <Text style={styles.headerSubtitle}>Monitor your journey</Text>
       </View>
 

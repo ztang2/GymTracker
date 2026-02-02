@@ -85,11 +85,15 @@ export default function AchievementsScreen({ navigation }: AchievementsScreenPro
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Achievements</Text>
-        <View style={{ width: 24 }} />
+        <Text style={styles.title} accessibilityRole="header">Achievements</Text>
+        <View style={{ width: 24 }} accessible={false} />
       </View>
 
       <ScrollView
@@ -134,6 +138,9 @@ export default function AchievementsScreen({ navigation }: AchievementsScreenPro
               key={f}
               style={[styles.filterTab, filter === f && styles.filterTabActive]}
               onPress={() => setFilter(f)}
+              accessibilityRole="button"
+              accessibilityLabel={`Show ${f} badges`}
+              accessibilityState={{ selected: filter === f }}
             >
               <Text
                 style={[

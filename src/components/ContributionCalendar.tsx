@@ -121,10 +121,16 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({
     return currentWeekMonth !== prevWeekMonth;
   };
 
+  const totalWorkouts = data.reduce((sum, day) => sum + day.count, 0);
+  const activeDays = data.filter(day => day.count > 0).length;
+  
   return (
-    <View style={styles.container}>
+    <View 
+      style={styles.container}
+      accessibilityLabel={`Workout consistency calendar: ${activeDays} active days, ${totalWorkouts} total workouts, current streak ${currentStreak} days, longest streak ${longestStreak} days`}
+    >
       <View style={styles.calendarCard}>
-        <Text style={styles.title}>Workout Consistency</Text>
+        <Text style={styles.title} accessibilityRole="header">Workout Consistency</Text>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
           <Svg width={svgWidth} height={svgHeight}>

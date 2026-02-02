@@ -25,7 +25,10 @@ export default function LevelBadge({ level, size = 'medium', showTier = false }:
   const config = sizeConfig[size];
 
   return (
-    <View style={styles.container}>
+    <View 
+      style={styles.container}
+      accessibilityLabel={`Level ${level}${showTier ? `, ${tier.name} tier` : ''}`}
+    >
       <View
         style={[
           styles.badge,

@@ -35,14 +35,19 @@ export default function UserProfileCard({
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}
+      accessibilityLabel={`User profile: ${userName}, member since ${memberSince}`}
     >
       <View style={styles.content}>
         {/* Avatar */}
         <View style={styles.avatarContainer}>
           {userAvatar ? (
-            <Image source={{ uri: userAvatar }} style={styles.avatar} />
+            <Image 
+              source={{ uri: userAvatar }} 
+              style={styles.avatar}
+              accessibilityLabel={`${userName}'s profile picture`}
+            />
           ) : (
-            <View style={styles.avatarPlaceholder}>
+            <View style={styles.avatarPlaceholder} accessible={false}>
               <Text style={styles.initialsText}>{getInitials(userName)}</Text>
             </View>
           )}

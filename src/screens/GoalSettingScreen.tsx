@@ -211,11 +211,15 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
           <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Set Goals</Text>
-        <View style={{ width: 24 }} />
+        <Text style={styles.title} accessibilityRole="header">Set Goals</Text>
+        <View style={{ width: 24 }} accessible={false} />
       </View>
 
       <ScrollView
@@ -248,6 +252,8 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
                   <TouchableOpacity
                     onPress={() => handleDeleteGoal(progress.goal.id)}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Delete ${GOAL_TYPE_LABELS[progress.goal.goal_type]} goal`}
                   >
                     <Ionicons name="trash-outline" size={20} color={colors.error} />
                   </TouchableOpacity>
@@ -292,6 +298,8 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
                 key={index}
                 style={styles.suggestionCard}
                 onPress={() => handleSuggestionPress(suggestion)}
+                accessibilityRole="button"
+                accessibilityLabel={`Suggested goal: ${suggestion.description}`}
               >
                 <View style={styles.suggestionIcon}>
                   <Ionicons

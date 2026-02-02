@@ -67,6 +67,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             source={require('../../assets/logo.png')}
             style={styles.logoImage}
             resizeMode="contain"
+            accessibilityLabel="LiftArc logo"
           />
           <LinearGradient
             colors={colors.gradientPurplePink}
@@ -82,7 +83,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         {/* Login Form */}
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.textPrimary }]}>Email</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]} accessibilityRole="header">Email</Text>
             <TextInput
               style={[styles.input, { 
                 backgroundColor: colors.inputBackground, 
@@ -97,11 +98,13 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               keyboardType="email-address"
               autoComplete="email"
               editable={!loading}
+              accessibilityLabel="Email address"
+              accessibilityHint="Enter your email address"
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.textPrimary }]}>Password</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]} accessibilityRole="header">Password</Text>
             <TextInput
               style={[styles.input, { 
                 backgroundColor: colors.inputBackground, 
@@ -116,6 +119,8 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               autoCapitalize="none"
               autoComplete="password"
               editable={!loading}
+              accessibilityLabel="Password"
+              accessibilityHint="Enter your password"
             />
           </View>
 
@@ -125,6 +130,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             onPress={handleSignIn}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in"
+            accessibilityHint="Sign in to your account"
+            accessibilityState={{ disabled: loading }}
           >
             <LinearGradient
               colors={colors.gradientPurplePink}
@@ -140,12 +149,30 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             </LinearGradient>
           </TouchableOpacity>
 
+          {/* Forgot Password Link */}
+          <View style={styles.forgotPasswordContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ForgotPasswordScreen')}
+              disabled={loading}
+              accessibilityRole="button"
+              accessibilityLabel="Forgot password"
+              accessibilityHint="Navigate to password reset screen"
+              accessibilityState={{ disabled: loading }}
+            >
+              <Text style={[styles.linkText, { color: colors.purple }]}>Forgot Password?</Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Sign Up Link */}
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.textSecondary }]}>Don't have an account? </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('SignUpScreen')}
               disabled={loading}
+              accessibilityRole="button"
+              accessibilityLabel="Sign up"
+              accessibilityHint="Navigate to sign up screen"
+              accessibilityState={{ disabled: loading }}
             >
               <Text style={[styles.linkText, { color: colors.purple }]}>Sign Up</Text>
             </TouchableOpacity>
@@ -223,6 +250,10 @@ const styles = StyleSheet.create({
     ...typography.headline,
     color: '#FFFFFF',
     fontWeight: '700',
+  },
+  forgotPasswordContainer: {
+    alignItems: 'center',
+    marginTop: spacing.md,
   },
   footer: {
     flexDirection: 'row',

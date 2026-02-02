@@ -25,7 +25,13 @@ export default function SettingsMenuItem({
   
   return (
     <View>
-      <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
+      <TouchableOpacity 
+        onPress={onPress} 
+        style={styles.container} 
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={`${title}${rightText ? `, ${rightText}` : ''}`}
+      >
         {/* Icon */}
         <View style={styles.iconContainer}>
           <Ionicons name={icon} size={24} color={colors.textPrimary} />

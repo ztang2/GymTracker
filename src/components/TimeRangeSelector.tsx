@@ -49,6 +49,9 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
             key={range}
             onPress={() => onSelectRange(range)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`${getRangeLabel(range)} time range`}
+            accessibilityState={{ selected: isSelected }}
           >
             {isSelected ? (
               <LinearGradient

@@ -1,6 +1,7 @@
 // Auth screens
 export { default as LoginScreen } from './LoginScreen';
 export { default as SignUpScreen } from './SignUpScreen';
+export { default as ForgotPasswordScreen } from './ForgotPasswordScreen';
 
 // Main screens
 export { default as HomeScreen } from './HomeScreen';
@@ -19,3 +20,4 @@ export { default as ProfileScreen } from './ProfileScreen';
 export { default as GoalSettingScreen } from './GoalSettingScreen';
 export { default as AchievementsScreen } from './AchievementsScreen';
 export { default as TemplateListScreen } from './TemplateListScreen';
+export { default as PrivacyPolicyScreen } from './PrivacyPolicyScreen';

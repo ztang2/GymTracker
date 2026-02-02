@@ -4,3 +4,4 @@ export type { UseExerciseSearchOptions, UseExerciseSearchResult } from './useExe
 export { useWorkoutTimer } from './useWorkoutTimer';
 export { useRestTimer } from './useRestTimer';
 export { useWorkoutState } from './useWorkoutState';
+export { useNetworkState } from './useNetworkState';

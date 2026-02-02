@@ -43,7 +43,13 @@ const StatCard: React.FC<StatCardProps> = ({
 
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.container}>
+      <TouchableOpacity 
+        onPress={onPress} 
+        activeOpacity={0.7} 
+        style={styles.container}
+        accessibilityRole="button"
+        accessibilityLabel={`${title}: ${value}${subtitle ? `, ${subtitle}` : ''}`}
+      >
         {variant === 'gradient' ? (
           <LinearGradient
             colors={gradColors}
@@ -63,7 +69,10 @@ const StatCard: React.FC<StatCardProps> = ({
   }
 
   return (
-    <View style={styles.container}>
+    <View 
+      style={styles.container}
+      accessibilityLabel={`${title}: ${value}${subtitle ? `, ${subtitle}` : ''}`}
+    >
       {variant === 'gradient' ? (
         <LinearGradient
           colors={gradColors}

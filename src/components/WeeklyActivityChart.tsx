@@ -27,9 +27,15 @@ export default function WeeklyActivityChart({
   const maxVolume = Math.max(...weekData.map(d => d.volume), 1);
   const chartHeight = 180;
 
+  const totalWorkouts = weekData.reduce((sum, day) => sum + day.workoutCount, 0);
+  const totalVolume = weekData.reduce((sum, day) => sum + day.volume, 0);
+  
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+    <View 
+      style={styles.container}
+      accessibilityLabel={`${title} activity chart: ${totalWorkouts} workouts, ${totalVolume} kilograms total volume`}
+    >
+      <Text style={styles.title} accessibilityRole="header">{title}</Text>
       
       <View style={styles.chartContainer}>
         <View style={styles.barsRow}>

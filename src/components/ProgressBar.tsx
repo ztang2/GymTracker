@@ -63,7 +63,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   // Simple mode - just the bar without labels
   if (isSimpleMode) {
     return (
-      <View style={[styles.track, { height, backgroundColor: backgroundColor || colors.border }]}>
+      <View 
+        style={[styles.track, { height, backgroundColor: backgroundColor || colors.border }]}
+        accessibilityLabel={`Progress: ${Math.round(percentage)}%`}
+        accessibilityRole="progressbar"
+      >
         <Animated.View
           style={[
             styles.fillContainer,
@@ -92,7 +96,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 
   // Label mode - with labels and percentage
   return (
-    <View style={styles.container}>
+    <View 
+      style={styles.container}
+      accessibilityLabel={`${label}: ${current} of ${target} ${unit}, ${Math.round(percentage)}% complete`}
+      accessibilityRole="progressbar"
+    >
       <View style={styles.labelRow}>
         <Text style={styles.label}>{label}</Text>
         {showPercentage ? (

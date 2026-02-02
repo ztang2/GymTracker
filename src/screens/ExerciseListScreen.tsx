@@ -65,7 +65,7 @@ export default function ExerciseListScreen({ navigation }: ExerciseListScreenPro
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.textPrimary }]}>Exercise Library</Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]} accessibilityRole="header">Exercise Library</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
             Browse and discover exercises
           </Text>
@@ -133,7 +133,7 @@ export default function ExerciseListScreen({ navigation }: ExerciseListScreenPro
         )}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{title}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">{title}</Text>
           </View>
         )}
         contentContainerStyle={styles.listContent}

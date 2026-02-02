@@ -102,7 +102,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
         {/* Sign Up Form */}
         <View style={styles.form}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Display Name (Optional)</Text>
+            <Text style={styles.label} accessibilityRole="header">Display Name (Optional)</Text>
             <TextInput
               style={styles.input}
               placeholder="How should we call you?"
@@ -112,11 +112,13 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
               autoCapitalize="words"
               autoComplete="name"
               editable={!loading}
+              accessibilityLabel="Display name"
+              accessibilityHint="Enter your display name, optional"
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email *</Text>
+            <Text style={styles.label} accessibilityRole="header">Email *</Text>
             <TextInput
               style={styles.input}
               placeholder="your.email@example.com"
@@ -127,11 +129,13 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
               keyboardType="email-address"
               autoComplete="email"
               editable={!loading}
+              accessibilityLabel="Email address"
+              accessibilityHint="Enter your email address, required"
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password *</Text>
+            <Text style={styles.label} accessibilityRole="header">Password *</Text>
             <TextInput
               style={styles.input}
               placeholder="At least 6 characters"
@@ -142,11 +146,13 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
               autoCapitalize="none"
               autoComplete="password-new"
               editable={!loading}
+              accessibilityLabel="Password"
+              accessibilityHint="Enter a password with at least 6 characters"
             />
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirm Password *</Text>
+            <Text style={styles.label} accessibilityRole="header">Confirm Password *</Text>
             <TextInput
               style={styles.input}
               placeholder="Re-enter your password"
@@ -157,6 +163,8 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
               autoCapitalize="none"
               autoComplete="password-new"
               editable={!loading}
+              accessibilityLabel="Confirm password"
+              accessibilityHint="Re-enter your password to confirm"
             />
           </View>
 
@@ -166,6 +174,10 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
             onPress={handleSignUp}
             disabled={loading}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Create account"
+            accessibilityHint="Sign up for a new account"
+            accessibilityState={{ disabled: loading }}
           >
             <LinearGradient
               colors={colors.gradientPurplePink}
@@ -187,6 +199,10 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
             <TouchableOpacity
               onPress={() => navigation.navigate('LoginScreen')}
               disabled={loading}
+              accessibilityRole="button"
+              accessibilityLabel="Sign in"
+              accessibilityHint="Navigate to sign in screen"
+              accessibilityState={{ disabled: loading }}
             >
               <Text style={styles.linkText}>Sign In</Text>
             </TouchableOpacity>

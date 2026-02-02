@@ -21,7 +21,7 @@ export default function PRBadge({ size = 'medium', showLabel = true }: PRBadgePr
   const config = sizeConfig[size];
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityLabel="Personal record badge">
       <View
         style={[
           styles.badge,

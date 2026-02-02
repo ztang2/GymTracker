@@ -29,7 +29,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       <Text style={[styles.message, { color: colors.textSecondary }]}>{message}</Text>
 
       {actionLabel && onAction && (
-        <TouchableOpacity onPress={onAction} activeOpacity={0.8}>
+        <TouchableOpacity 
+          onPress={onAction} 
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={actionLabel}
+        >
           <LinearGradient
             colors={colors.gradientPurplePink}
             start={{ x: 0, y: 0 }}

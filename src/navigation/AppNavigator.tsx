@@ -15,6 +15,7 @@ import type {
 import {
   LoginScreen,
   SignUpScreen,
+  ForgotPasswordScreen,
   HomeScreen,
   WorkoutDetailScreen,
   WorkoutScreen,
@@ -29,8 +30,11 @@ import {
   GoalSettingScreen,
   AchievementsScreen,
   TemplateListScreen,
+  PrivacyPolicyScreen,
 } from '../screens';
 import { useAuth, useTheme } from '../contexts';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { OfflineBanner } from '../components';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -44,6 +48,7 @@ function AuthNavigator() {
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="LoginScreen" component={LoginScreen} />
       <AuthStack.Screen name="SignUpScreen" component={SignUpScreen} />
+      <AuthStack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
     </AuthStack.Navigator>
   );
 }
@@ -187,6 +192,11 @@ function ProfileNavigator() {
         component={AchievementsScreen}
         options={{ headerShown: false }}
       />
+      <ProfileStack.Screen
+        name="PrivacyPolicyScreen"
+        component={PrivacyPolicyScreen}
+        options={{ headerShown: false }}
+      />
     </ProfileStack.Navigator>
   );
 }
@@ -239,22 +249,34 @@ function MainTabNavigator() {
         <Tab.Screen
           name="HomeTab"
           component={HomeNavigator}
-          options={{ tabBarLabel: 'Home' }}
+          options={{ 
+            tabBarLabel: 'Home',
+            tabBarAccessibilityLabel: 'Home tab',
+          }}
         />
         <Tab.Screen
           name="CalendarTab"
           component={CalendarNavigator}
-          options={{ tabBarLabel: 'Calendar' }}
+          options={{ 
+            tabBarLabel: 'Calendar',
+            tabBarAccessibilityLabel: 'Calendar tab',
+          }}
         />
         <Tab.Screen
           name="ProgressTab"
           component={ProgressNavigator}
-          options={{ tabBarLabel: 'Progress' }}
+          options={{ 
+            tabBarLabel: 'Progress',
+            tabBarAccessibilityLabel: 'Progress tab',
+          }}
         />
         <Tab.Screen
           name="ProfileTab"
           component={ProfileNavigator}
-          options={{ tabBarLabel: 'Profile' }}
+          options={{ 
+            tabBarLabel: 'Profile',
+            tabBarAccessibilityLabel: 'Profile tab',
+          }}
         />
       </Tab.Navigator>
   );
@@ -274,8 +296,11 @@ export default function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
-      {user ? <MainTabNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
+    <ErrorBoundary>
+      <NavigationContainer>
+        {user ? <MainTabNavigator /> : <AuthNavigator />}
+        <OfflineBanner />
+      </NavigationContainer>
+    </ErrorBoundary>
   );
 }

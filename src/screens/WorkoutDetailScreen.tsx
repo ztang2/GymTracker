@@ -462,21 +462,34 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
     <View style={styles.container}>
       {/* Header with Edit/Save/Cancel buttons */}
       <View style={styles.header}>
-        <Text style={styles.title}>Workout Details</Text>
+        <Text style={styles.title} accessibilityRole="header">Workout Details</Text>
         <View style={styles.headerButtons}>
           {!isEditMode ? (
-            <TouchableOpacity onPress={handleEnterEditMode} style={styles.editButton}>
+            <TouchableOpacity 
+              onPress={handleEnterEditMode} 
+              style={styles.editButton}
+              accessibilityRole="button"
+              accessibilityLabel="Edit workout"
+            >
               <Ionicons name="pencil" size={24} color={colors.purple} />
             </TouchableOpacity>
           ) : (
             <>
-              <TouchableOpacity onPress={handleCancelEdit} style={styles.cancelButton}>
+              <TouchableOpacity 
+                onPress={handleCancelEdit} 
+                style={styles.cancelButton}
+                accessibilityRole="button"
+                accessibilityLabel="Cancel editing"
+              >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 onPress={handleSaveEdit} 
                 style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
                 disabled={isSaving}
+                accessibilityRole="button"
+                accessibilityLabel="Save changes"
+                accessibilityState={{ disabled: isSaving }}
               >
                 <Text style={styles.saveButtonText}>
                   {isSaving ? 'Saving...' : 'Save'}

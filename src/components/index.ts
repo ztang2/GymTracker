@@ -47,3 +47,6 @@ export { ExerciseSelectionModal } from './ExerciseSelectionModal';
 export { default as SearchBar } from './SearchBar';
 export { default as CategoryFilterChips } from './CategoryFilterChips';
 export { default as ExerciseListItem } from './ExerciseListItem';
+
+// Network state components
+export { default as OfflineBanner } from './OfflineBanner';

@@ -18,14 +18,18 @@ export const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   const styles = createStyles(colors);
   return (
     <View style={styles.header}>
-      <TouchableOpacity onPress={onCancel}>
+      <TouchableOpacity 
+        onPress={onCancel}
+        accessibilityRole="button"
+        accessibilityLabel="Cancel workout"
+      >
         <Ionicons name="close" size={28} color={colors.textPrimary} />
       </TouchableOpacity>
-      <View style={styles.timerContainer}>
-        <Ionicons name="time-outline" size={20} color={colors.teal} />
+      <View style={styles.timerContainer} accessibilityLabel={`Workout duration: ${formatDuration(elapsedSeconds)}`}>
+        <Ionicons name="time-outline" size={20} color={colors.teal} accessible={false} />
         <Text style={styles.timerText}>{formatDuration(elapsedSeconds)}</Text>
       </View>
-      <View style={{ width: 28 }} />
+      <View style={{ width: 28 }} accessible={false} />
     </View>
   );
 };

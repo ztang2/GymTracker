@@ -34,6 +34,9 @@ export default function ExerciseListItem({
       style={styles.container}
       onPress={onPress}
       activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`${exercise.name}, ${exercise.category} exercise`}
+      accessibilityHint="View exercise details"
     >
       {/* Left: Category indicator */}
       <View style={[styles.categoryIndicator, { backgroundColor: categoryColor }]} />
@@ -54,6 +57,9 @@ export default function ExerciseListItem({
           onPress={handleFavoritePress}
           style={styles.favoriteButton}
           activeOpacity={0.6}
+          accessibilityRole="button"
+          accessibilityLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          accessibilityState={{ selected: isFavorite }}
         >
           <Ionicons
             name={isFavorite ? 'heart' : 'heart-outline'}

@@ -34,9 +34,17 @@ export default function SearchBar({
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
+        accessibilityLabel="Search"
+        accessibilityHint={placeholder}
       />
       {value.length > 0 && (
-        <TouchableOpacity onPress={handleClear} style={styles.clearButton} activeOpacity={0.6}>
+        <TouchableOpacity 
+          onPress={handleClear} 
+          style={styles.clearButton} 
+          activeOpacity={0.6}
+          accessibilityRole="button"
+          accessibilityLabel="Clear search"
+        >
           <Ionicons name="close-circle" size={20} color={colors.textTertiary} />
         </TouchableOpacity>
       )}

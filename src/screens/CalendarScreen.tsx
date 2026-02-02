@@ -87,17 +87,27 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.purple }]}>Calendar</Text>
+        <Text style={[styles.title, { color: colors.purple }]} accessibilityRole="header">Calendar</Text>
         <Text style={styles.subtitle}>Track your consistency</Text>
       </View>
 
       {/* Month Navigation */}
       <View style={styles.monthHeader}>
-        <TouchableOpacity onPress={handlePreviousMonth} style={styles.navButton}>
+        <TouchableOpacity 
+          onPress={handlePreviousMonth} 
+          style={styles.navButton}
+          accessibilityRole="button"
+          accessibilityLabel="Previous month"
+        >
           <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.monthText}>{monthName}</Text>
-        <TouchableOpacity onPress={handleNextMonth} style={styles.navButton}>
+        <Text style={styles.monthText} accessibilityRole="header">{monthName}</Text>
+        <TouchableOpacity 
+          onPress={handleNextMonth} 
+          style={styles.navButton}
+          accessibilityRole="button"
+          accessibilityLabel="Next month"
+        >
           <Ionicons name="chevron-forward" size={24} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>

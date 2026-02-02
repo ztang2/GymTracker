@@ -31,6 +31,8 @@ export default function ActionButton({
         onPress={onPress}
         style={[styles.container, colorGlow(glowColor, 'lg')]}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={title}
       >
         <LinearGradient
           colors={gradientColors}
@@ -52,6 +54,8 @@ export default function ActionButton({
       onPress={onPress}
       style={[styles.container, styles.solidButton, { backgroundColor: color || colors.cardBackground }]}
       activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={title}
     >
       <View style={styles.content}>
         <Ionicons name={icon} size={32} color={colors.textPrimary} />

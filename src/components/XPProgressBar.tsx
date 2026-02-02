@@ -19,7 +19,10 @@ export default function XPProgressBar({ levelInfo, compact = false }: XPProgress
 
   if (compact) {
     return (
-      <View style={styles.compactContainer}>
+      <View 
+        style={styles.compactContainer}
+        accessibilityLabel={`Level ${levelInfo.level}, ${xpInLevel} of ${xpNeeded} XP to next level`}
+      >
         <View style={styles.compactHeader}>
           <Text style={styles.compactLevel}>Lv. {levelInfo.level}</Text>
           <Text style={styles.compactXP}>{xpInLevel}/{xpNeeded} XP</Text>
@@ -37,7 +40,10 @@ export default function XPProgressBar({ levelInfo, compact = false }: XPProgress
   }
 
   return (
-    <View style={styles.container}>
+    <View 
+      style={styles.container}
+      accessibilityLabel={`Level ${levelInfo.level} ${levelInfo.tierName}, ${levelInfo.currentXP} total XP, ${xpInLevel} of ${xpNeeded} XP to next level`}
+    >
       {/* Level Badge */}
       <View style={[styles.levelBadge, { backgroundColor: levelInfo.tierColor }, colorGlow(levelInfo.tierColor, 'sm')]}>
         <Text style={styles.levelNumber}>{levelInfo.level}</Text>

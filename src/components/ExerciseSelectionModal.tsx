@@ -121,6 +121,8 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
     <TouchableOpacity
       style={styles.exerciseListItem}
       onPress={() => handleSelectExercise(item)}
+      accessibilityRole="button"
+      accessibilityLabel={`Add ${item.name}, ${getCategoryDisplayName(item.category)} exercise`}
     >
       <View>
         <Text style={styles.exerciseListName}>{item.name}</Text>
@@ -142,16 +144,20 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
       <View style={[styles.modalContainer, { paddingTop: topInset }]}>
         {/* Modal Header */}
         <View style={styles.modalHeader}>
-          <TouchableOpacity onPress={handleClose}>
+          <TouchableOpacity 
+            onPress={handleClose}
+            accessibilityRole="button"
+            accessibilityLabel="Cancel"
+          >
             <Text style={styles.modalCancel}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Add Exercise</Text>
-          <View style={{ width: 60 }} />
+          <Text style={styles.modalTitle} accessibilityRole="header">Add Exercise</Text>
+          <View style={{ width: 60 }} accessible={false} />
         </View>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color={colors.textTertiary} />
+          <Ionicons name="search" size={20} color={colors.textTertiary} accessible={false} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search exercises..."
@@ -160,9 +166,15 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
             onChangeText={setSearchQuery}
             autoCapitalize="none"
             autoCorrect={false}
+            accessibilityLabel="Search exercises"
+            accessibilityHint="Enter exercise name to search"
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <TouchableOpacity 
+              onPress={() => setSearchQuery('')}
+              accessibilityRole="button"
+              accessibilityLabel="Clear search"
+            >
               <Ionicons name="close-circle" size={20} color={colors.textTertiary} />
             </TouchableOpacity>
           )}
@@ -181,6 +193,9 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
               !selectedCategory && styles.categoryChipActive,
             ]}
             onPress={() => setSelectedCategory(null)}
+            accessibilityRole="button"
+            accessibilityLabel="All categories"
+            accessibilityState={{ selected: !selectedCategory }}
           >
             <Text
               style={[
@@ -201,6 +216,9 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
               onPress={() =>
                 setSelectedCategory(selectedCategory === category ? null : category)
               }
+              accessibilityRole="button"
+              accessibilityLabel={`${getCategoryDisplayName(category)} category`}
+              accessibilityState={{ selected: selectedCategory === category }}
             >
               <Text
                 style={[

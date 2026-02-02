@@ -39,7 +39,14 @@ export default function WorkoutHistoryCard({
   const moreExercises = hasExercises && workout.exercises.length > 3 ? ` +${workout.exercises.length - 3} more` : '';
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container} activeOpacity={0.7}>
+    <TouchableOpacity 
+      onPress={onPress} 
+      style={styles.container} 
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`Workout from ${formatDate(workout.date)}${workout.duration_minutes ? `, ${workout.duration_minutes} minutes` : ''}${hasExercises ? `, exercises: ${exerciseNames}${moreExercises}` : ''}`}
+      accessibilityHint="View workout details"
+    >
       {/* Left side: Colored circular icon with glow */}
       <View style={[styles.iconContainer, {
         backgroundColor: accent,

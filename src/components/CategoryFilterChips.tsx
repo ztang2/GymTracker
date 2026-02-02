@@ -45,6 +45,9 @@ export default function CategoryFilterChips({
             ]}
             onPress={() => onSelectCategory(category.value)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`${category.label} category`}
+            accessibilityState={{ selected: isSelected }}
           >
             <Text
               style={[

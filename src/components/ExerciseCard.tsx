@@ -51,6 +51,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         <TouchableOpacity
           onPress={onRemove}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove ${exercise.exerciseName}`}
         >
           <Ionicons name="trash-outline" size={20} color={colors.error} />
         </TouchableOpacity>
@@ -94,6 +96,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               placeholderTextColor={colors.textMuted}
               editable={!set.completed}
               selectTextOnFocus
+              accessibilityLabel={`Set ${index + 1} weight in kilograms`}
+              accessibilityHint="Enter the weight for this set"
             />
           </View>
           <View style={{ flex: 1 }}>
@@ -106,12 +110,17 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               placeholderTextColor={colors.textMuted}
               editable={!set.completed}
               selectTextOnFocus
+              accessibilityLabel={`Set ${index + 1} repetitions`}
+              accessibilityHint="Enter the number of reps for this set"
             />
           </View>
           <View style={styles.setActions}>
             <TouchableOpacity
               style={[styles.checkbox, set.completed && styles.checkboxChecked]}
               onPress={() => onToggleComplete(set.id)}
+              accessibilityRole="checkbox"
+              accessibilityLabel={`Mark set ${index + 1} as ${set.completed ? 'incomplete' : 'complete'}`}
+              accessibilityState={{ checked: set.completed }}
             >
               {set.completed && (
                 <Ionicons name="checkmark" size={16} color={colors.textPrimary} />
@@ -121,6 +130,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <TouchableOpacity
                 onPress={() => onRemoveSet(set.id)}
                 hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
+                accessibilityRole="button"
+                accessibilityLabel={`Remove set ${index + 1}`}
               >
                 <Ionicons name="close" size={18} color={colors.textTertiary} />
               </TouchableOpacity>
@@ -130,7 +141,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       ))}
 
       {/* Add Set Button */}
-      <TouchableOpacity style={styles.addSetButton} onPress={onAddSet}>
+      <TouchableOpacity 
+        style={styles.addSetButton} 
+        onPress={onAddSet}
+        accessibilityRole="button"
+        accessibilityLabel={`Add set to ${exercise.exerciseName}`}
+      >
         <Ionicons name="add" size={18} color={colors.teal} />
         <Text style={styles.addSetText}>Add Set</Text>
       </TouchableOpacity>

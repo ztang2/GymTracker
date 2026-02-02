@@ -36,15 +36,17 @@ export async function signUp(
       return { user: null, error };
     }
 
-    // Create user profile in user_profiles table
+    // Create user profile in user_profiles table (use upsert to handle conflicts)
     if (data.user) {
       const { error: profileError } = await supabase
         .from('user_profiles')
-        .insert({
+        .upsert({
           user_id: data.user.id,
           display_name: displayName || email.split('@')[0],
           total_xp: 0,
           current_level: 1,
+        }, {
+          onConflict: 'user_id',
         });
 
       if (profileError) {

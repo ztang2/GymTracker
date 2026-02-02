@@ -63,7 +63,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   };
 
   const handlePrivacy = () => {
-    Alert.alert('Privacy', 'Privacy settings coming soon!');
+    navigation.navigate('PrivacyPolicyScreen');
   };
 
   const handleAccount = () => {
@@ -101,7 +101,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.purple }]}>Profile</Text>
+        <Text style={[styles.title, { color: colors.purple }]} accessibilityRole="header">Profile</Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Manage your account</Text>
       </View>
 
@@ -184,6 +184,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           style={styles.modalOverlay} 
           activeOpacity={1} 
           onPress={() => setShowThemeModal(false)}
+          accessibilityLabel="Close theme selection modal"
+          accessibilityRole="button"
         >
           <View style={[styles.modalContent, { backgroundColor: colors.cardBackground }]}>
             <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Theme</Text>
@@ -203,6 +205,9 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
                     }
                   ]}
                   onPress={() => handleSelectTheme(mode)}
+                  accessibilityRole="radio"
+                  accessibilityLabel={`${getThemeLabel(mode)} theme`}
+                  accessibilityState={{ checked: themeMode === mode, selected: themeMode === mode }}
                 >
                   <View style={styles.themeOptionLeft}>
                     <Ionicons 
@@ -235,6 +240,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
             <TouchableOpacity 
               style={[styles.modalCloseButton, { backgroundColor: colors.purple }]}
               onPress={() => setShowThemeModal(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Done selecting theme"
             >
               <Text style={styles.modalCloseButtonText}>Done</Text>
             </TouchableOpacity>

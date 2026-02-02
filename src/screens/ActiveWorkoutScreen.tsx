@@ -379,6 +379,9 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
         <TouchableOpacity
           style={styles.addExerciseButton}
           onPress={() => setModalVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Add exercise"
+          accessibilityHint="Add an exercise to your workout"
         >
           <Ionicons name="add" size={24} color={colors.textPrimary} />
           <Typography style={styles.addExerciseText}>Add Exercise</Typography>
@@ -388,6 +391,10 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
           style={[styles.finishButton, saving && styles.finishButtonDisabled]}
           onPress={handleFinishWorkout}
           disabled={saving}
+          accessibilityRole="button"
+          accessibilityLabel="Finish workout"
+          accessibilityHint="Complete and save your workout"
+          accessibilityState={{ disabled: saving }}
         >
           <LinearGradient
             colors={colors.gradientTealGreen}

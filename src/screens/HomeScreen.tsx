@@ -154,7 +154,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.appTitle, { color: colors.purple }]}>LiftArc</Text>
+        <Text style={[styles.appTitle, { color: colors.purple }]} accessibilityRole="header">LiftArc</Text>
         <Text style={[styles.tagline, { color: colors.textSecondary }]}>Let's crush your goals today</Text>
       </View>
 
@@ -184,8 +184,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       {/* Quick Start Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Ionicons name="flash" size={20} color={colors.orange} />
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Quick Actions</Text>
+          <Ionicons name="flash" size={20} color={colors.orange} accessible={false} />
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">Quick Actions</Text>
         </View>
         <View style={styles.quickStartRow}>
           <ActionButton
@@ -206,8 +206,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       {/* Recent Workouts Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Ionicons name="flame" size={20} color={colors.pink} />
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recent Workouts</Text>
+          <Ionicons name="flame" size={20} color={colors.pink} accessible={false} />
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">Recent Workouts</Text>
         </View>
         {workouts.length === 0 ? (
           <EmptyState

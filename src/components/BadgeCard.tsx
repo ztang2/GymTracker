@@ -27,7 +27,10 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
 
   if (compact) {
     return (
-      <View style={[styles.compactContainer, !badge.isUnlocked && styles.locked]}>
+      <View 
+        style={[styles.compactContainer, !badge.isUnlocked && styles.locked]}
+        accessibilityLabel={`${badge.name} badge${badge.isUnlocked ? ', earned' : `, locked, progress ${badge.currentValue} of ${badge.requirement_value}`}`}
+      >
         <View style={[styles.compactIcon, { backgroundColor: badge.isUnlocked ? rarityColor : colors.backgroundElevated }]}>
           <Ionicons
             name={badge.icon_name as any}
@@ -48,7 +51,10 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
   }
 
   return (
-    <View style={[styles.container, !badge.isUnlocked && styles.locked]}>
+    <View 
+      style={[styles.container, !badge.isUnlocked && styles.locked]}
+      accessibilityLabel={`${badge.name} badge, ${badge.rarity} rarity, ${badge.description}, ${badge.isUnlocked ? `earned ${formatEarnedDate(badge.earnedAt!)}` : `progress ${badge.currentValue} of ${badge.requirement_value}`}, ${badge.xp_reward} XP reward`}
+    >
       <View style={styles.row}>
         {/* Badge Icon */}
         <View style={styles.iconContainer}>

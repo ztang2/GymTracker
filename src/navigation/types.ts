@@ -6,6 +6,7 @@ import type { StackScreenProps } from '@react-navigation/stack';
 export type AuthStackParamList = {
   LoginScreen: undefined;
   SignUpScreen: undefined;
+  ForgotPasswordScreen: undefined;
 };
 
 // Main bottom tab navigator params (LiftArc UI: Home, Calendar, Progress, Profile)
@@ -46,6 +47,7 @@ export type ProgressStackParamList = {
 export type ProfileStackParamList = {
   ProfileScreen: undefined;
   AchievementsScreen: undefined;
+  PrivacyPolicyScreen: undefined;
 };
 
 // Navigation prop types for each screen
