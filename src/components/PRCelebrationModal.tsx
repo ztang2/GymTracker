@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius, prColors } from '../constants/theme';
+import { typography, spacing, borderRadius, prColors ,  type ThemeColors } from '../constants/theme';
 import type { PRDetectionResult } from '../services/types';
 import { getPRTypeName, formatPRValue } from '../services/prService';
 
@@ -147,7 +147,7 @@ export default function PRCelebrationModal({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',

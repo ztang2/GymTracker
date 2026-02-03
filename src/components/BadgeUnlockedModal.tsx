@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
+import { typography, spacing, borderRadius, rarityColors, rarityGradients ,  type ThemeColors } from '../constants/theme';
 import type { Badge } from '../services/types';
 import { colorGlow } from '../utils';
 
@@ -130,7 +130,7 @@ export default function BadgeUnlockedModal({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',

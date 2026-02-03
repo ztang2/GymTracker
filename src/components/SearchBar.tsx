@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts';
-import { spacing, borderRadius, typography } from '../constants/theme';
+import { spacing, borderRadius, typography ,  type ThemeColors } from '../constants/theme';
 
 interface SearchBarProps {
   value: string;
@@ -52,7 +52,7 @@ export default function SearchBar({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

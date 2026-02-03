@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 
 interface MonthCalendarProps {
@@ -157,7 +157,7 @@ export default function MonthCalendar({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     // Glassmorphism effect
     backgroundColor: colors.cardBackground, // Semi-transparent dark

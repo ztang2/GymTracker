@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows ,  type ThemeColors } from '../constants/theme';
 import { buildShareTextFromSummary, shareWorkoutText } from '../utils/shareWorkout';
 import type { WorkoutSummary, PRDetectionResult, Badge } from '../services/types';
 
@@ -363,7 +363,7 @@ export default function WorkoutSummaryModal({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',

@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import type { ThemeColors } from '../constants/theme';
 import { useTheme } from '../contexts';
 import { useState, useEffect } from 'react';
 import type { ExerciseDetailScreenProps } from '../navigation/types';
@@ -45,7 +46,7 @@ export default function ExerciseDetailScreen({ route }: ExerciseDetailScreenProp
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: colors.background },
   title: { fontSize: 28, fontWeight: 'bold', marginBottom: 8, color: colors.textPrimary },
   category: { fontSize: 14, color: colors.textSecondary, marginBottom: 24 },

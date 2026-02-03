@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing ,  type ThemeColors } from '../constants/theme';
 import type { WorkoutSession, WorkoutSessionWithExercises } from '../services/types';
 import { colorGlow } from '../utils';
 
@@ -77,7 +77,7 @@ export default function WorkoutHistoryCard({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

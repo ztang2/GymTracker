@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts';
-import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows ,  type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 import { PER_EXERCISE_REST_TIMER_OPTIONS } from '../services';
 
@@ -168,7 +168,7 @@ export const RestTimerOptionsModal: React.FC<RestTimerOptionsModalProps> = ({
   );
 };
 
-const createStyles = (colors: any) =>
+const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     overlay: {
       flex: 1,

@@ -6,7 +6,7 @@ import type { WorkoutScreenProps } from '../navigation/types';
 import { createWorkoutSession } from '../services';
 import { EmptyState } from '../components';
 import { useAuth, useTheme } from '../contexts';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { showAlert } from '../utils/alert';
 
 export default function WorkoutScreen({ navigation }: WorkoutScreenProps) {
@@ -61,7 +61,7 @@ export default function WorkoutScreen({ navigation }: WorkoutScreenProps) {
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

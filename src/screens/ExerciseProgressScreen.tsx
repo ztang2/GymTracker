@@ -32,7 +32,7 @@ import type {
   PersonalRecord,
 } from '../services/types';
 import { useAuth, useTheme } from '../contexts';
-import { typography, spacing, getCategoryColor, borderRadius } from '../constants/theme';
+import { typography, spacing, getCategoryColor, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { formatDate, parseISODate } from '../utils/dateUtils';
 
 type NavigationProp = StackNavigationProp<HomeStackParamList>;
@@ -322,7 +322,7 @@ const ExerciseProgressScreen: React.FC<ExerciseProgressScreenProps> = ({ route }
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

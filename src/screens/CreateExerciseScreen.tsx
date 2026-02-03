@@ -14,7 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { CreateExerciseScreenProps } from '../navigation/types';
 import { createCustomExercise } from '../services/exerciseService';
 import type { ExerciseCategory } from '../services/types';
-import { spacing, borderRadius, typography } from '../constants/theme';
+import { spacing, borderRadius, typography ,  type ThemeColors } from '../constants/theme';
 import { showAlert } from '../utils/alert';
 
 const MUSCLE_GROUPS: Array<{ value: ExerciseCategory; label: string }> = [
@@ -288,7 +288,7 @@ export default function CreateExerciseScreen({ navigation }: CreateExerciseScree
   );
 }
 
-const createStyles = (colors: any) =>
+const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,

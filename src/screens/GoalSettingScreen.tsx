@@ -25,7 +25,7 @@ import {
   GOAL_PERIOD_LABELS,
   GOAL_TYPE_ICONS,
 } from '../services/goalService';
-import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows ,  type ThemeColors } from '../constants/theme';
 import { ProgressBar, LoadingState } from '../components';
 import { useAuth , useTheme } from '../contexts';
 import { colorGlow } from '../utils';
@@ -454,7 +454,7 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

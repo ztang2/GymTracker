@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows ,  type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 
 interface StatCardProps {
@@ -91,7 +91,7 @@ const StatCard: React.FC<StatCardProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: spacing.sm,

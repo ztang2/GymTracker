@@ -5,7 +5,7 @@ import { showAlert } from '../utils/alert';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { ProfileStackParamList } from '../navigation/types';
 import { deleteUserAccount } from '../services';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius, type ThemeColors } from '../constants/theme';
 import { useAuth, useTheme } from '../contexts';
 
 type DeleteAccountScreenProps = StackScreenProps<ProfileStackParamList, 'DeleteAccountScreen'>;
@@ -142,7 +142,7 @@ export default function DeleteAccountScreen({ navigation }: DeleteAccountScreenP
 
 interface DeleteItemProps {
   text: string;
-  colors: any;
+  colors: ThemeColors;
 }
 
 function DeleteItem({ text, colors }: DeleteItemProps) {

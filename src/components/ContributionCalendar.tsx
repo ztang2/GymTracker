@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Svg, { Rect, G, Text as SvgText } from 'react-native-svg';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { DayData } from '../services/types';
 import { getDayOfWeek, isToday } from '../utils/dateUtils';
 import { colorGlow } from '../utils/glowStyle';
@@ -255,7 +255,7 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     marginVertical: spacing.lg,
   },

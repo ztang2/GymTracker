@@ -3,7 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing ,  type ThemeColors } from '../constants/theme';
 
 interface UserProfileCardProps {
   userName: string;
@@ -84,7 +84,7 @@ export default function UserProfileCard({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     borderRadius: borderRadius.lg,
     overflow: 'hidden',

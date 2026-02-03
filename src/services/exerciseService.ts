@@ -205,7 +205,7 @@ export async function getRecentExercises(
   for (const item of data) {
     if (item.exercise && !seenIds.has(item.exercise_id)) {
       seenIds.add(item.exercise_id);
-      uniqueExercises.push(item.exercise as any as Exercise);
+      uniqueExercises.push(item.exercise as unknown as Exercise); // Supabase join returns compatible shape
 
       if (uniqueExercises.length >= limit) {
         break;

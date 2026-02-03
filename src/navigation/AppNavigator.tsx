@@ -42,6 +42,7 @@ import {
 import { useAuth, useTheme } from '../contexts';
 import { seedExercises } from '../services';
 import { ErrorBoundary, OfflineBanner } from '../components';
+import type { ThemeColors } from '../constants/theme';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -62,7 +63,7 @@ function AuthNavigator() {
 }
 
 // Shared stack screen options with slide-from-right transition
-const getStackScreenOptions = (colors: any) => ({
+const getStackScreenOptions = (colors: ThemeColors) => ({
   headerStyle: {
     backgroundColor: colors.background,
   },

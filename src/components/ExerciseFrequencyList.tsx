@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import { typography, spacing, borderRadius, getCategoryColor } from '../constants/theme';
+import { typography, spacing, borderRadius, getCategoryColor ,  type ThemeColors } from '../constants/theme';
 import { ExerciseFrequency } from '../services/types';
 
 interface ExerciseFrequencyListProps {
@@ -77,7 +77,7 @@ const ExerciseFrequencyList: React.FC<ExerciseFrequencyListProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     marginVertical: spacing.md,
   },

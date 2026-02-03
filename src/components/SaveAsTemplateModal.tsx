@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { COMMON_TEMPLATES } from '../services/templateService';
 
 interface SaveAsTemplateModalProps {
@@ -168,7 +168,7 @@ export default function SaveAsTemplateModal({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',

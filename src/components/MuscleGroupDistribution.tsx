@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { typography, spacing, borderRadius, getCategoryColor } from '../constants/theme';
+import { typography, spacing, borderRadius, getCategoryColor ,  type ThemeColors } from '../constants/theme';
 
 export interface CategoryWorkoutData {
   category: string;
@@ -119,7 +119,7 @@ export default function MuscleGroupDistribution({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

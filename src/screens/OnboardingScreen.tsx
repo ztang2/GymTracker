@@ -76,7 +76,7 @@ export default function OnboardingScreen({ navigation }: OnboardingScreenProps) 
       <View style={styles.bottomBar}>
         <TouchableOpacity onPress={handleStart}>
           <LinearGradient
-            colors={[colors.purple, colors.pink] as any}
+            colors={[colors.purple, colors.pink] as [string, string]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.gradientButton}

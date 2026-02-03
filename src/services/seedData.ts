@@ -781,7 +781,6 @@ export const SEED_EXERCISES: CreateExerciseInput[] = [
  */
 export async function seedExercises(): Promise<void> {
   try {
-    console.log('Checking if exercises already exist...');
 
     // Check if exercises table already has data
     const { count, error: countError } = await supabase
@@ -795,11 +794,9 @@ export async function seedExercises(): Promise<void> {
 
     // If all exercises already exist, skip seeding
     if (count && count >= SEED_EXERCISES.length) {
-      console.log(`✓ Exercises already seeded (${count} exercises found)`);
       return;
     }
 
-    console.log(`Found ${count || 0} exercises, need ${SEED_EXERCISES.length}. Seeding...`);
 
     // Upsert all seed exercises (insert new ones, skip existing)
     const { data, error: insertError } = await supabase
@@ -812,8 +809,6 @@ export async function seedExercises(): Promise<void> {
       throw new Error(`Failed to seed exercises: ${insertError.message}`);
     }
 
-    console.log(`✓ Successfully seeded ${data?.length || SEED_EXERCISES.length} exercises`);
-    console.log('Categories:', ['chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'cardio']);
   } catch (error) {
     console.error('Seed operation failed:', error);
     throw error;

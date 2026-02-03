@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { TimeRange } from '../services/types';
 
 interface TimeRangeSelectorProps {
@@ -74,7 +74,7 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     paddingVertical: spacing.md,
   },

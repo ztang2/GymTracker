@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 
 interface ProgressBarProps {
@@ -58,7 +58,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   const isSimpleMode = !label;
   
   // Calculate glow style for gradient fills
-  const glowStyle = isGradient ? colorGlow((finalColor as any)[0], 'sm') : {};
+  const glowStyle = isGradient ? colorGlow((finalColor as string[])[0], 'sm') : {};
 
   // Simple mode - just the bar without labels
   if (isSimpleMode) {
@@ -142,7 +142,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     marginVertical: spacing.sm,
   },

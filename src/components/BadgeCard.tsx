@@ -3,7 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { typography, spacing, borderRadius, rarityColors, rarityGradients } from '../constants/theme';
+import { typography, spacing, borderRadius, rarityColors, rarityGradients ,  type ThemeColors } from '../constants/theme';
 import type { BadgeWithStatus, BadgeRarity } from '../services/types';
 import ProgressBar from './ProgressBar';
 import { colorGlow } from '../utils';
@@ -128,7 +128,7 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

@@ -54,8 +54,8 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         if (url) {
           setAvatarUrl(url);
         }
-      } catch (error: any) {
-        showAlert('Error', error.message || 'Failed to update avatar.');
+      } catch (error) {
+        showAlert('Error', error instanceof Error ? error.message : 'Failed to update avatar.');
       } finally {
         setAvatarLoading(false);
       }

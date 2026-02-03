@@ -10,7 +10,8 @@ export function colorGlow(color: string, size: 'sm' | 'md' | 'lg' = 'md') {
   };
   const c = configs[size];
   if (Platform.OS === 'web') {
-    return { boxShadow: `0 0 ${c.blur}px ${c.spread}px ${color}${c.opacity}, 0 0 ${c.outerBlur}px ${Math.round(c.spread * 1.6)}px ${color}${c.outerOpacity}` } as any;
+    // boxShadow is web-only and not in RN's ViewStyle type
+    return { boxShadow: `0 0 ${c.blur}px ${c.spread}px ${color}${c.opacity}, 0 0 ${c.outerBlur}px ${Math.round(c.spread * 1.6)}px ${color}${c.outerOpacity}` } as Record<string, string>;
   }
   return {
     shadowColor: color,

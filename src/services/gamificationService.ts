@@ -143,15 +143,35 @@ export async function updateUserProfile(
 
 /**
  * Award XP to user and recalculate level
- * TODO: Replace read-then-write with atomic Supabase RPC (increment_xp) to prevent
- * XP loss from concurrent calls. Current approach is acceptable since concurrent
- * workout saves by the same user are rare.
+ * Uses atomic Supabase RPC to prevent XP loss from concurrent calls
  */
 export async function awardXP(
   userId: string,
   xpAmount: number
 ): Promise<{ newXP: number; newLevel: number; leveledUp: boolean } | null> {
-  // Get current profile
+  const { data, error } = await supabase
+    .rpc('increment_xp', { p_user_id: userId, p_xp_amount: xpAmount })
+    .single();
+
+  if (error) {
+    console.error('Error awarding XP via RPC:', error);
+    // Fallback to read-then-write if RPC not available (migration not run yet)
+    return awardXPFallback(userId, xpAmount);
+  }
+
+  const result = data as { new_xp: number; new_level: number; leveled_up: boolean };
+  return {
+    newXP: result.new_xp,
+    newLevel: result.new_level,
+    leveledUp: result.leveled_up,
+  };
+}
+
+/** Fallback for when the increment_xp RPC is not available */
+async function awardXPFallback(
+  userId: string,
+  xpAmount: number
+): Promise<{ newXP: number; newLevel: number; leveledUp: boolean } | null> {
   const profile = await getUserProfile(userId);
   if (!profile) return null;
 
@@ -159,17 +179,13 @@ export async function awardXP(
   const newLevel = calculateLevel(newXP);
   const leveledUp = newLevel > profile.current_level;
 
-  // Update profile
   const { error } = await supabase
     .from('user_profiles')
-    .update({
-      total_xp: newXP,
-      current_level: newLevel,
-    })
+    .update({ total_xp: newXP, current_level: newLevel })
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error awarding XP:', error);
+    console.error('Error awarding XP (fallback):', error);
     return null;
   }
 

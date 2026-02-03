@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts';
-import { typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing ,  type ThemeColors } from '../constants/theme';
 import type { WorkoutSessionWithExercises, ExerciseCategory } from '../services/types';
 import { parseISODate, isSameDay } from '../utils/dateUtils';
 import { colorGlow } from '../utils';
@@ -15,7 +15,7 @@ interface RecentWorkoutCardProps {
 }
 
 /** Map category to a theme color key */
-const CATEGORY_COLOR_KEY: Record<ExerciseCategory, string> = {
+const CATEGORY_COLOR_KEY: Record<ExerciseCategory, keyof ThemeColors> = {
   chest: 'categoryChest',
   back: 'categoryBack',
   legs: 'categoryLegs',
@@ -151,7 +151,7 @@ export default function RecentWorkoutCard({
       {muscleGroups.length > 0 && (
         <View style={styles.chipsRow}>
           {muscleGroups.map((cat) => {
-            const chipColor = (colors as any)[CATEGORY_COLOR_KEY[cat]] || colors.purple;
+            const chipColor = (colors[CATEGORY_COLOR_KEY[cat]] as string) || colors.purple;
             return (
               <View
                 key={cat}

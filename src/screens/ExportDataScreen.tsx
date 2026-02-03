@@ -7,7 +7,7 @@ import { showAlert } from '../utils/alert';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { ProfileStackParamList } from '../navigation/types';
 import { exportUserData, formatAsCSV, type ExportData } from '../services';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius, type ThemeColors } from '../constants/theme';
 import { useAuth, useTheme } from '../contexts';
 
 type ExportDataScreenProps = StackScreenProps<ProfileStackParamList, 'ExportDataScreen'>;
@@ -270,7 +270,7 @@ interface StatItemProps {
   label: string;
   value: string;
   icon: keyof typeof Ionicons.glyphMap;
-  colors: any;
+  colors: ThemeColors;
 }
 
 function StatItem({ label, value, icon, colors }: StatItemProps) {

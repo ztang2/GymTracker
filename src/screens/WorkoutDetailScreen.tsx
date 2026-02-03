@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
+import type { ThemeColors } from '../constants/theme';
 import { showAlert } from '../utils/alert';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -294,14 +295,12 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
   };
 
   // Update set field
-  const handleUpdateSet = (exerciseIdx: number, setIdx: number, field: keyof ExerciseSet, value: any) => {
+  const handleUpdateSet = (exerciseIdx: number, setIdx: number, field: keyof ExerciseSet, value: ExerciseSet[keyof ExerciseSet]) => {
     if (!editedWorkout) return;
 
     const updated = { ...editedWorkout };
     const exercise = updated.exercises[exerciseIdx];
-    const set = exercise.sets[setIdx];
-
-    (set as any)[field] = value;
+    exercise.sets[setIdx] = { ...exercise.sets[setIdx], [field]: value };
 
     setEditedWorkout(updated);
   };
@@ -740,7 +739,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
           value={new Date(displayWorkout.date)}
           mode="date"
           display="default"
-          onChange={(event: any, date?: Date) => {
+          onChange={(event: { type: string }, date?: Date) => {
             if (event.type === 'set' && date) {
               handleUpdateDate(date);
             } else {
@@ -793,7 +792,7 @@ export default function WorkoutDetailScreen({ route, navigation }: WorkoutDetail
   );
 }
 
-const createStyles = (colors: any) =>
+const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,

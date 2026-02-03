@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing ,  type ThemeColors } from '../constants/theme';
 
 export interface DayProgress {
   day: string; // "Mon", "Tue", etc.
@@ -63,7 +63,7 @@ export default function DailyProgressBar({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

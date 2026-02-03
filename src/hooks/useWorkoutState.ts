@@ -27,9 +27,13 @@ interface UseWorkoutStateReturn {
 /**
  * Custom hook for managing workout state (exercises and sets)
  * Returns functions to add/remove exercises and sets, update set values, and toggle completion
+ *
+ * @param initialExercises - Optional pre-filled exercises (e.g. from a template)
  */
-export const useWorkoutState = (): UseWorkoutStateReturn => {
-  const [exercises, setExercises] = useState<LocalExercise[]>([]);
+export const useWorkoutState = (
+  initialExercises?: LocalExercise[]
+): UseWorkoutStateReturn => {
+  const [exercises, setExercises] = useState<LocalExercise[]>(initialExercises ?? []);
 
   const addExercise = useCallback((exercise: Exercise) => {
     const newExercise = createLocalExercise(

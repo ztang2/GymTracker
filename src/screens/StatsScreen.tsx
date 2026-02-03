@@ -21,7 +21,7 @@ import {
 } from '../services/statsService';
 import { TimeRange, WorkoutStats, CalendarData, CategoryDistribution, ExerciseFrequency, WeeklyCount } from '../services/types';
 import { useAuth , useTheme } from '../contexts';
-import { typography, spacing } from '../constants/theme';
+import { typography, spacing ,  type ThemeColors } from '../constants/theme';
 
 const StatsScreen: React.FC = () => {
   const { colors } = useTheme();
@@ -97,7 +97,6 @@ const StatsScreen: React.FC = () => {
 
   const onExercisePress = (exerciseId: string) => {
     // TODO: Navigate to ExerciseProgressScreen
-    console.log('Navigate to exercise:', exerciseId);
   };
 
   if (loading && !refreshing) {
@@ -126,7 +125,6 @@ const StatsScreen: React.FC = () => {
           actionLabel="Start Your First Workout"
           onAction={() => {
             // TODO: Navigate to Workout tab
-            console.log('Navigate to workout tab');
           }}
         />
       </View>
@@ -252,7 +250,7 @@ const StatsScreen: React.FC = () => {
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

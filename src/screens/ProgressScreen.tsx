@@ -26,7 +26,7 @@ import {
 } from '../services/statsService';
 import { getUserPRs } from '../services/prService';
 import { getWorkoutsByDateRange, batchGetWorkoutSessions } from '../services/workoutService';
-import { typography, spacing } from '../constants/theme';
+import { typography, spacing ,  type ThemeColors } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
 import { useWeightUnit } from '../hooks';
 import {
@@ -294,7 +294,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
 
         return {
           id: pr.id,
-          exerciseName: (pr.exercise as any)?.name || 'Unknown Exercise',
+          exerciseName: (pr.exercise as { name?: string })?.name || 'Unknown Exercise', // TODO: type Supabase join result
           recordType,
           value,
           date: pr.achieved_at.split('T')[0],
@@ -376,7 +376,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
           message="Complete a few workouts to see your trends and analytics"
           actionLabel="Start Your First Workout"
           onAction={() => {
-            navigation.navigate('HomeTab' as any);
+            navigation.navigate('HomeTab' as const); // TODO: type navigation params
           }}
           icon={
             <View style={styles.emptyIcon}>
@@ -441,7 +441,7 @@ export default function ProgressScreen({ navigation }: ProgressScreenProps) {
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

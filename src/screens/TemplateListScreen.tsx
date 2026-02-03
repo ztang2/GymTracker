@@ -19,7 +19,7 @@ import {
   type WorkoutTemplate,
 } from '../services';
 import { LoadingState, EmptyState } from '../components';
-import { typography, spacing, borderRadius, shadows, getCategoryColor } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows, getCategoryColor ,  type ThemeColors } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
 
 // Cross-platform alert helper
@@ -257,7 +257,7 @@ export default function TemplateListScreen({ navigation }: TemplateListScreenPro
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

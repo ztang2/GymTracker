@@ -762,7 +762,7 @@ export async function getUniqueExerciseCount(userId: string): Promise<number> {
 
   if (error || !data) return 0;
 
-  const unique = new Set(data.map((d: any) => d.exercise_id));
+  const unique = new Set(data.map((d) => d.exercise_id));
   return unique.size;
 }
 
@@ -787,7 +787,7 @@ export async function getAllMuscleGroupsThisWeek(userId: string): Promise<number
 
   if (error || !data) return 0;
 
-  const categories = new Set(data.map((d: any) => d.exercise?.category).filter(Boolean));
+  const categories = new Set(data.map((d) => (d.exercise as { category?: string })?.category).filter(Boolean));
   const allGroups = ['chest', 'back', 'legs', 'shoulders', 'arms', 'core'];
   const hitAll = allGroups.every(g => categories.has(g));
   return hitAll ? 1 : 0;
@@ -805,7 +805,7 @@ export async function getEarlyWorkoutCount(userId: string): Promise<number> {
 
   if (error || !data) return 0;
 
-  return data.filter((w: any) => {
+  return data.filter((w) => {
     const hour = new Date(w.start_time).getHours();
     return hour < 7;
   }).length;
@@ -823,7 +823,7 @@ export async function getNightWorkoutCount(userId: string): Promise<number> {
 
   if (error || !data) return 0;
 
-  return data.filter((w: any) => {
+  return data.filter((w) => {
     const hour = new Date(w.start_time).getHours();
     return hour >= 22;
   }).length;
@@ -840,7 +840,7 @@ export async function getWeekendWorkoutCount(userId: string): Promise<number> {
 
   if (error || !data) return 0;
 
-  return data.filter((w: any) => {
+  return data.filter((w) => {
     const day = new Date(w.date + 'T12:00:00').getDay();
     return day === 0 || day === 6;
   }).length;

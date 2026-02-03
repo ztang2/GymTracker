@@ -6,7 +6,7 @@ import type { CalendarScreenProps } from '../navigation/types';
 import { getDailyWorkoutCounts, getCurrentStreak } from '../services/statsService';
 import { getWorkoutsByDateRange } from '../services/workoutService';
 import { MonthCalendar, LoadingState, EmptyState } from '../components';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { useAuth , useTheme } from '../contexts';
 import { colorGlow } from '../utils';
 import { formatISODate } from '../utils/dateUtils';
@@ -200,7 +200,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
                   navigation.navigate('HomeTab', {
                     screen: 'WorkoutDetailScreen',
                     params: { workoutId: workout.id },
-                  } as any);
+                  } as any); // TODO: type nested navigation params properly
                 }}
                 accessibilityRole="button"
                 accessibilityLabel={`View workout from ${workout.date}`}
@@ -230,7 +230,7 @@ export default function CalendarScreen({ navigation }: CalendarScreenProps) {
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

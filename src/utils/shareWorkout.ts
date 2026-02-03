@@ -166,9 +166,9 @@ export async function shareWorkoutText(text: string): Promise<void> {
         dialogTitle: 'Share your workout',
       }
     );
-  } catch (error: any) {
+  } catch (error) {
     // User cancelled - not an error
-    if (error?.message !== 'User did not share') {
+    if (error instanceof Error && error.message !== 'User did not share') {
       console.error('Share failed:', error);
     }
   }

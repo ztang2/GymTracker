@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatDuration } from '../services/workoutLogger';
 import { REST_TIMER_OPTIONS } from '../services';
 import { useTheme } from '../contexts';
-import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows ,  type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 
 interface RestTimerToastProps {
@@ -152,7 +152,7 @@ export const RestTimerToast: React.FC<RestTimerToastProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     position: 'absolute',
     left: spacing.lg,

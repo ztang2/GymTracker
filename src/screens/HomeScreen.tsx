@@ -71,7 +71,7 @@ function GradientIcon({ iconName, gradientColors }: GradientIconProps) {
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <LinearGradient
-        colors={gradientColors as any}
+        colors={gradientColors as [string, string, ...string[]]}
         style={[styles.gradientCircle, colorGlow(glowColor, 'md')]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}

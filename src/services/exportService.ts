@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 
+// TODO: type these with proper Supabase table row types instead of any
 export interface ExportData {
   user_profile: any;
   workout_sessions: any[];

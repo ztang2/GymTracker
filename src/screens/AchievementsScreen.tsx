@@ -29,7 +29,7 @@ import {
   BadgeCard,
   LevelBadge,
 } from '../components';
-import { typography, spacing, borderRadius, badgeCategoryIcons, rarityColors, rarityGradients } from '../constants/theme';
+import { typography, spacing, borderRadius, badgeCategoryIcons, rarityColors, rarityGradients, type ThemeColors } from '../constants/theme';
 import { useAuth, useTheme } from '../contexts';
 import { colorGlow } from '../utils';
 
@@ -341,7 +341,7 @@ function GridBadgeCard({
   cardWidth,
 }: {
   badge: BadgeWithStatus;
-  colors: any;
+  colors: ThemeColors;
   cardWidth: number;
 }) {
   const styles = createGridStyles(colors, cardWidth);
@@ -412,7 +412,7 @@ function GridBadgeCard({
   );
 }
 
-const createGridStyles = (colors: any, cardWidth: number) =>
+const createGridStyles = (colors: ThemeColors, cardWidth: number) =>
   StyleSheet.create({
     card: {
       width: cardWidth,
@@ -493,7 +493,7 @@ const createGridStyles = (colors: any, cardWidth: number) =>
     },
   });
 
-const createStyles = (colors: any) =>
+const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,

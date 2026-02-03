@@ -59,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Subscribe to auth state changes
   useEffect(() => {
     const subscription = onAuthStateChange((event, session) => {
-      console.log('Auth state changed:', event);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);

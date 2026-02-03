@@ -3,7 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { typography, spacing, borderRadius, getLevelTier } from '../constants/theme';
+import { typography, spacing, borderRadius, getLevelTier ,  type ThemeColors } from '../constants/theme';
 
 interface LevelBadgeProps {
   level: number;
@@ -56,7 +56,7 @@ export default function LevelBadge({ level, size = 'medium', showTier = false }:
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     alignItems: 'center',
     gap: spacing.xs,

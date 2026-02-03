@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { CartesianChart, Line } from 'victory-native';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 
 interface WorkoutTrendChartProps {
   data: Array<{ label: string; value: number }>;
@@ -66,7 +66,7 @@ const WorkoutTrendChart: React.FC<WorkoutTrendChartProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     marginVertical: spacing.md,
   },

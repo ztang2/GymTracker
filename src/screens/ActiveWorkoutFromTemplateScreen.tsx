@@ -1,44 +1,31 @@
-import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
 
 import type { ActiveWorkoutFromTemplateScreenProps } from '../navigation/types';
 import {
-  requestNotificationPermissions,
-  getLastPerformance,
-  getRestTimerSeconds,
-  setRestTimerSeconds,
-  isHapticFeedbackEnabled,
-  awardXP,
-  calculateWorkoutXP,
-  checkAndAwardBadges,
-  getCurrentStreak,
   getTemplate,
-  type LastPerformance,
-  type Exercise,
 } from '../services';
 import {
-  saveWorkout,
   generateLocalId,
-  type ActiveWorkoutState,
   type LocalExercise,
   type LocalSet,
 } from '../services/workoutLogger';
 import { useAuth, useTheme } from '../contexts';
-import { spacing, borderRadius, typography } from '../constants/theme';
+import { spacing, borderRadius, typography ,  type ThemeColors } from '../constants/theme';
 import {
   WorkoutSummaryModal,
   WorkoutHeader,
   RestTimerToast,
   ExerciseCard,
   ExerciseSelectionModal,
+  RestTimerOptionsModal,
+  SaveAsTemplateModal,
   LoadingState,
 } from '../components';
-import type { WorkoutSummary } from '../services/types';
-import { useWorkoutTimer, useRestTimer } from '../hooks';
+import { useActiveWorkout } from '../hooks';
 import { showAlert } from '../utils/alert';
 import { supabase } from '../services/supabase';
 
@@ -50,88 +37,14 @@ export default function ActiveWorkoutFromTemplateScreen({
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { colors } = useTheme();
-  const styles = createStyles(colors);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
-  // Loading state for template
+  // Template loading state
   const [templateLoading, setTemplateLoading] = useState(true);
+  const [initialExercises, setInitialExercises] = useState<LocalExercise[] | undefined>(undefined);
 
-  // Workout state
-  const [startTime] = useState(new Date());
-  const [workoutNotes, setWorkoutNotes] = useState('');
-  const [workoutNotesExpanded, setWorkoutNotesExpanded] = useState(false);
-  const [exercises, setExercises] = useState<LocalExercise[]>([]);
-
-  // Timer hooks
-  const elapsedSeconds = useWorkoutTimer(startTime);
-
-  // Load rest timer duration from settings
-  const [initialRestDuration, setInitialRestDuration] = useState(90);
-  useEffect(() => {
-    const loadRestDuration = async () => {
-      const duration = await getRestTimerSeconds();
-      setInitialRestDuration(duration);
-    };
-    loadRestDuration();
-  }, []);
-
-  const {
-    restTimerVisible,
-    restSeconds,
-    restTimerDuration,
-    startRestTimer,
-    skipRestTimer,
-    setRestTimerDuration,
-    adjustRestTime,
-  } = useRestTimer(initialRestDuration);
-
-  // Modal state
-  const [modalVisible, setModalVisible] = useState(false);
-
-  // Rest timer options modal
-  const [showRestTimerOptions, setShowRestTimerOptions] = useState(false);
-
-  // Last performance data
-  const [lastPerformanceData, setLastPerformanceData] = useState<
-    Map<string, LastPerformance>
-  >(new Map());
-
-  // Settings
-  const [hapticEnabled, setHapticEnabled] = useState(true);
-
-  // Saving state
-  const [saving, setSaving] = useState(false);
-
-  // Workout summary modal state
-  const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [workoutSummary, setWorkoutSummary] = useState<WorkoutSummary | null>(null);
-
-  // Hide tab bar
-  useLayoutEffect(() => {
-    const parent = navigation.getParent();
-    if (parent) {
-      parent.setOptions({ tabBarStyle: { display: 'none' } });
-    }
-    return () => {
-      if (parent) {
-        parent.setOptions({
-          tabBarStyle: {
-            display: 'flex',
-            backgroundColor: colors.background,
-            borderTopColor: colors.border,
-          },
-        });
-      }
-    };
-  }, [navigation]);
-
-  // Load template and pre-fill exercises
-  useEffect(() => {
-    loadTemplate();
-    requestNotificationPermissions();
-    loadSettings();
-  }, []);
-
-  const loadTemplate = async () => {
+  // Load template and convert to local exercises
+  const loadTemplate = useCallback(async () => {
     if (!user) return;
     try {
       const template = await getTemplate(templateId, user.id);
@@ -141,7 +54,6 @@ export default function ActiveWorkoutFromTemplateScreen({
         return;
       }
 
-      // Convert template exercises to local workout exercises
       const localExercises: LocalExercise[] = template.exercises.map((te) => {
         const sets: LocalSet[] = [];
         const numSets = te.target_sets || 3;
@@ -164,12 +76,7 @@ export default function ActiveWorkoutFromTemplateScreen({
         };
       });
 
-      setExercises(localExercises);
-
-      // Fetch last performance for all template exercises
-      for (const te of template.exercises) {
-        fetchLastPerformance(te.exercise_id);
-      }
+      setInitialExercises(localExercises);
 
       // Update last_used_at on the template
       await supabase
@@ -183,340 +90,166 @@ export default function ActiveWorkoutFromTemplateScreen({
     } finally {
       setTemplateLoading(false);
     }
-  };
+  }, [user, templateId, navigation]);
 
-  const loadSettings = async () => {
-    try {
-      const haptic = await isHapticFeedbackEnabled();
-      setHapticEnabled(haptic);
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-    }
-  };
+  useEffect(() => {
+    loadTemplate();
+  }, [loadTemplate]);
 
-  const fetchLastPerformance = useCallback(async (exerciseId: string) => {
-    if (!user) return;
-    try {
-      const perf = await getLastPerformance(user.id, exerciseId);
-      if (perf) {
-        setLastPerformanceData((prev) => {
-          const newMap = new Map(prev);
-          newMap.set(exerciseId, perf);
-          return newMap;
-        });
-      }
-    } catch (error) {
-      console.error('Failed to fetch last performance:', error);
-    }
-  }, [user]);
-
-  // Exercise management functions
-  const addExercise = (exercise: Exercise) => {
-    const newExercise: LocalExercise = {
-      id: generateLocalId(),
-      exerciseId: exercise.id,
-      exerciseName: exercise.name,
-      category: exercise.category,
-      sets: [{ id: generateLocalId(), weight: 0, reps: 0, completed: false }],
-      notes: '',
-    };
-    setExercises((prev) => [...prev, newExercise]);
-    setModalVisible(false);
-    fetchLastPerformance(exercise.id);
-  };
-
-  const removeExercise = (exerciseLocalId: string) => {
-    showAlert('Remove Exercise', 'Are you sure you want to remove this exercise?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: () => setExercises((prev) => prev.filter((ex) => ex.id !== exerciseLocalId)),
-      },
-    ]);
-  };
-
-  const addSet = (exerciseLocalId: string) => {
-    setExercises((prev) =>
-      prev.map((ex) => {
-        if (ex.id === exerciseLocalId) {
-          return {
-            ...ex,
-            sets: [
-              ...ex.sets,
-              { id: generateLocalId(), weight: 0, reps: 0, completed: false },
-            ],
-          };
-        }
-        return ex;
-      })
-    );
-  };
-
-  const removeSet = (exerciseLocalId: string, setId: string) => {
-    setExercises((prev) =>
-      prev.map((ex) => {
-        if (ex.id === exerciseLocalId && ex.sets.length > 1) {
-          return { ...ex, sets: ex.sets.filter((s) => s.id !== setId) };
-        }
-        return ex;
-      })
-    );
-  };
-
-  const updateSet = (
-    exerciseLocalId: string,
-    setId: string,
-    field: 'weight' | 'reps',
-    value: string
-  ) => {
-    const numValue = parseInt(value, 10) || 0;
-    setExercises((prev) =>
-      prev.map((ex) => {
-        if (ex.id === exerciseLocalId) {
-          return {
-            ...ex,
-            sets: ex.sets.map((s) => {
-              if (s.id === setId) return { ...s, [field]: numValue };
-              return s;
-            }),
-          };
-        }
-        return ex;
-      })
-    );
-  };
-
-  const toggleSetComplete = (exerciseLocalId: string, setId: string): boolean => {
-    let justCompleted = false;
-    setExercises((prev) =>
-      prev.map((ex) => {
-        if (ex.id === exerciseLocalId) {
-          return {
-            ...ex,
-            sets: ex.sets.map((s) => {
-              if (s.id === setId) {
-                justCompleted = !s.completed;
-                return { ...s, completed: !s.completed };
-              }
-              return s;
-            }),
-          };
-        }
-        return ex;
-      })
-    );
-    return justCompleted;
-  };
-
-  const updateExerciseNotes = (exerciseLocalId: string, notes: string) => {
-    setExercises((prev) =>
-      prev.map((ex) => {
-        if (ex.id === exerciseLocalId) return { ...ex, notes };
-        return ex;
-      })
-    );
-  };
-
-  // Handle set completion with haptic
-  const handleToggleSetComplete = async (exerciseLocalId: string, setId: string) => {
-    const completed = toggleSetComplete(exerciseLocalId, setId);
-    if (completed) {
-      if (hapticEnabled && Platform.OS !== 'web') {
-        try {
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        } catch { /* Haptics not available */ }
-      }
-      startRestTimer();
-    }
-  };
-
-  const handleRestTimerDurationChange = async (seconds: number) => {
-    setRestTimerDuration(seconds);
-    setShowRestTimerOptions(false);
-    await setRestTimerSeconds(seconds);
-  };
-
-  const handleFinishWorkout = async () => {
-    const hasCompletedSets = exercises.some((ex) =>
-      ex.sets.some((set) => set.completed && set.reps > 0)
-    );
-
-    if (!hasCompletedSets) {
-      showAlert(
-        'No Completed Sets',
-        'Please complete at least one set before finishing the workout.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    showAlert('Finish Workout', 'Are you sure you want to finish this workout?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Finish',
-        onPress: async () => {
-          setSaving(true);
-          try {
-            const workoutState: ActiveWorkoutState = {
-              exercises,
-              startTime,
-              notes: workoutNotes,
-            };
-
-            await saveWorkout(user!.id, workoutState);
-
-            const duration = Math.floor((Date.now() - startTime.getTime()) / 1000);
-            let setCount = 0;
-            let totalVolume = 0;
-            let totalReps = 0;
-
-            exercises.forEach((ex) => {
-              ex.sets.forEach((set) => {
-                if (set.completed && set.reps > 0) {
-                  setCount++;
-                  totalReps += set.reps;
-                  totalVolume += set.reps * set.weight;
-                }
-              });
-            });
-
-            const currentStreak = await getCurrentStreak(user!.id);
-            const xpEarned = calculateWorkoutXP(setCount, currentStreak);
-            await awardXP(user!.id, xpEarned);
-            const newBadges = await checkAndAwardBadges(user!.id);
-
-            const summary: WorkoutSummary = {
-              duration,
-              exerciseCount: exercises.filter((e) => e.sets.some((s) => s.completed)).length,
-              setCount,
-              totalVolume,
-              totalReps,
-              xpEarned,
-              newPRs: [],
-              newBadges,
-            };
-
-            setWorkoutSummary(summary);
-            setShowSummaryModal(true);
-          } catch (error) {
-            console.error('Failed to save workout:', error);
-            showAlert(
-              'Error',
-              error instanceof Error ? error.message : 'Failed to save workout. Please try again.',
-              [{ text: 'OK' }]
-            );
-          } finally {
-            setSaving(false);
-          }
-        },
-      },
-    ]);
-  };
-
-  const handleSummaryClose = () => {
-    setShowSummaryModal(false);
-    navigation.goBack();
-  };
-
-  const handleCancelWorkout = () => {
-    showAlert(
-      'Discard Workout',
-      'Are you sure you want to discard this workout? All progress will be lost.',
-      [
-        { text: 'Keep Working', style: 'cancel' },
-        {
-          text: 'Discard',
-          style: 'destructive',
-          onPress: () => navigation.goBack(),
-        },
-      ]
-    );
-  };
-
-  if (templateLoading) {
+  // Only create the workout hook once template is loaded
+  // We render LoadingState until then, so the hook is stable once created
+  if (templateLoading || initialExercises === undefined) {
     return <LoadingState />;
   }
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <ActiveWorkoutFromTemplateContent
+      navigation={navigation}
+      initialExercises={initialExercises}
+      colors={colors}
+      styles={styles}
+      insets={insets}
+    />
+  );
+}
+
+/**
+ * Inner component that mounts only after the template is loaded,
+ * ensuring useActiveWorkout receives stable initialExercises.
+ */
+function ActiveWorkoutFromTemplateContent({
+  navigation,
+  initialExercises,
+  colors,
+  styles,
+  insets,
+}: {
+  navigation: { goBack: () => void; navigate: (screen: string, params?: Record<string, unknown>) => void; getParent: () => { setOptions: (opts: Record<string, unknown>) => void } | undefined }; // TODO: type with navigation types
+  initialExercises: LocalExercise[];
+  colors: ThemeColors;
+  styles: ReturnType<typeof createStyles>;
+  insets: { top: number; bottom: number };
+}) {
+  const w = useActiveWorkout({
+    initialExercises,
+    navigation,
+    colors,
+  });
+
+  // Fetch last performance for all pre-filled exercises on mount
+  useEffect(() => {
+    for (const ex of initialExercises) {
+      w.fetchLastPerformance(ex.exerciseId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <View style={styles.container}>
       {/* Header with Timer */}
-      <WorkoutHeader elapsedSeconds={elapsedSeconds} onCancel={handleCancelWorkout} />
+      <WorkoutHeader elapsedSeconds={w.elapsedSeconds} onCancel={w.handleCancelWorkout} />
 
       {/* Exercise List */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Workout Notes */}
-        <View style={styles.workoutNotesContainer}>
-          <TouchableOpacity
-            style={styles.workoutNotesHeader}
-            onPress={() => setWorkoutNotesExpanded(!workoutNotesExpanded)}
-            accessibilityRole="button"
-            accessibilityLabel={`${workoutNotesExpanded ? 'Collapse' : 'Expand'} workout notes`}
-          >
-            <View style={styles.notesHeaderLeft}>
-              <Ionicons name="create-outline" size={20} color={colors.textSecondary} />
-              <Text style={[styles.workoutNotesTitle, { color: colors.textSecondary }]}>
-                Workout Notes {workoutNotes ? `(${workoutNotes.length})` : ''}
+      <View style={styles.scrollContainer}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={true}
+          nestedScrollEnabled={true}
+        >
+          {/* Workout Notes */}
+          <View style={styles.workoutNotesContainer}>
+            <TouchableOpacity
+              style={styles.workoutNotesHeader}
+              onPress={() => w.setWorkoutNotesExpanded(!w.workoutNotesExpanded)}
+              accessibilityRole="button"
+              accessibilityLabel={`${w.workoutNotesExpanded ? 'Collapse' : 'Expand'} workout notes`}
+            >
+              <View style={styles.notesHeaderLeft}>
+                <Ionicons name="create-outline" size={20} color={colors.textSecondary} />
+                <Text style={[styles.workoutNotesTitle, { color: colors.textSecondary }]}>
+                  Workout Notes {w.workoutNotes ? `(${w.workoutNotes.length})` : ''}
+                </Text>
+              </View>
+              <Ionicons
+                name={w.workoutNotesExpanded ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+            {w.workoutNotesExpanded && (
+              <TextInput
+                style={[
+                  styles.workoutNotesInput,
+                  {
+                    backgroundColor: colors.cardBackground,
+                    color: colors.textPrimary,
+                    borderColor: colors.border,
+                  },
+                ]}
+                placeholder="Add notes about this workout..."
+                placeholderTextColor={colors.textTertiary}
+                value={w.workoutNotes}
+                onChangeText={w.setWorkoutNotes}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+            )}
+          </View>
+
+          {w.exercises.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Ionicons name="barbell-outline" size={64} color={colors.textTertiary} />
+              <Text style={styles.emptyTitle}>No Exercises</Text>
+              <Text style={styles.emptyMessage}>
+                Tap the button below to add an exercise
               </Text>
             </View>
-            <Ionicons
-              name={workoutNotesExpanded ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-          {workoutNotesExpanded && (
-            <TextInput
-              style={[
-                styles.workoutNotesInput,
-                {
-                  backgroundColor: colors.cardBackground,
-                  color: colors.textPrimary,
-                  borderColor: colors.border,
-                },
-              ]}
-              placeholder="Add notes about this workout..."
-              placeholderTextColor={colors.textTertiary}
-              value={workoutNotes}
-              onChangeText={setWorkoutNotes}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
+          ) : (
+            w.exercises.map((exercise, index) => (
+              <ExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                lastPerformance={w.lastPerformanceData.get(exercise.exerciseId)}
+                restDuration={w.getExerciseRestDuration(
+                  exercise.exerciseId,
+                  exercise.exerciseName
+                )}
+                isFirst={index === 0}
+                isLast={index === w.exercises.length - 1}
+                onRemove={() => w.handleRemoveExercise(exercise.id)}
+                onAddSet={() => w.addSet(exercise.id)}
+                onRemoveSet={(setId) => w.removeSet(exercise.id, setId)}
+                onUpdateSet={(setId, field, value) =>
+                  w.updateSet(exercise.id, setId, field, value)
+                }
+                onToggleComplete={(setId) => w.handleToggleSetComplete(exercise.id, setId)}
+                onUpdateNotes={(notes) => w.updateExerciseNotes(exercise.id, notes)}
+                onConfigureRestTimer={() =>
+                  w.handleConfigureExerciseRestTimer(
+                    exercise.exerciseId,
+                    exercise.exerciseName
+                  )
+                }
+                onMoveUp={() => w.moveExercise(exercise.id, 'up')}
+                onMoveDown={() => w.moveExercise(exercise.id, 'down')}
+              />
+            ))
           )}
-        </View>
+        </ScrollView>
+      </View>
 
-        {exercises.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Ionicons name="barbell-outline" size={64} color={colors.textTertiary} />
-            <Text style={styles.emptyTitle}>No Exercises</Text>
-            <Text style={styles.emptyMessage}>
-              Tap the button below to add an exercise
-            </Text>
-          </View>
-        ) : (
-          exercises.map((exercise) => (
-            <ExerciseCard
-              key={exercise.id}
-              exercise={exercise}
-              lastPerformance={lastPerformanceData.get(exercise.exerciseId)}
-              onRemove={() => removeExercise(exercise.id)}
-              onAddSet={() => addSet(exercise.id)}
-              onRemoveSet={(setId) => removeSet(exercise.id, setId)}
-              onUpdateSet={(setId, field, value) => updateSet(exercise.id, setId, field, value)}
-              onToggleComplete={(setId) => handleToggleSetComplete(exercise.id, setId)}
-              onUpdateNotes={(notes) => updateExerciseNotes(exercise.id, notes)}
-            />
-          ))
-        )}
-        <View style={{ height: 150 }} />
-      </ScrollView>
-
-      {/* Footer Buttons */}
+      {/* Footer fade gradient + Buttons */}
+      <LinearGradient
+        colors={['transparent', colors.background]}
+        style={styles.footerFade}
+        pointerEvents="none"
+      />
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
         <TouchableOpacity
           style={styles.addExerciseButton}
-          onPress={() => setModalVisible(true)}
+          onPress={() => w.setModalVisible(true)}
           accessibilityRole="button"
           accessibilityLabel="Add exercise"
         >
@@ -525,9 +258,9 @@ export default function ActiveWorkoutFromTemplateScreen({
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.finishButton, saving && styles.finishButtonDisabled]}
-          onPress={handleFinishWorkout}
-          disabled={saving}
+          style={[styles.finishButton, w.saving && styles.finishButtonDisabled]}
+          onPress={w.handleFinishWorkout}
+          disabled={w.saving}
           accessibilityRole="button"
           accessibilityLabel="Finish workout"
         >
@@ -538,7 +271,7 @@ export default function ActiveWorkoutFromTemplateScreen({
             style={styles.finishGradient}
           >
             <Text style={styles.finishButtonText}>
-              {saving ? 'Saving...' : 'Finish Workout'}
+              {w.saving ? 'Saving...' : 'Finish Workout'}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -546,130 +279,170 @@ export default function ActiveWorkoutFromTemplateScreen({
 
       {/* Rest Timer Toast */}
       <RestTimerToast
-        visible={restTimerVisible}
-        restSeconds={restSeconds}
-        restTimerDuration={restTimerDuration}
-        bottomOffset={180 + insets.bottom}
-        onSkip={skipRestTimer}
-        onLongPress={() => setShowRestTimerOptions(true)}
-        onAdjustTime={adjustRestTime}
-        showOptions={showRestTimerOptions}
-        onCloseOptions={() => setShowRestTimerOptions(false)}
-        onSelectDuration={handleRestTimerDurationChange}
+        visible={w.restTimerVisible}
+        restSeconds={w.restSeconds}
+        restTimerDuration={w.restTimerDuration}
+        bottomOffset={150 + Math.max(insets.bottom, spacing.lg)}
+        onSkip={w.skipRestTimer}
+        onLongPress={() => w.setShowRestTimerOptions(true)}
+        onAdjustTime={w.adjustRestTime}
+        showOptions={w.showRestTimerOptions}
+        onCloseOptions={() => w.setShowRestTimerOptions(false)}
+        onSelectDuration={w.handleRestTimerDurationChange}
       />
 
       {/* Workout Summary Modal */}
       <WorkoutSummaryModal
-        visible={showSummaryModal}
-        summary={workoutSummary}
-        onClose={handleSummaryClose}
+        visible={w.showSummaryModal}
+        summary={w.workoutSummary}
+        onClose={w.handleSummaryClose}
+        onSaveAsTemplate={w.handleSaveAsTemplate}
+      />
+
+      {/* Save As Template Modal */}
+      <SaveAsTemplateModal
+        visible={w.showSaveTemplateModal}
+        onClose={() => {
+          w.setShowSaveTemplateModal(false);
+          navigation.goBack();
+        }}
+        onSave={w.handleTemplateSave}
+        loading={w.savingTemplate}
       />
 
       {/* Add Exercise Modal */}
       <ExerciseSelectionModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onSelectExercise={addExercise}
+        visible={w.modalVisible}
+        onClose={() => w.setModalVisible(false)}
+        onSelectExercise={w.handleAddExercise}
         topInset={insets.top}
+      />
+
+      {/* Per-Exercise Rest Timer Options Modal */}
+      <RestTimerOptionsModal
+        visible={w.exerciseTimerModal.visible}
+        exerciseName={w.exerciseTimerModal.exerciseName}
+        currentDuration={
+          w.exerciseTimerModal.exerciseId
+            ? w.getExerciseRestDuration(
+                w.exerciseTimerModal.exerciseId,
+                w.exerciseTimerModal.exerciseName
+              )
+            : 60
+        }
+        onClose={w.closeExerciseTimerModal}
+        onSelectDuration={w.handleExerciseRestTimerSelect}
       />
     </View>
   );
 }
 
-const createStyles = (colors: any) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    content: {
-      flex: 1,
-      paddingHorizontal: spacing.xl,
-      paddingTop: spacing.lg,
-    },
-    emptyState: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 80,
-    },
-    emptyTitle: {
-      ...typography.title2,
-      color: colors.textPrimary,
-      marginTop: spacing.lg,
-      marginBottom: spacing.sm,
-    },
-    emptyMessage: {
-      ...typography.bodySecondary,
-      color: colors.textSecondary,
-      textAlign: 'center',
-    },
-    footer: {
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  scrollView: {
+    ...(Platform.OS === 'web' ? {
       position: 'absolute',
-      bottom: 0,
+      top: 0,
       left: 0,
       right: 0,
-      backgroundColor: colors.background,
-      borderTopWidth: 1,
-      borderTopColor: colors.border,
-      paddingHorizontal: spacing.xl,
-      paddingTop: spacing.lg,
-      gap: spacing.md,
-    },
-    addExerciseButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: colors.cardBackground,
-      paddingVertical: spacing.lg,
-      borderRadius: borderRadius.lg,
-      gap: spacing.sm,
-    },
-    addExerciseText: {
-      ...typography.headline,
-      color: colors.textPrimary,
-    },
-    finishButton: {
-      borderRadius: borderRadius.lg,
-      overflow: 'hidden',
-    },
-    finishButtonDisabled: {
-      opacity: 0.6,
-    },
-    finishGradient: {
-      paddingVertical: spacing.lg,
-      alignItems: 'center',
-    },
-    finishButtonText: {
-      ...typography.headline,
-      color: colors.textPrimary,
-    },
-    workoutNotesContainer: {
-      backgroundColor: colors.cardBackground,
-      borderRadius: borderRadius.lg,
-      padding: spacing.lg,
-      marginBottom: spacing.lg,
-    },
-    workoutNotesHeader: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    notesHeaderLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: spacing.sm,
-    },
-    workoutNotesTitle: {
-      ...typography.headline,
-      fontWeight: '600',
-    },
-    workoutNotesInput: {
-      ...typography.body,
-      paddingHorizontal: spacing.md,
-      paddingVertical: spacing.md,
-      borderRadius: borderRadius.md,
-      borderWidth: 1,
-      marginTop: spacing.md,
-      minHeight: 100,
-    },
-  });
+      bottom: 0,
+    } : {
+      flex: 1,
+    }),
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+  },
+  emptyTitle: {
+    ...typography.title2,
+    color: colors.textPrimary,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  emptyMessage: {
+    ...typography.bodySecondary,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  footerFade: {
+    height: 24,
+    marginTop: -24,
+  },
+  footer: {
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.sm,
+    gap: spacing.md,
+  },
+  addExerciseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cardBackground,
+    paddingVertical: spacing.lg,
+    borderRadius: borderRadius.lg,
+    gap: spacing.sm,
+  },
+  addExerciseText: {
+    ...typography.headline,
+    color: colors.textPrimary,
+  },
+  finishButton: {
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  finishButtonDisabled: {
+    opacity: 0.6,
+  },
+  finishGradient: {
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+  },
+  finishButtonText: {
+    ...typography.headline,
+    color: colors.textPrimary,
+  },
+  workoutNotesContainer: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
+  },
+  workoutNotesHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  notesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  workoutNotesTitle: {
+    ...typography.headline,
+    fontWeight: '600',
+  },
+  workoutNotesInput: {
+    ...typography.body,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    marginTop: spacing.md,
+    minHeight: 100,
+  },
+});

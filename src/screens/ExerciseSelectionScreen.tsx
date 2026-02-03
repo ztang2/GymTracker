@@ -12,7 +12,7 @@ import {
 } from '../components';
 import { useExerciseSearch } from '../hooks';
 import { addExerciseToWorkout } from '../services';
-import { typography, spacing } from '../constants/theme';
+import { typography, spacing ,  type ThemeColors } from '../constants/theme';
 import type { Exercise } from '../services/types';
 
 export default function ExerciseSelectionScreen({
@@ -163,7 +163,7 @@ export default function ExerciseSelectionScreen({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
   },

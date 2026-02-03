@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts';
-import { spacing, borderRadius, typography, getCategoryColor } from '../constants/theme';
+import { spacing, borderRadius, typography, getCategoryColor ,  type ThemeColors } from '../constants/theme';
 import type { Exercise } from '../services/types';
 
 interface ExerciseListItemProps {
@@ -24,7 +24,7 @@ export default function ExerciseListItem({
   const styles = createStyles(colors);
   const categoryColor = getCategoryColor(exercise.category);
 
-  const handleFavoritePress = (e: any) => {
+  const handleFavoritePress = (e: { stopPropagation: () => void }) => {
     e.stopPropagation(); // Prevent triggering the card press
     onToggleFavorite?.();
   };
@@ -77,7 +77,7 @@ export default function ExerciseListItem({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',

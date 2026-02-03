@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Circle, Line as SvgLine } from 'react-native-svg';
 import { useTheme } from '../contexts';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 
 export interface ProgressChartDataPoint {
   date: string; // YYYY-MM-DD or any date string
@@ -181,7 +181,7 @@ function formatDateLabel(dateStr: string): string {
   return dateStr.substring(5);
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

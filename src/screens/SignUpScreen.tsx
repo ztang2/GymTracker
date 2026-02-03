@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth , useTheme } from '../contexts';
-import { spacing, typography, borderRadius } from '../constants/theme';
+import { spacing, typography, borderRadius ,  type ThemeColors } from '../constants/theme';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { AuthStackParamList } from '../navigation/types';
 
@@ -213,7 +213,7 @@ export default function SignUpScreen({ navigation }: SignUpScreenProps) {
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

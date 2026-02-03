@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useTheme } from '../contexts';
-import { spacing, borderRadius, typography } from '../constants/theme';
+import { spacing, borderRadius, typography ,  type ThemeColors } from '../constants/theme';
 import type { ExerciseCategory } from '../services/types';
 
 interface CategoryFilterChipsProps {
@@ -64,7 +64,7 @@ export default function CategoryFilterChips({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     paddingVertical: spacing.sm,
     gap: spacing.sm,

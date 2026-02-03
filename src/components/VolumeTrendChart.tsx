@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Svg, { Path, Circle, Line as SvgLine, Rect } from 'react-native-svg';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 import { useWeightUnit } from '../hooks';
 
 export interface WeekVolumeData {
@@ -211,7 +211,7 @@ export default function VolumeTrendChart({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

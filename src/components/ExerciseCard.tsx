@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Animated } from 'r
 import { Ionicons } from '@expo/vector-icons';
 import type { LocalExercise } from '../services/workoutLogger';
 import type { LastPerformance } from '../services';
-import { typography, spacing, borderRadius, shadows } from '../constants/theme';
+import { typography, spacing, borderRadius, shadows, type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 import { useWeightUnit } from '../hooks';
 
@@ -314,8 +314,8 @@ const WeightInput: React.FC<{
   convert: (kg: number) => number;
   toKg: (display: number) => number;
   onUpdateSet: (setId: string, field: 'weight' | 'reps', value: string) => void;
-  colors: any;
-  styles: any;
+  colors: ThemeColors;
+  styles: ReturnType<typeof createStyles>; // TODO: type this properly if circular
 }> = ({ set, index, unit, convert, toKg, onUpdateSet, colors, styles }) => {
   const [localValue, setLocalValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -384,7 +384,7 @@ const WeightInput: React.FC<{
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   exerciseCard: {
     backgroundColor: colors.cardBackground,
     borderRadius: borderRadius.lg,

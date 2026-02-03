@@ -3,7 +3,7 @@ import { useTheme } from '../contexts';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { formatDuration } from '../services/workoutLogger';
-import { typography, spacing, borderRadius } from '../constants/theme';
+import { typography, spacing, borderRadius ,  type ThemeColors } from '../constants/theme';
 
 interface WorkoutHeaderProps {
   elapsedSeconds: number;
@@ -34,7 +34,7 @@ export const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   );
 };
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',

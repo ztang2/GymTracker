@@ -3,7 +3,7 @@ import { useTheme } from '../contexts';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { typography, borderRadius, spacing } from '../constants/theme';
+import { typography, borderRadius, spacing ,  type ThemeColors } from '../constants/theme';
 import { colorGlow } from '../utils';
 
 interface ActionButtonProps {
@@ -65,7 +65,7 @@ export default function ActionButton({
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     aspectRatio: 1,

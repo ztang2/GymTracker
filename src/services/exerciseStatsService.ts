@@ -78,7 +78,8 @@ export async function getExerciseHistory(
     }
 
     // Transform the data
-    const history: ExerciseHistorySession[] = data.map((workoutExercise: any) => {
+    // TODO: type Supabase join result properly
+    const history: ExerciseHistorySession[] = data.map((workoutExercise: Record<string, unknown>) => {
       const session = Array.isArray(workoutExercise.workout_sessions)
         ? workoutExercise.workout_sessions[0]
         : workoutExercise.workout_sessions;

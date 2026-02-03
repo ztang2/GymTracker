@@ -2,7 +2,7 @@ import React from 'react';
 import { useTheme } from '../contexts';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { typography, spacing, borderRadius, prColors } from '../constants/theme';
+import { typography, spacing, borderRadius, prColors ,  type ThemeColors } from '../constants/theme';
 
 interface PRBadgeProps {
   size?: 'small' | 'medium' | 'large';
@@ -41,7 +41,7 @@ export default function PRBadge({ size = 'medium', showLabel = true }: PRBadgePr
   );
 }
 
-const createStyles = (colors: any) => StyleSheet.create({
+const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
