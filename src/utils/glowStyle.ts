@@ -1,23 +1,26 @@
 import { Platform } from 'react-native';
 
-// Creates a color-matched glow effect for colored elements
-// size: 'sm' | 'md' | 'lg' for different intensities
-export function colorGlow(color: string, size: 'sm' | 'md' | 'lg' = 'md') {
+// Minimal shadow for depth - monochrome design
+// No colored glows, just subtle black shadows
+export function colorGlow(_color: string, size: 'sm' | 'md' | 'lg' = 'md') {
   const configs = {
-    sm: { spread: 5, blur: 10, opacity: '44', outerBlur: 20, outerOpacity: '22' },
-    md: { spread: 7, blur: 16, opacity: '55', outerBlur: 32, outerOpacity: '30' },
-    lg: { spread: 10, blur: 22, opacity: '66', outerBlur: 40, outerOpacity: '35' },
+    sm: { blur: 4, opacity: 0.1 },
+    md: { blur: 8, opacity: 0.15 },
+    lg: { blur: 12, opacity: 0.2 },
   };
   const c = configs[size];
+  
   if (Platform.OS === 'web') {
-    // boxShadow is web-only and not in RN's ViewStyle type
-    return { boxShadow: `0 0 ${c.blur}px ${c.spread}px ${color}${c.opacity}, 0 0 ${c.outerBlur}px ${Math.round(c.spread * 1.6)}px ${color}${c.outerOpacity}` } as Record<string, string>;
+    return { 
+      boxShadow: `0 2px ${c.blur}px rgba(0, 0, 0, ${c.opacity})` 
+    } as Record<string, string>;
   }
+  
   return {
-    shadowColor: color,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: parseInt(c.opacity, 16) / 255,
-    shadowRadius: c.blur,
-    elevation: size === 'lg' ? 16 : size === 'md' ? 12 : 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: c.opacity,
+    shadowRadius: c.blur / 2,
+    elevation: size === 'lg' ? 8 : size === 'md' ? 4 : 2,
   };
 }
