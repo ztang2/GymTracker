@@ -53,5 +53,8 @@ export { default as ExerciseListItem } from './ExerciseListItem';
 // Network state components
 export { default as OfflineBanner } from './OfflineBanner';
 
+// Error handling
+export { default as ErrorBoundary } from './ErrorBoundary';
+
 // Animation components
 export { default as AnimatedCard } from './AnimatedCard';

@@ -41,8 +41,7 @@ import {
 } from '../screens';
 import { useAuth, useTheme } from '../contexts';
 import { seedExercises } from '../services';
-import ErrorBoundary from '../components/ErrorBoundary';
-import { OfflineBanner } from '../components';
+import { ErrorBoundary, OfflineBanner } from '../components';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();

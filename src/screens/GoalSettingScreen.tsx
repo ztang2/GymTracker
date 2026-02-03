@@ -154,6 +154,10 @@ export default function GoalSettingScreen({ navigation }: GoalSettingScreenProps
       showAlert('Invalid Value', 'Please enter a valid target value.', [{ text: 'OK' }]);
       return;
     }
+    if (value > 999999) {
+      showAlert('Invalid Value', 'Target value must be 999,999 or less.', [{ text: 'OK' }]);
+      return;
+    }
 
     setSaving(true);
     try {

@@ -54,6 +54,16 @@ export default function CreateExerciseScreen({ navigation }: CreateExerciseScree
       return;
     }
 
+    if (name.trim().length > 100) {
+      showAlert('Validation Error', 'Exercise name must be 100 characters or less', [{ text: 'OK' }]);
+      return;
+    }
+
+    if (description.trim().length > 500) {
+      showAlert('Validation Error', 'Description must be 500 characters or less', [{ text: 'OK' }]);
+      return;
+    }
+
     if (!selectedCategory) {
       showAlert('Validation Error', 'Please select a muscle group', [{ text: 'OK' }]);
       return;

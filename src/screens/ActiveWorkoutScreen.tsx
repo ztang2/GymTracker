@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert, TextInput } from 'react-native';
+import React, { useState, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +17,8 @@ import {
   checkAndAwardBadges,
   getCurrentStreak,
   createTemplateFromWorkout,
+  detectPRsFromWorkout,
+  XP_REWARDS,
   type LastPerformance,
   type Exercise,
 } from '../services';
@@ -70,7 +72,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { colors } = useTheme();
-  const styles = createStyles(colors);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   // Workout state
   const [startTime] = useState(new Date());
@@ -188,9 +190,9 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
   // Fetch last performance data when an exercise is added
   const fetchLastPerformance = useCallback(async (exerciseId: string) => {
     if (!user) return;
-          
+
     try {
-      const perf = await getLastPerformance(user!.id, exerciseId);
+      const perf = await getLastPerformance(user.id, exerciseId);
       if (perf) {
         setLastPerformanceData((prev) => {
           const newMap = new Map(prev);
@@ -201,7 +203,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
     } catch (error) {
       console.error('Failed to fetch last performance:', error);
     }
-  }, []);
+  }, [user]);
 
   // Handle adding exercise
   const handleAddExercise = (exercise: Exercise) => {
@@ -289,6 +291,11 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
       {
         text: 'Finish',
         onPress: async () => {
+          if (!user) {
+            showAlert('Error', 'You must be logged in to save a workout.', [{ text: 'OK' }]);
+            return;
+          }
+
           setSaving(true);
           try {
             const workoutState: ActiveWorkoutState = {
@@ -297,7 +304,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
               notes: workoutNotes,
             };
 
-            await saveWorkout(user!.id, workoutState);
+            const savedSession = await saveWorkout(user.id, workoutState);
 
             // Calculate workout summary
             const duration = Math.floor((Date.now() - startTime.getTime()) / 1000);
@@ -315,15 +322,27 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
               });
             });
 
+            // Detect personal records
+            const exerciseSetsForPR = exercises
+              .filter(ex => ex.sets.some(s => s.completed && s.reps > 0))
+              .map(ex => ({
+                exerciseId: ex.exerciseId,
+                exerciseName: ex.exerciseName,
+                sets: ex.sets.filter(s => s.completed && s.reps > 0),
+              }));
+
+            const newPRs = await detectPRsFromWorkout(user.id, savedSession.id, exerciseSetsForPR);
+
             // Get current streak and calculate XP
-            const currentStreak = await getCurrentStreak(user!.id);
-            const xpEarned = calculateWorkoutXP(setCount, currentStreak);
+            const currentStreak = await getCurrentStreak(user.id);
+            let xpEarned = calculateWorkoutXP(setCount, currentStreak);
+            xpEarned += newPRs.length * XP_REWARDS.personalRecord;
 
             // Award XP to user
-            await awardXP(user!.id, xpEarned);
+            await awardXP(user.id, xpEarned);
 
             // Check and award any new badges
-            const newBadges = await checkAndAwardBadges(user!.id);
+            const newBadges = await checkAndAwardBadges(user.id);
 
             const summary: WorkoutSummary = {
               duration,
@@ -334,7 +353,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
               totalVolume,
               totalReps,
               xpEarned,
-              newPRs: [],
+              newPRs,
               newBadges: newBadges,
             };
 
@@ -451,9 +470,9 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
                 size={20}
                 color={colors.textSecondary}
               />
-              <Typography style={[styles.workoutNotesTitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.workoutNotesTitle, { color: colors.textSecondary }]}>
                 Workout Notes {workoutNotes ? `(${workoutNotes.length})` : ''}
-              </Typography>
+              </Text>
             </View>
             <Ionicons
               name={workoutNotesExpanded ? 'chevron-up' : 'chevron-down'}
@@ -485,10 +504,10 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
         {exercises.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="barbell-outline" size={64} color={colors.textTertiary} />
-            <Typography style={styles.emptyTitle}>No Exercises Added</Typography>
-            <Typography style={styles.emptyMessage}>
+            <Text style={styles.emptyTitle}>No Exercises Added</Text>
+            <Text style={styles.emptyMessage}>
               Tap the button below to add your first exercise
-            </Typography>
+            </Text>
           </View>
         ) : (
           exercises.map((exercise, index) => (
@@ -539,7 +558,7 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
           accessibilityHint="Add an exercise to your workout"
         >
           <Ionicons name="add" size={24} color={colors.textPrimary} />
-          <Typography style={styles.addExerciseText}>Add Exercise</Typography>
+          <Text style={styles.addExerciseText}>Add Exercise</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -557,9 +576,9 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
             end={{ x: 1, y: 0 }}
             style={styles.finishGradient}
           >
-            <Typography style={styles.finishButtonText}>
+            <Text style={styles.finishButtonText}>
               {saving ? 'Saving...' : 'Finish Workout'}
-            </Typography>
+            </Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -625,15 +644,6 @@ export default function ActiveWorkoutScreen({ navigation }: ActiveWorkoutScreenP
     </View>
   );
 }
-
-// Quick Typography wrapper to avoid Text duplication
-const Typography: React.FC<{ style?: any; children: React.ReactNode }> = ({
-  style,
-  children,
-}) => {
-  const { Text } = require('react-native');
-  return <Text style={style}>{children}</Text>;
-};
 
 const createStyles = (colors: any) => StyleSheet.create({
   container: {

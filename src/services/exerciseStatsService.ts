@@ -358,6 +358,6 @@ export function calculateFrequencyPerWeek(
     Math.round((last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24))
   );
   
-  const weeks = daysDiff / 7;
+  const weeks = Math.max(1, daysDiff / 7);
   return timesPerformed / weeks;
 }

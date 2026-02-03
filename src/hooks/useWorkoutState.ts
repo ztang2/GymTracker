@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
   createLocalExercise,
   createEmptySet,
@@ -73,7 +73,7 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
       field: 'weight' | 'reps',
       value: string
     ) => {
-      const numValue = parseInt(value, 10) || 0;
+      const numValue = parseFloat(value) || 0;
       setExercises((prev) =>
         prev.map((ex) => {
           if (ex.id === exerciseLocalId) {
@@ -98,10 +98,10 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
    * Toggles the completion status of a set
    * Returns true if the set was just marked as complete (for haptic feedback)
    */
+  const justCompletedRef = useRef(false);
   const toggleSetComplete = useCallback(
     (exerciseLocalId: string, setId: string): boolean => {
-      let wasCompleted = false;
-      let justCompleted = false;
+      justCompletedRef.current = false;
 
       setExercises((prev) =>
         prev.map((ex) => {
@@ -110,8 +110,7 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
               ...ex,
               sets: ex.sets.map((s) => {
                 if (s.id === setId) {
-                  wasCompleted = s.completed;
-                  justCompleted = !wasCompleted;
+                  justCompletedRef.current = !s.completed;
                   return { ...s, completed: !s.completed };
                 }
                 return s;
@@ -122,7 +121,7 @@ export const useWorkoutState = (): UseWorkoutStateReturn => {
         })
       );
 
-      return justCompleted;
+      return justCompletedRef.current;
     },
     []
   );

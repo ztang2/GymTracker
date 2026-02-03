@@ -97,6 +97,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   const INITIAL_DISPLAY_COUNT = 5;
   const FETCH_LIMIT = 15;
+  const lastLoadRef = useRef(0);
 
   // Reload data every time the screen comes into focus
   useFocusEffect(
@@ -107,9 +108,14 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     }, [user])
   );
 
-  const loadData = async () => {
+  const loadData = useCallback(async (forceRefresh = false) => {
     if (!user) return;
-    
+
+    // Skip if loaded within last 30 seconds (unless force refresh)
+    const now = Date.now();
+    if (!forceRefresh && now - lastLoadRef.current < 30000) return;
+    lastLoadRef.current = now;
+
     try {
       // Fetch recent workouts, weekly stats, and user profile
       const [recent, stats, profile] = await Promise.all([
@@ -145,13 +151,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await loadData();
+    await loadData(true);
     setRefreshing(false);
-  }, []);
+  }, [loadData]);
 
   const handleNewWorkout = () => {
     navigation.navigate('ActiveWorkoutScreen');
