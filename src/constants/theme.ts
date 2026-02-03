@@ -1,141 +1,141 @@
-// THEME DESIGN SYSTEM
+// THEME DESIGN SYSTEM - Slate (Apple-inspired, minimal)
 
-// Dark theme colors (FitFlow-inspired)
+// Dark theme colors - Pure black with light gray accents
 export const darkColors = {
-  // Background colors (dark theme) - Deep navy-purple
-  background: '#0D0B1E',  // Deep navy-purple background (NOT pure black)
-  backgroundElevated: '#16133A',  // Slightly lighter purple-navy
-  cardBackground: '#2A2560',  // Clearly elevated from #0D0B1E background
-  cardBackgroundHover: 'rgba(40, 35, 80, 0.9)',  // Hovered/pressed cards
+  // Background colors - True black with subtle elevation
+  background: '#000000',
+  backgroundElevated: '#0A0A0A',
+  cardBackground: '#111111',
+  cardBackgroundHover: '#1A1A1A',
 
-  // Text colors (dark theme)
-  textPrimary: '#FFFFFF',  // Pure white
-  textSecondary: '#A59FBF',  // Muted lavender-gray
-  textTertiary: '#6B6585',  // Darker muted
-  textMuted: '#4b5563',  // Very subtle text
+  // Text colors - Clean hierarchy
+  textPrimary: '#F8FAFC',
+  textSecondary: '#94A3B8',
+  textTertiary: '#64748B',
+  textMuted: '#475569',
 
-  // Vibrant accent colors
-  purple: '#8B5CF6',  // Vibrant purple
-  purpleLight: '#A855F7',  // Lighter purple
-  pink: '#EC4899',  // Pink accent
-  pinkLight: '#F472B6',  // Lighter pink
-  green: '#10B981',  // Emerald-500
-  greenLight: '#34D399',  // Emerald-400
-  teal: '#14B8A6',  // Teal accent
-  tealLight: '#2DD4BF',  // Lighter teal
-  orange: '#F97316',  // Orange accent
-  orangeLight: '#FB923C',  // Lighter orange
+  // Accent colors - Light gray/white (elegant, not colorful)
+  purple: '#E2E8F0',      // Primary accent
+  purpleLight: '#F1F5F9',
+  pink: '#CBD5E1',        // Secondary
+  pinkLight: '#E2E8F0',
+  green: '#E2E8F0',       // Success (same elegant gray)
+  greenLight: '#F1F5F9',
+  teal: '#E2E8F0',
+  tealLight: '#F1F5F9',
+  orange: '#E2E8F0',
+  orangeLight: '#F1F5F9',
 
-  // Gradient definitions (for gradient cards)
-  gradientPurplePink: ['#A855F7', '#EC4899'] as readonly ['#A855F7', '#EC4899'],  // Purple to pink
-  gradientTealGreen: ['#14B8A6', '#10B981'] as readonly ['#14B8A6', '#10B981'],  // Teal to green
-  gradientOrange: ['#F97316', '#FB923C'] as readonly ['#F97316', '#FB923C'],  // Orange gradient
-  gradientCyanBlue: ['#06B6D4', '#3B82F6'] as readonly ['#06B6D4', '#3B82F6'],  // Cyan to blue (for workouts icon)
-  gradientPinkPurple: ['#EC4899', '#8B5CF6'] as readonly ['#EC4899', '#8B5CF6'],  // Pink to purple (for minutes icon)
-  gradientPinkCoral: ['#EC4899', '#F97316'] as readonly ['#EC4899', '#F97316'],  // Pink to coral (for Set Goal button)
+  // Gradient definitions - Subtle grayscale
+  gradientPurplePink: ['#E2E8F0', '#CBD5E1'] as readonly [string, string],
+  gradientTealGreen: ['#F1F5F9', '#E2E8F0'] as readonly [string, string],
+  gradientOrange: ['#E2E8F0', '#CBD5E1'] as readonly [string, string],
+  gradientCyanBlue: ['#F1F5F9', '#E2E8F0'] as readonly [string, string],
+  gradientPinkPurple: ['#CBD5E1', '#E2E8F0'] as readonly [string, string],
+  gradientPinkCoral: ['#E2E8F0', '#CBD5E1'] as readonly [string, string],
 
-  // Contribution calendar colors (dark theme)
-  calendarEmpty: '#1a1a1a',  // Dark gray for empty days
-  calendarLevel1: '#14B8A6',  // Teal for 1 workout
-  calendarLevel2: '#10B981',  // Green for 2 workouts
-  calendarLevel3: '#059669',  // Darker green for 3+ workouts
-  calendarToday: '#EC4899',  // Pink for today marker
+  // Contribution calendar - Subtle progression
+  calendarEmpty: '#1E293B',
+  calendarLevel1: '#475569',
+  calendarLevel2: '#64748B',
+  calendarLevel3: '#94A3B8',
+  calendarToday: '#F1F5F9',
 
-  // Category colors (7 vibrant colors for muscle groups)
-  categoryChest: '#F97316',  // Orange
-  categoryBack: '#14B8A6',  // Teal
-  categoryLegs: '#8B5CF6',  // Purple
-  categoryShoulders: '#EC4899',  // Pink
-  categoryArms: '#10B981',  // Green
-  categoryCore: '#F59E0B',  // Amber
-  categoryCardio: '#EF4444',  // Red
+  // Category colors - Distinct but muted
+  categoryChest: '#F1F5F9',
+  categoryBack: '#E2E8F0',
+  categoryLegs: '#CBD5E1',
+  categoryShoulders: '#94A3B8',
+  categoryArms: '#F8FAFC',
+  categoryCore: '#E2E8F0',
+  categoryCardio: '#CBD5E1',
 
   // UI element colors
-  border: 'rgba(160, 140, 220, 0.4)',  // Visible glassmorphic border
-  borderLight: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted subtle border
-  borderFocus: '#8B5CF6',  // Purple border for focus states
-  success: '#10B981',
-  error: '#EF4444',
-  warning: '#F59E0B',
-  info: '#3B82F6',
+  border: '#1E293B',
+  borderLight: '#1E293B',
+  borderFocus: '#E2E8F0',
+  success: '#E2E8F0',
+  error: '#F87171',       // Keep red for errors (important)
+  warning: '#FBBF24',     // Keep yellow for warnings
+  info: '#E2E8F0',
   
   // Input colors
-  inputBackground: '#1A1635',
-  inputBorder: 'rgba(139, 92, 246, 0.15)',
-  inputPlaceholder: '#6B6585',
+  inputBackground: '#0A0A0A',
+  inputBorder: '#1E293B',
+  inputPlaceholder: '#475569',
   
   // Tab bar
-  tabBarBackground: '#0D0B1E',  // Same deep navy as background
-  tabBarBorder: 'rgba(139, 92, 246, 0.15)',  // Purple-tinted border
+  tabBarBackground: '#000000',
+  tabBarBorder: '#1E293B',
 };
 
-// Light theme colors (FitFlow-inspired)
+// Light theme colors - Pure white with dark gray accents
 export const lightColors = {
-  // Background colors (light theme) - Soft lavender-white
-  background: '#FAF8FF',  // Soft off-white with lavender tint
-  backgroundElevated: '#EDE8FF',  // Elevated surfaces with lavender
-  cardBackground: '#FFFFFF',  // Pure white cards
-  cardBackgroundHover: '#F5F5F5',  // Hovered/pressed cards
+  // Background colors - Clean white
+  background: '#FFFFFF',
+  backgroundElevated: '#F8FAFC',
+  cardBackground: '#F1F5F9',
+  cardBackgroundHover: '#E2E8F0',
 
-  // Text colors (light theme) - Purple undertones
-  textPrimary: '#1E1533',  // Dark charcoal with purple tint
-  textSecondary: '#6B5B8A',  // Muted purple-gray
-  textTertiary: '#A394C0',  // Lighter purple-gray
-  textMuted: '#D1D5DB',  // Very subtle text
+  // Text colors - Dark hierarchy
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textTertiary: '#94A3B8',
+  textMuted: '#CBD5E1',
 
-  // Vibrant accent colors (same as dark)
-  purple: '#8B5CF6',  // Vibrant purple
-  purpleLight: '#A855F7',  // Lighter purple
-  pink: '#EC4899',  // Pink accent
-  pinkLight: '#F472B6',  // Lighter pink
-  green: '#10B981',  // Emerald-500
-  greenLight: '#34D399',  // Emerald-400
-  teal: '#14B8A6',  // Teal accent
-  tealLight: '#2DD4BF',  // Lighter teal
-  orange: '#F97316',  // Orange accent
-  orangeLight: '#FB923C',  // Lighter orange
+  // Accent colors - Dark gray/black
+  purple: '#334155',      // Primary accent
+  purpleLight: '#475569',
+  pink: '#64748B',        // Secondary
+  pinkLight: '#475569',
+  green: '#334155',
+  greenLight: '#475569',
+  teal: '#334155',
+  tealLight: '#475569',
+  orange: '#334155',
+  orangeLight: '#475569',
 
-  // Gradient definitions (same as dark)
-  gradientPurplePink: ['#A855F7', '#EC4899'] as readonly ['#A855F7', '#EC4899'],
-  gradientTealGreen: ['#14B8A6', '#10B981'] as readonly ['#14B8A6', '#10B981'],
-  gradientOrange: ['#F97316', '#FB923C'] as readonly ['#F97316', '#FB923C'],
-  gradientCyanBlue: ['#06B6D4', '#3B82F6'] as readonly ['#06B6D4', '#3B82F6'],  // Cyan to blue
-  gradientPinkPurple: ['#EC4899', '#8B5CF6'] as readonly ['#EC4899', '#8B5CF6'],  // Pink to purple
-  gradientPinkCoral: ['#EC4899', '#F97316'] as readonly ['#EC4899', '#F97316'],  // Pink to coral
+  // Gradient definitions
+  gradientPurplePink: ['#334155', '#475569'] as readonly [string, string],
+  gradientTealGreen: ['#1E293B', '#334155'] as readonly [string, string],
+  gradientOrange: ['#334155', '#475569'] as readonly [string, string],
+  gradientCyanBlue: ['#1E293B', '#334155'] as readonly [string, string],
+  gradientPinkPurple: ['#475569', '#334155'] as readonly [string, string],
+  gradientPinkCoral: ['#334155', '#475569'] as readonly [string, string],
 
-  // Contribution calendar colors (light theme)
-  calendarEmpty: '#F5F5F5',  // Light gray for empty days
-  calendarLevel1: '#14B8A6',  // Teal for 1 workout
-  calendarLevel2: '#10B981',  // Green for 2 workouts
-  calendarLevel3: '#059669',  // Darker green for 3+ workouts
-  calendarToday: '#EC4899',  // Pink for today marker
+  // Contribution calendar
+  calendarEmpty: '#F1F5F9',
+  calendarLevel1: '#CBD5E1',
+  calendarLevel2: '#94A3B8',
+  calendarLevel3: '#64748B',
+  calendarToday: '#0F172A',
 
-  // Category colors (same vibrant colors work in both modes)
-  categoryChest: '#F97316',  // Orange
-  categoryBack: '#14B8A6',  // Teal
-  categoryLegs: '#8B5CF6',  // Purple
-  categoryShoulders: '#EC4899',  // Pink
-  categoryArms: '#10B981',  // Green
-  categoryCore: '#F59E0B',  // Amber
-  categoryCardio: '#EF4444',  // Red
+  // Category colors
+  categoryChest: '#1E293B',
+  categoryBack: '#334155',
+  categoryLegs: '#475569',
+  categoryShoulders: '#64748B',
+  categoryArms: '#0F172A',
+  categoryCore: '#334155',
+  categoryCardio: '#475569',
 
   // UI element colors
-  border: 'rgba(139, 92, 246, 0.18)',  // Purple-tinted border
-  borderLight: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted subtle border
-  borderFocus: '#8B5CF6',  // Purple border for focus states
-  success: '#10B981',
-  error: '#EF4444',
-  warning: '#F59E0B',
-  info: '#3B82F6',
+  border: '#E2E8F0',
+  borderLight: '#F1F5F9',
+  borderFocus: '#334155',
+  success: '#334155',
+  error: '#DC2626',
+  warning: '#D97706',
+  info: '#334155',
   
   // Input colors
-  inputBackground: '#F0ECFF',
-  inputBorder: 'rgba(139, 92, 246, 0.12)',
-  inputPlaceholder: '#A394C0',
+  inputBackground: '#F8FAFC',
+  inputBorder: '#E2E8F0',
+  inputPlaceholder: '#94A3B8',
   
   // Tab bar
-  tabBarBackground: '#FFFFFF',  // White background
-  tabBarBorder: 'rgba(139, 92, 246, 0.12)',  // Purple-tinted border
+  tabBarBackground: '#FFFFFF',
+  tabBarBorder: '#E2E8F0',
 };
 
 // Type definition for theme colors
@@ -146,8 +146,87 @@ export function getThemeColors(mode: 'light' | 'dark'): ThemeColors {
   return mode === 'dark' ? darkColors : lightColors;
 }
 
-// Default export for backward compatibility (will be replaced by context)
+// Default export for backward compatibility
 export const colors = darkColors;
+
+// Rarity colors for badges
+export const rarityColors = {
+  common: '#64748B',
+  uncommon: '#94A3B8',
+  rare: '#CBD5E1',
+  epic: '#E2E8F0',
+  legendary: '#F8FAFC',
+};
+
+// Rarity gradients
+export const rarityGradients = {
+  common: ['#475569', '#64748B'] as readonly [string, string],
+  uncommon: ['#64748B', '#94A3B8'] as readonly [string, string],
+  rare: ['#94A3B8', '#CBD5E1'] as readonly [string, string],
+  epic: ['#CBD5E1', '#E2E8F0'] as readonly [string, string],
+  legendary: ['#E2E8F0', '#F8FAFC'] as readonly [string, string],
+};
+
+// PR colors
+export const prColors = {
+  gold: '#F8FAFC',
+  silver: '#CBD5E1',
+  bronze: '#94A3B8',
+  goldGradient: ['#F8FAFC', '#E2E8F0'] as readonly [string, string],
+  silverGradient: ['#CBD5E1', '#94A3B8'] as readonly [string, string],
+  bronzeGradient: ['#94A3B8', '#64748B'] as readonly [string, string],
+};
+
+// Badge category icons
+export const badgeCategoryIcons = {
+  milestone: 'trophy',
+  consistency: 'flame',
+  strength: 'barbell',
+  variety: 'grid',
+  dedication: 'medal',
+};
+
+// XP gradient
+export const xpGradient = ['#F1F5F9', '#CBD5E1'] as readonly [string, string];
+
+// Shadow presets - Subtle, refined
+export const shadows = {
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+};
+
+// Get category color by name
+export function getCategoryColor(category: string): string {
+  const categoryMap: Record<string, string> = {
+    chest: '#F1F5F9',
+    back: '#E2E8F0',
+    legs: '#CBD5E1',
+    shoulders: '#94A3B8',
+    arms: '#F8FAFC',
+    core: '#E2E8F0',
+    cardio: '#CBD5E1',
+  };
+  return categoryMap[category.toLowerCase()] || '#E2E8F0';
+}
 
 export const spacing = {
   xs: 4,
@@ -159,36 +238,45 @@ export const spacing = {
   xxxl: 32,
 };
 
-// Typography helpers (use with colors from useTheme)
+// Typography - Clean, refined
 export const typography = {
-  // Large headings
   largeTitle: {
     fontSize: 34,
     fontWeight: '700' as const,
-    letterSpacing: 0.4,
+    letterSpacing: 0.3,
   },
   title: {
     fontSize: 24,
     fontWeight: '700' as const,
+    letterSpacing: 0.2,
   },
   title2: {
     fontSize: 20,
     fontWeight: '600' as const,
+    letterSpacing: 0.1,
   },
   headline: {
     fontSize: 17,
     fontWeight: '600' as const,
   },
   body: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '400' as const,
   },
-  bodySecondary: {
-    fontSize: 16,
-    fontWeight: '400' as const,
+  bodyMedium: {
+    fontSize: 15,
+    fontWeight: '500' as const,
   },
   callout: {
+    fontSize: 16,
+    fontWeight: '400' as const,
+  },
+  subhead: {
     fontSize: 14,
+    fontWeight: '400' as const,
+  },
+  footnote: {
+    fontSize: 13,
     fontWeight: '400' as const,
   },
   caption: {
@@ -199,129 +287,40 @@ export const typography = {
     fontSize: 11,
     fontWeight: '400' as const,
   },
-  // Stat card number style
   statNumber: {
-    fontSize: 40,
+    fontSize: 28,
     fontWeight: '700' as const,
+    letterSpacing: -0.5,
+  },
+  bodySecondary: {
+    fontSize: 14,
+    fontWeight: '400' as const,
   },
 };
 
 export const borderRadius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 20,
+  sm: 6,
+  md: 10,
+  lg: 14,
+  xl: 18,
   xxl: 24,
   full: 9999,
 };
 
-export const shadows = {
-  sm: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 2,
-  },
-  md: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.30,
-    shadowRadius: 4.65,
-    elevation: 4,
-  },
-  lg: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.37,
-    shadowRadius: 7.49,
-    elevation: 8,
-  },
-  // Purple glow for dark mode cards
-  purpleGlow: {
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-};
+// Level tier system
+export interface LevelTier {
+  name: string;
+  color: string;
+  minLevel: number;
+  maxLevel: number;
+}
 
-// Helper function to get category color
-export const getCategoryColor = (category: string): string => {
-  const categoryMap: { [key: string]: string } = {
-    Chest: colors.categoryChest,
-    Back: colors.categoryBack,
-    Legs: colors.categoryLegs,
-    Shoulders: colors.categoryShoulders,
-    Arms: colors.categoryArms,
-    Core: colors.categoryCore,
-    Cardio: colors.categoryCardio,
-  };
-  return categoryMap[category] || colors.purple;
-};
-
-// ============================================================================
-// GAMIFICATION COLORS
-// ============================================================================
-
-// Rarity colors for badges and achievements
-export const rarityColors = {
-  common: '#9CA3AF',      // Gray
-  uncommon: '#10B981',    // Green
-  rare: '#3B82F6',        // Blue
-  epic: '#8B5CF6',        // Purple
-  legendary: '#F59E0B',   // Gold
-} as const;
-
-// Rarity gradients for badge backgrounds
-export const rarityGradients = {
-  common: ['#6B7280', '#9CA3AF'] as readonly ['#6B7280', '#9CA3AF'],
-  uncommon: ['#059669', '#10B981'] as readonly ['#059669', '#10B981'],
-  rare: ['#2563EB', '#3B82F6'] as readonly ['#2563EB', '#3B82F6'],
-  epic: ['#7C3AED', '#8B5CF6'] as readonly ['#7C3AED', '#8B5CF6'],
-  legendary: ['#D97706', '#F59E0B'] as readonly ['#D97706', '#F59E0B'],
-} as const;
-
-// XP bar gradient
-export const xpGradient = ['#8B5CF6', '#EC4899'] as readonly ['#8B5CF6', '#EC4899'];
-
-// Level colors (for level badge backgrounds)
-export const levelColors = {
-  novice: '#9CA3AF',      // Level 1-10: Gray
-  beginner: '#10B981',    // Level 11-20: Green
-  intermediate: '#3B82F6', // Level 21-35: Blue
-  advanced: '#8B5CF6',    // Level 36-50: Purple
-  expert: '#EC4899',      // Level 51-75: Pink
-  master: '#F59E0B',      // Level 76-99: Gold
-  legend: '#EF4444',      // Level 100: Red/Fire
-} as const;
-
-// Helper function to get level tier info
-export const getLevelTier = (level: number): { name: string; color: string; minLevel: number; maxLevel: number } => {
-  if (level >= 100) return { name: 'Legend', color: levelColors.legend, minLevel: 100, maxLevel: 100 };
-  if (level >= 76) return { name: 'Master', color: levelColors.master, minLevel: 76, maxLevel: 99 };
-  if (level >= 51) return { name: 'Expert', color: levelColors.expert, minLevel: 51, maxLevel: 75 };
-  if (level >= 36) return { name: 'Advanced', color: levelColors.advanced, minLevel: 36, maxLevel: 50 };
-  if (level >= 21) return { name: 'Intermediate', color: levelColors.intermediate, minLevel: 21, maxLevel: 35 };
-  if (level >= 11) return { name: 'Beginner', color: levelColors.beginner, minLevel: 11, maxLevel: 20 };
-  return { name: 'Novice', color: levelColors.novice, minLevel: 1, maxLevel: 10 };
-};
-
-// Badge category icons (Ionicons names)
-export const badgeCategoryIcons = {
-  streak: 'flame',
-  volume: 'barbell',
-  strength: 'trophy',
-  milestone: 'ribbon',
-  consistency: 'calendar',
-  variety: 'grid',
-  dedication: 'time',
-} as const;
-
-// PR celebration colors
-export const prColors = {
-  gold: '#FFD700',
-  goldGradient: ['#FFD700', '#FFA500'] as readonly ['#FFD700', '#FFA500'],
-  firework: '#EC4899',
-} as const;
+export function getLevelTier(level: number): LevelTier {
+  if (level >= 100) return { name: 'Legend', color: '#F8FAFC', minLevel: 100, maxLevel: 100 };
+  if (level >= 76) return { name: 'Master', color: '#E2E8F0', minLevel: 76, maxLevel: 99 };
+  if (level >= 51) return { name: 'Expert', color: '#CBD5E1', minLevel: 51, maxLevel: 75 };
+  if (level >= 36) return { name: 'Advanced', color: '#94A3B8', minLevel: 36, maxLevel: 50 };
+  if (level >= 21) return { name: 'Intermediate', color: '#64748B', minLevel: 21, maxLevel: 35 };
+  if (level >= 11) return { name: 'Beginner', color: '#475569', minLevel: 11, maxLevel: 20 };
+  return { name: 'Novice', color: '#334155', minLevel: 1, maxLevel: 10 };
+}
