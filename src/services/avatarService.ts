@@ -1,5 +1,7 @@
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
+import { handleServiceError } from '../utils/errorHandler';
 import { decode } from 'base64-arraybuffer';
 
 const AVATAR_BUCKET = 'avatars';
@@ -64,7 +66,7 @@ export async function uploadAvatar(
     });
 
   if (uploadError) {
-    console.error('Avatar upload error:', uploadError);
+    handleServiceError(uploadError, 'uploadAvatar.upload');
     throw new Error('Failed to upload avatar image.');
   }
 
@@ -77,12 +79,12 @@ export async function uploadAvatar(
 
   // Update user profile with avatar URL
   const { error: updateError } = await supabase
-    .from('user_profiles')
+    .from(TABLES.USER_PROFILES)
     .update({ avatar_url: publicUrl })
     .eq('user_id', userId);
 
   if (updateError) {
-    console.error('Profile update error:', updateError);
+    handleServiceError(updateError, 'uploadAvatar.updateProfile');
     throw new Error('Failed to update profile with avatar.');
   }
 

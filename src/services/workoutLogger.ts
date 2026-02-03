@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type {
   WorkoutSession,
   WorkoutExercise,
@@ -115,7 +116,7 @@ export async function saveWorkout(
 
   // Step 1: Create the workout session
   const { data: sessionData, error: sessionError } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .insert({
       user_id: userId,
       date: workout.startTime.toISOString().split('T')[0],
@@ -142,13 +143,13 @@ export async function saveWorkout(
   }));
 
   const { data: exerciseData, error: exerciseError } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .insert(exerciseInserts)
     .select();
 
   if (exerciseError) {
     // Attempt to clean up the session if exercise insert fails
-    await supabase.from('workout_sessions').delete().eq('id', sessionId);
+    await supabase.from(TABLES.WORKOUT_SESSIONS).delete().eq('id', sessionId);
     throw new Error(`Failed to create workout exercises: ${exerciseError.message}`);
   }
 
@@ -186,13 +187,13 @@ export async function saveWorkout(
 
   if (setInserts.length > 0) {
     const { error: setsError } = await supabase
-      .from('exercise_sets')
+      .from(TABLES.EXERCISE_SETS)
       .insert(setInserts);
 
     if (setsError) {
       // Attempt to clean up if set insert fails
-      await supabase.from('workout_exercises').delete().eq('workout_session_id', sessionId);
-      await supabase.from('workout_sessions').delete().eq('id', sessionId);
+      await supabase.from(TABLES.WORKOUT_EXERCISES).delete().eq('workout_session_id', sessionId);
+      await supabase.from(TABLES.WORKOUT_SESSIONS).delete().eq('id', sessionId);
       throw new Error(`Failed to create exercise sets: ${setsError.message}`);
     }
   }

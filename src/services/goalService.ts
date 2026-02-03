@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type { UserGoal, GoalType, GoalPeriod, GoalProgress } from './types';
 import { getWorkoutStatsByRange, getTotalVolume, getCurrentStreak } from './statsService';
 import { formatISODate, subtractDays, getWeekStart, getMonthStart } from '../utils/dateUtils';
@@ -19,7 +20,7 @@ import { formatISODate, subtractDays, getWeekStart, getMonthStart } from '../uti
  */
 export async function getActiveGoals(userId: string): Promise<UserGoal[]> {
   const { data, error } = await supabase
-    .from('user_goals')
+    .from(TABLES.USER_GOALS)
     .select('*')
     .eq('user_id', userId)
     .eq('is_active', true)
@@ -40,7 +41,7 @@ export async function getActiveGoals(userId: string): Promise<UserGoal[]> {
  */
 export async function getAllGoals(userId: string): Promise<UserGoal[]> {
   const { data, error } = await supabase
-    .from('user_goals')
+    .from(TABLES.USER_GOALS)
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
@@ -69,7 +70,7 @@ export async function createGoal(
 ): Promise<UserGoal | null> {
   // Deactivate any existing goal of the same type and period
   await supabase
-    .from('user_goals')
+    .from(TABLES.USER_GOALS)
     .update({ is_active: false })
     .eq('user_id', userId)
     .eq('goal_type', goalType)
@@ -78,7 +79,7 @@ export async function createGoal(
 
   // Create the new goal
   const { data, error } = await supabase
-    .from('user_goals')
+    .from(TABLES.USER_GOALS)
     .insert({
       user_id: userId,
       goal_type: goalType,
@@ -108,7 +109,7 @@ export async function updateGoal(
   updates: Partial<Pick<UserGoal, 'target_value' | 'is_active'>>
 ): Promise<UserGoal | null> {
   const { data, error } = await supabase
-    .from('user_goals')
+    .from(TABLES.USER_GOALS)
     .update(updates)
     .eq('id', goalId)
     .select()
@@ -129,7 +130,7 @@ export async function updateGoal(
  */
 export async function deleteGoal(goalId: string): Promise<boolean> {
   const { error } = await supabase
-    .from('user_goals')
+    .from(TABLES.USER_GOALS)
     .delete()
     .eq('id', goalId);
 

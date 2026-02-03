@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type { Exercise, ExerciseCategory } from './types';
 
 /**
@@ -17,7 +18,7 @@ export async function getAllExercises(userId?: string): Promise<Exercise[]> {
   // Simple query - fetch all exercises. Custom exercise filtering can be added
   // once the is_custom column is added to the database schema.
   const { data, error } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('*')
     .order('name', { ascending: true });
 
@@ -43,7 +44,7 @@ export async function getExercisesByCategory(
   // Simple query by category. Custom exercise filtering can be added
   // once the is_custom column is added to the database schema.
   const query = supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('*')
     .eq('category', category);
 
@@ -69,7 +70,7 @@ export async function searchExercises(searchTerm: string): Promise<Exercise[]> {
   }
 
   const { data, error } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('*')
     .ilike('name', `%${searchTerm}%`)
     .order('name', { ascending: true });
@@ -89,7 +90,7 @@ export async function searchExercises(searchTerm: string): Promise<Exercise[]> {
  */
 export async function getExerciseById(id: string): Promise<Exercise | null> {
   const { data, error } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('*')
     .eq('id', id)
     .single();
@@ -117,7 +118,7 @@ export async function getExercisesByIds(ids: string[]): Promise<Exercise[]> {
   }
 
   const { data, error } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('*')
     .in('id', ids)
     .order('name', { ascending: true });
@@ -136,7 +137,7 @@ export async function getExercisesByIds(ids: string[]): Promise<Exercise[]> {
  */
 export async function getExerciseCategoryCounts(): Promise<Record<string, number>> {
   const { data, error } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('category');
 
   if (error) {
@@ -170,7 +171,7 @@ export async function getRecentExercises(
 ): Promise<Exercise[]> {
   // Query workout_exercises with exercise details, ordered by created_at desc
   const { data, error } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .select(`
       exercise_id,
       created_at,
@@ -243,7 +244,7 @@ export async function createCustomExercise(
 
   // Check if exercise name already exists for this user
   const { data: existing, error: checkError } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .select('id')
     .eq('user_id', userId)
     .ilike('name', exercise.name.trim())
@@ -259,7 +260,7 @@ export async function createCustomExercise(
 
   // Insert the custom exercise
   const { data, error } = await supabase
-    .from('exercises')
+    .from(TABLES.EXERCISES)
     .insert({
       name: exercise.name.trim(),
       category: exercise.category,

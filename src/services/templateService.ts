@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type { WorkoutTemplate, TemplateExercise } from './types';
 
 /**
@@ -15,7 +16,7 @@ import type { WorkoutTemplate, TemplateExercise } from './types';
  */
 export async function getUserTemplates(userId: string): Promise<WorkoutTemplate[]> {
   const { data, error } = await supabase
-    .from('workout_templates')
+    .from(TABLES.WORKOUT_TEMPLATES)
     .select(`
       *,
       exercises:template_exercises(
@@ -47,7 +48,7 @@ export async function getTemplate(
   userId: string
 ): Promise<WorkoutTemplate | null> {
   const { data, error } = await supabase
-    .from('workout_templates')
+    .from(TABLES.WORKOUT_TEMPLATES)
     .select(`
       *,
       exercises:template_exercises(
@@ -82,7 +83,7 @@ export async function createTemplate(
   estimatedDuration: number | null = null
 ): Promise<WorkoutTemplate | null> {
   const { data, error } = await supabase
-    .from('workout_templates')
+    .from(TABLES.WORKOUT_TEMPLATES)
     .insert({
       user_id: userId,
       name,
@@ -108,7 +109,7 @@ export async function updateTemplate(
   updates: Partial<Pick<WorkoutTemplate, 'name' | 'description' | 'estimated_duration'>>
 ): Promise<WorkoutTemplate | null> {
   const { data, error } = await supabase
-    .from('workout_templates')
+    .from(TABLES.WORKOUT_TEMPLATES)
     .update(updates)
     .eq('id', templateId)
     .select()
@@ -127,7 +128,7 @@ export async function updateTemplate(
  */
 export async function deleteTemplate(templateId: string): Promise<boolean> {
   const { error } = await supabase
-    .from('workout_templates')
+    .from(TABLES.WORKOUT_TEMPLATES)
     .delete()
     .eq('id', templateId);
 
@@ -156,7 +157,7 @@ export async function addExerciseToTemplate(
   notes: string | null = null
 ): Promise<TemplateExercise | null> {
   const { data, error } = await supabase
-    .from('template_exercises')
+    .from(TABLES.TEMPLATE_EXERCISES)
     .insert({
       template_id: templateId,
       exercise_id: exerciseId,
@@ -184,7 +185,7 @@ export async function removeExerciseFromTemplate(
   templateExerciseId: string
 ): Promise<boolean> {
   const { error } = await supabase
-    .from('template_exercises')
+    .from(TABLES.TEMPLATE_EXERCISES)
     .delete()
     .eq('id', templateExerciseId);
 
@@ -206,7 +207,7 @@ export async function reorderTemplateExercises(
   // Update each exercise order
   const updates = exerciseOrders.map(({ id, order_index }) =>
     supabase
-      .from('template_exercises')
+      .from(TABLES.TEMPLATE_EXERCISES)
       .update({ order_index })
       .eq('id', id)
       .eq('template_id', templateId)

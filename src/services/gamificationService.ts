@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
+import { handleServiceError } from '../utils/errorHandler';
 import type {
   UserProfile,
   Badge,
@@ -84,13 +86,13 @@ export function getLevelInfo(totalXP: number): LevelInfo {
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
   // Try to get existing profile
   const { data, error } = await supabase
-    .from('user_profiles')
+    .from(TABLES.USER_PROFILES)
     .select('*')
     .eq('user_id', userId)
     .single();
 
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching user profile:', error);
+    handleServiceError(error, 'getUserProfile');
     return null;
   }
 
@@ -100,7 +102,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
 
   // Create new profile
   const { data: newProfile, error: createError } = await supabase
-    .from('user_profiles')
+    .from(TABLES.USER_PROFILES)
     .insert({
       user_id: userId,
       display_name: null,
@@ -112,7 +114,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     .single();
 
   if (createError) {
-    console.error('Error creating user profile:', createError);
+    handleServiceError(createError, 'getUserProfile.create');
     return null;
   }
 
@@ -127,14 +129,14 @@ export async function updateUserProfile(
   updates: Partial<Pick<UserProfile, 'display_name' | 'avatar_url'>>
 ): Promise<UserProfile | null> {
   const { data, error } = await supabase
-    .from('user_profiles')
+    .from(TABLES.USER_PROFILES)
     .update(updates)
     .eq('user_id', userId)
     .select()
     .single();
 
   if (error) {
-    console.error('Error updating user profile:', error);
+    handleServiceError(error, 'updateUserProfile');
     return null;
   }
 
@@ -154,7 +156,7 @@ export async function awardXP(
     .single();
 
   if (error) {
-    console.error('Error awarding XP via RPC:', error);
+    handleServiceError(error, 'awardXP');
     // Fallback to read-then-write if RPC not available (migration not run yet)
     return awardXPFallback(userId, xpAmount);
   }
@@ -180,12 +182,12 @@ async function awardXPFallback(
   const leveledUp = newLevel > profile.current_level;
 
   const { error } = await supabase
-    .from('user_profiles')
+    .from(TABLES.USER_PROFILES)
     .update({ total_xp: newXP, current_level: newLevel })
     .eq('user_id', userId);
 
   if (error) {
-    console.error('Error awarding XP (fallback):', error);
+    handleServiceError(error, 'awardXPFallback');
     return null;
   }
 
@@ -267,12 +269,12 @@ function getCurrentBadgeValue(
  */
 export async function getAllBadges(): Promise<Badge[]> {
   const { data, error } = await supabase
-    .from('badges')
+    .from(TABLES.BADGES)
     .select('*')
     .order('xp_reward', { ascending: true });
 
   if (error) {
-    console.error('Error fetching badges:', error);
+    handleServiceError(error, 'getAllBadges');
     return [];
   }
 
@@ -284,7 +286,7 @@ export async function getAllBadges(): Promise<Badge[]> {
  */
 export async function getUserBadges(userId: string): Promise<UserBadge[]> {
   const { data, error } = await supabase
-    .from('user_badges')
+    .from(TABLES.USER_BADGES)
     .select(`
       *,
       badge:badges(*)
@@ -293,7 +295,7 @@ export async function getUserBadges(userId: string): Promise<UserBadge[]> {
     .order('earned_at', { ascending: false });
 
   if (error) {
-    console.error('Error fetching user badges:', error);
+    handleServiceError(error, 'getUserBadges');
     return [];
   }
 
@@ -309,7 +311,7 @@ export async function awardBadge(
 ): Promise<{ awarded: boolean; badge: Badge | null; xpAwarded: number }> {
   // Check if already earned
   const { data: existing } = await supabase
-    .from('user_badges')
+    .from(TABLES.USER_BADGES)
     .select('id')
     .eq('user_id', userId)
     .eq('badge_id', badgeId)
@@ -321,7 +323,7 @@ export async function awardBadge(
 
   // Get badge details
   const { data: badge } = await supabase
-    .from('badges')
+    .from(TABLES.BADGES)
     .select('*')
     .eq('id', badgeId)
     .single();
@@ -332,14 +334,14 @@ export async function awardBadge(
 
   // Award badge
   const { error } = await supabase
-    .from('user_badges')
+    .from(TABLES.USER_BADGES)
     .insert({
       user_id: userId,
       badge_id: badgeId,
     });
 
   if (error) {
-    console.error('Error awarding badge:', error);
+    handleServiceError(error, 'awardBadge');
     return { awarded: false, badge: null, xpAwarded: 0 };
   }
 
@@ -420,7 +422,7 @@ export async function checkAndAwardBadges(userId: string): Promise<Badge[]> {
       }
     }
   } catch (error) {
-    console.error('Error checking badges:', error);
+    handleServiceError(error, 'checkAndAwardBadges');
   }
 
   return newlyAwardedBadges;
@@ -516,13 +518,13 @@ export interface LeaderboardEntry {
  */
 export async function getXPLeaderboard(limit: number = 10): Promise<LeaderboardEntry[]> {
   const { data, error } = await supabase
-    .from('user_profiles')
+    .from(TABLES.USER_PROFILES)
     .select('user_id, display_name, total_xp, current_level')
     .order('total_xp', { ascending: false })
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching leaderboard:', error);
+    handleServiceError(error, 'getXPLeaderboard');
     return [];
   }
 

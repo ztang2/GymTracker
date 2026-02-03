@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 
 // TODO: type these with proper Supabase table row types instead of any
 export interface ExportData {
@@ -24,14 +25,14 @@ export async function exportUserData(userId: string): Promise<ExportData | null>
   try {
     // Fetch user profile
     const { data: profile } = await supabase
-      .from('user_profiles')
+      .from(TABLES.USER_PROFILES)
       .select('*')
       .eq('user_id', userId)
       .single();
 
     // Fetch workout sessions
     const { data: workouts } = await supabase
-      .from('workout_sessions')
+      .from(TABLES.WORKOUT_SESSIONS)
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -39,41 +40,41 @@ export async function exportUserData(userId: string): Promise<ExportData | null>
     // Fetch workout exercises
     const workoutIds = workouts?.map(w => w.id) || [];
     const { data: workoutExercises } = await supabase
-      .from('workout_exercises')
+      .from(TABLES.WORKOUT_EXERCISES)
       .select('*')
       .in('workout_id', workoutIds.length > 0 ? workoutIds : ['']);
 
     // Fetch exercise sets
     const workoutExerciseIds = workoutExercises?.map(we => we.id) || [];
     const { data: exerciseSets } = await supabase
-      .from('exercise_sets')
+      .from(TABLES.EXERCISE_SETS)
       .select('*')
       .in('workout_exercise_id', workoutExerciseIds.length > 0 ? workoutExerciseIds : ['']);
 
     // Fetch personal records
     const { data: personalRecords } = await supabase
-      .from('personal_records')
+      .from(TABLES.PERSONAL_RECORDS)
       .select('*')
       .eq('user_id', userId)
       .order('achieved_at', { ascending: false });
 
     // Fetch user goals
     const { data: userGoals } = await supabase
-      .from('user_goals')
+      .from(TABLES.USER_GOALS)
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     // Fetch user badges
     const { data: userBadges } = await supabase
-      .from('user_badges')
+      .from(TABLES.USER_BADGES)
       .select('*')
       .eq('user_id', userId)
       .order('earned_at', { ascending: false });
 
     // Fetch workout templates
     const { data: templates } = await supabase
-      .from('workout_templates')
+      .from(TABLES.WORKOUT_TEMPLATES)
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -81,7 +82,7 @@ export async function exportUserData(userId: string): Promise<ExportData | null>
     // Fetch template exercises
     const templateIds = templates?.map(t => t.id) || [];
     const { data: templateExercises } = await supabase
-      .from('template_exercises')
+      .from(TABLES.TEMPLATE_EXERCISES)
       .select('*')
       .in('template_id', templateIds.length > 0 ? templateIds : ['']);
 

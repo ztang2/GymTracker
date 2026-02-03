@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type { CreateExerciseInput } from './types';
 
 /**
@@ -784,7 +785,7 @@ export async function seedExercises(): Promise<void> {
 
     // Check if exercises table already has data
     const { count, error: countError } = await supabase
-      .from('exercises')
+      .from(TABLES.EXERCISES)
       .select('*', { count: 'exact', head: true });
 
     if (countError) {
@@ -800,7 +801,7 @@ export async function seedExercises(): Promise<void> {
 
     // Upsert all seed exercises (insert new ones, skip existing)
     const { data, error: insertError } = await supabase
-      .from('exercises')
+      .from(TABLES.EXERCISES)
       .upsert(SEED_EXERCISES, { onConflict: 'name' })
       .select();
 

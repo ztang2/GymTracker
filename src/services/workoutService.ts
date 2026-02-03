@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type {
   WorkoutSession,
   WorkoutSessionWithExercises,
@@ -30,7 +31,7 @@ export async function createWorkoutSession(
   input: Omit<CreateWorkoutSessionInput, 'user_id'>
 ): Promise<WorkoutSession> {
   const { data, error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .insert({
       user_id: userId,
       ...input,
@@ -62,7 +63,7 @@ export async function getWorkoutSession(
 ): Promise<WorkoutSessionWithExercises | null> {
   // Step 1: Fetch the workout session
   const { data: session, error: sessionError } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .select('*')
     .eq('id', sessionId)
     .eq('user_id', userId)
@@ -81,7 +82,7 @@ export async function getWorkoutSession(
 
   // Step 2: Fetch workout_exercises with exercise details
   const { data: workoutExercises, error: exercisesError } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .select(`
       *,
       exercise:exercises(*)
@@ -99,7 +100,7 @@ export async function getWorkoutSession(
 
   if (workoutExerciseIds.length > 0) {
     const { data: sets, error: setsError } = await supabase
-      .from('exercise_sets')
+      .from(TABLES.EXERCISE_SETS)
       .select('*')
       .in('workout_exercise_id', workoutExerciseIds)
       .order('set_number', { ascending: true });
@@ -137,7 +138,7 @@ export async function batchGetWorkoutSessions(
 
   // Query 1: All sessions
   const { data: sessions, error: sessionsError } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .select('*')
     .eq('user_id', userId)
     .in('id', sessionIds);
@@ -148,7 +149,7 @@ export async function batchGetWorkoutSessions(
   // Query 2: All workout_exercises with exercise details
   const validIds = sessions.map(s => s.id);
   const { data: allWorkoutExercises, error: exError } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .select(`*, exercise:exercises(*)`)
     .in('workout_session_id', validIds)
     .order('order_index', { ascending: true });
@@ -160,7 +161,7 @@ export async function batchGetWorkoutSessions(
   let allSets: ExerciseSet[] = [];
   if (weIds.length > 0) {
     const { data: sets, error: setsError } = await supabase
-      .from('exercise_sets')
+      .from(TABLES.EXERCISE_SETS)
       .select('*')
       .in('workout_exercise_id', weIds)
       .order('set_number', { ascending: true });
@@ -210,7 +211,7 @@ export async function getWorkoutSessionBasic(
   userId: string
 ): Promise<WorkoutSession | null> {
   const { data, error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .select('*')
     .eq('id', sessionId)
     .eq('user_id', userId)
@@ -238,7 +239,7 @@ export async function getWorkoutsByDate(
   date: string
 ): Promise<WorkoutSession[]> {
   const { data, error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .select('*')
     .eq('user_id', userId)
     .eq('date', date)
@@ -265,7 +266,7 @@ export async function getWorkoutsByDateRange(
   endDate: string
 ): Promise<WorkoutSession[]> {
   const { data, error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .select('*')
     .eq('user_id', userId)
     .gte('date', startDate)
@@ -292,7 +293,7 @@ export async function getRecentWorkouts(
   limit: number = 10
 ): Promise<WorkoutSession[]> {
   const { data, error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .select('*')
     .eq('user_id', userId)
     .order('date', { ascending: false })
@@ -320,7 +321,7 @@ export async function updateWorkoutSession(
   updates: Partial<Omit<WorkoutSession, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
 ): Promise<WorkoutSession> {
   const { data, error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .update(updates)
     .eq('id', sessionId)
     .eq('user_id', userId)
@@ -350,7 +351,7 @@ export async function deleteWorkoutSession(
   userId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('workout_sessions')
+    .from(TABLES.WORKOUT_SESSIONS)
     .delete()
     .eq('id', sessionId)
     .eq('user_id', userId);
@@ -380,7 +381,7 @@ export async function addExerciseToWorkout(
   notes?: string
 ): Promise<WorkoutExercise> {
   const { data, error } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .insert({
       workout_session_id: sessionId,
       exercise_id: exerciseId,
@@ -412,7 +413,7 @@ export async function getWorkoutExercises(
 ): Promise<WorkoutExerciseWithDetails[]> {
   // Fetch workout_exercises with exercise details
   const { data: workoutExercises, error: exercisesError } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .select(`
       *,
       exercise:exercises(*)
@@ -430,7 +431,7 @@ export async function getWorkoutExercises(
 
   if (workoutExerciseIds.length > 0) {
     const { data: sets, error: setsError } = await supabase
-      .from('exercise_sets')
+      .from(TABLES.EXERCISE_SETS)
       .select('*')
       .in('workout_exercise_id', workoutExerciseIds)
       .order('set_number', { ascending: true });
@@ -462,7 +463,7 @@ export async function removeExerciseFromWorkout(
   workoutExerciseId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .delete()
     .eq('id', workoutExerciseId);
 
@@ -483,7 +484,7 @@ export async function reorderWorkoutExercises(
   // Perform all updates in parallel using Promise.all
   const updatePromises = updates.map(({ workoutExerciseId, newOrderIndex }) =>
     supabase
-      .from('workout_exercises')
+      .from(TABLES.WORKOUT_EXERCISES)
       .update({ order_index: newOrderIndex })
       .eq('id', workoutExerciseId)
   );
@@ -511,7 +512,7 @@ export async function updateWorkoutExerciseNotes(
   notes: string
 ): Promise<WorkoutExercise> {
   const { data, error } = await supabase
-    .from('workout_exercises')
+    .from(TABLES.WORKOUT_EXERCISES)
     .update({ notes })
     .eq('id', workoutExerciseId)
     .select()
@@ -544,7 +545,7 @@ export async function addSetToExercise(
   setData: Omit<CreateExerciseSetInput, 'workout_exercise_id'>
 ): Promise<ExerciseSet> {
   const { data, error } = await supabase
-    .from('exercise_sets')
+    .from(TABLES.EXERCISE_SETS)
     .insert({
       workout_exercise_id: workoutExerciseId,
       ...setData,
@@ -573,7 +574,7 @@ export async function getExerciseSets(
   workoutExerciseId: string
 ): Promise<ExerciseSet[]> {
   const { data, error } = await supabase
-    .from('exercise_sets')
+    .from(TABLES.EXERCISE_SETS)
     .select('*')
     .eq('workout_exercise_id', workoutExerciseId)
     .order('set_number', { ascending: true });
@@ -597,7 +598,7 @@ export async function updateSet(
   updates: Partial<Omit<ExerciseSet, 'id' | 'workout_exercise_id' | 'created_at'>>
 ): Promise<ExerciseSet> {
   const { data, error } = await supabase
-    .from('exercise_sets')
+    .from(TABLES.EXERCISE_SETS)
     .update(updates)
     .eq('id', setId)
     .select()
@@ -632,7 +633,7 @@ export async function markSetComplete(setId: string): Promise<ExerciseSet> {
  */
 export async function deleteSet(setId: string): Promise<void> {
   const { error } = await supabase
-    .from('exercise_sets')
+    .from(TABLES.EXERCISE_SETS)
     .delete()
     .eq('id', setId);
 
@@ -651,7 +652,7 @@ export async function deleteAllSetsForExercise(
   workoutExerciseId: string
 ): Promise<void> {
   const { error } = await supabase
-    .from('exercise_sets')
+    .from(TABLES.EXERCISE_SETS)
     .delete()
     .eq('workout_exercise_id', workoutExerciseId);
 

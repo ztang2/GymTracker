@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type {
   PersonalRecord,
   PRRecordType,
@@ -20,7 +21,7 @@ import type {
  */
 export async function getUserPRs(userId: string): Promise<PersonalRecord[]> {
   const { data, error } = await supabase
-    .from('personal_records')
+    .from(TABLES.PERSONAL_RECORDS)
     .select(`
       *,
       exercise:exercises(id, name, category)
@@ -44,7 +45,7 @@ export async function getExercisePRs(
   exerciseId: string
 ): Promise<PersonalRecord[]> {
   const { data, error } = await supabase
-    .from('personal_records')
+    .from(TABLES.PERSONAL_RECORDS)
     .select('*')
     .eq('user_id', userId)
     .eq('exercise_id', exerciseId)
@@ -67,7 +68,7 @@ export async function getCurrentPR(
   recordType: PRRecordType
 ): Promise<PersonalRecord | null> {
   const { data, error } = await supabase
-    .from('personal_records')
+    .from(TABLES.PERSONAL_RECORDS)
     .select('*')
     .eq('user_id', userId)
     .eq('exercise_id', exerciseId)
@@ -95,7 +96,7 @@ export async function savePR(
 ): Promise<PersonalRecord | null> {
   // Upsert - update if exists, insert if not
   const { data, error } = await supabase
-    .from('personal_records')
+    .from(TABLES.PERSONAL_RECORDS)
     .upsert(
       {
         user_id: userId,

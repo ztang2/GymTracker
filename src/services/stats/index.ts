@@ -1,9 +1,7 @@
-/**
- * Stats Service — re-exports from split modules for backward compatibility.
- * New code should import from './stats/...' directly.
- */
+// Stats barrel — re-exports everything for backward compatibility
+export { getDateRangeForTimeRange } from './timeHelpers';
+
 export {
-  getDateRangeForTimeRange,
   getWorkoutStats,
   getWorkoutStatsByRange,
   getDailyWorkoutCounts,
@@ -13,17 +11,26 @@ export {
   getMostFrequentExercises,
   getWeeklyWorkoutCounts,
   getExerciseProgress,
+} from './coreStats';
+
+export {
   getCurrentStreak,
   getLongestStreak,
   getStreaks,
   getCalendarData,
+} from './streakStats';
+
+export {
   getLastPerformance,
   getLastPerformanceBatch,
   getTotalPRCount,
   getExerciseMaxWeight,
+} from './prStats';
+
+export {
   getUniqueExerciseCount,
   getAllMuscleGroupsThisWeek,
   getEarlyWorkoutCount,
   getNightWorkoutCount,
   getWeekendWorkoutCount,
-} from './stats';
+} from './badgeStats';

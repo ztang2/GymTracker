@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
+import { handleServiceError } from '../utils/errorHandler';
 import { getWorkoutsByDateRange, getWorkoutSession } from './workoutService';
 import { getExercisePRs as getPRsForExercise } from './prService';
 import type {
@@ -47,7 +49,7 @@ export async function getExerciseHistory(
   try {
     // Query workout_exercises joined with workout_sessions and exercise_sets
     const { data, error } = await supabase
-      .from('workout_exercises')
+      .from(TABLES.WORKOUT_EXERCISES)
       .select(`
         id,
         workout_session_id,
@@ -69,7 +71,7 @@ export async function getExerciseHistory(
       .order('workout_sessions(date)', { ascending: false });
 
     if (error) {
-      console.error('Error fetching exercise history:', error);
+      handleServiceError(error, 'getExerciseHistory');
       return [];
     }
 
@@ -122,7 +124,7 @@ export async function getExerciseHistory(
 
     return history;
   } catch (error) {
-    console.error('Error in getExerciseHistory:', error);
+    handleServiceError(error, 'getExerciseHistory');
     return [];
   }
 }

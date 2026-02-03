@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { TABLES } from '../constants/tables';
 import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 
 export interface AuthUser {
@@ -39,7 +40,7 @@ export async function signUp(
     // Create user profile in user_profiles table (use upsert to handle conflicts)
     if (data.user) {
       const { error: profileError } = await supabase
-        .from('user_profiles')
+        .from(TABLES.USER_PROFILES)
         .upsert({
           user_id: data.user.id,
           display_name: displayName || email.split('@')[0],
@@ -144,7 +145,7 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
     
     // First, get all workout session IDs for this user
     const { data: workoutSessions } = await supabase
-      .from('workout_sessions')
+      .from(TABLES.WORKOUT_SESSIONS)
       .select('id')
       .eq('user_id', userId);
     
@@ -153,7 +154,7 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
     if (workoutIds.length > 0) {
       // Get all workout exercise IDs
       const { data: workoutExercises } = await supabase
-        .from('workout_exercises')
+        .from(TABLES.WORKOUT_EXERCISES)
         .select('id')
         .in('workout_id', workoutIds);
       
@@ -162,7 +163,7 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
       // 1. Delete exercise_sets
       if (workoutExerciseIds.length > 0) {
         const { error: setsError } = await supabase
-          .from('exercise_sets')
+          .from(TABLES.EXERCISE_SETS)
           .delete()
           .in('workout_exercise_id', workoutExerciseIds);
         if (setsError) console.warn('Error deleting exercise_sets:', setsError);
@@ -170,7 +171,7 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
 
       // 2. Delete workout_exercises
       const { error: workoutExercisesError } = await supabase
-        .from('workout_exercises')
+        .from(TABLES.WORKOUT_EXERCISES)
         .delete()
         .in('workout_id', workoutIds);
       if (workoutExercisesError) console.warn('Error deleting workout_exercises:', workoutExercisesError);
@@ -178,28 +179,28 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
 
     // 3. Delete personal_records
     const { error: prsError } = await supabase
-      .from('personal_records')
+      .from(TABLES.PERSONAL_RECORDS)
       .delete()
       .eq('user_id', userId);
     if (prsError) console.warn('Error deleting personal_records:', prsError);
 
     // 4. Delete user_badges
     const { error: badgesError } = await supabase
-      .from('user_badges')
+      .from(TABLES.USER_BADGES)
       .delete()
       .eq('user_id', userId);
     if (badgesError) console.warn('Error deleting user_badges:', badgesError);
 
     // 5. Delete user_goals
     const { error: goalsError } = await supabase
-      .from('user_goals')
+      .from(TABLES.USER_GOALS)
       .delete()
       .eq('user_id', userId);
     if (goalsError) console.warn('Error deleting user_goals:', goalsError);
 
     // Get all template IDs for this user
     const { data: templates } = await supabase
-      .from('workout_templates')
+      .from(TABLES.WORKOUT_TEMPLATES)
       .select('id')
       .eq('user_id', userId);
     
@@ -208,7 +209,7 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
     // 6. Delete template_exercises
     if (templateIds.length > 0) {
       const { error: templateExercisesError } = await supabase
-        .from('template_exercises')
+        .from(TABLES.TEMPLATE_EXERCISES)
         .delete()
         .in('template_id', templateIds);
       if (templateExercisesError) console.warn('Error deleting template_exercises:', templateExercisesError);
@@ -216,21 +217,21 @@ export async function deleteUserAccount(userId: string): Promise<{ error: Error 
 
     // 7. Delete workout_templates
     const { error: templatesError } = await supabase
-      .from('workout_templates')
+      .from(TABLES.WORKOUT_TEMPLATES)
       .delete()
       .eq('user_id', userId);
     if (templatesError) console.warn('Error deleting workout_templates:', templatesError);
 
     // 8. Delete workout_sessions
     const { error: workoutsError } = await supabase
-      .from('workout_sessions')
+      .from(TABLES.WORKOUT_SESSIONS)
       .delete()
       .eq('user_id', userId);
     if (workoutsError) console.warn('Error deleting workout_sessions:', workoutsError);
 
     // 9. Delete user_profiles
     const { error: profileError } = await supabase
-      .from('user_profiles')
+      .from(TABLES.USER_PROFILES)
       .delete()
       .eq('user_id', userId);
     if (profileError) console.warn('Error deleting user_profiles:', profileError);
