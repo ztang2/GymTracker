@@ -1,6 +1,7 @@
 /**
  * Centralized error handling utilities for service layer
  */
+import { captureException } from './sentry';
 
 // ============================================================================
 // ERROR CODES
@@ -113,6 +114,14 @@ export function handleServiceError(error: unknown, context: string): AppError {
 
   // Consistent logging format
   console.error(`[${context}] ${code}: ${rawMessage}`);
+
+  // Report non-user-facing errors to Sentry for observability
+  if (!appError.isUserFacing) {
+    captureException(error instanceof Error ? error : appError, {
+      errorCode: code,
+      context,
+    });
+  }
 
   return appError;
 }

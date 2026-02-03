@@ -334,8 +334,8 @@ export default function AchievementsScreen({ navigation }: AchievementsScreenPro
   );
 }
 
-// Grid badge card component
-function GridBadgeCard({
+// Grid badge card component (memoized for render optimization)
+const GridBadgeCard = React.memo(function GridBadgeCard({
   badge,
   colors,
   cardWidth,
@@ -410,7 +410,7 @@ function GridBadgeCard({
       )}
     </View>
   );
-}
+});
 
 const createGridStyles = (colors: ThemeColors, cardWidth: number) =>
   StyleSheet.create({

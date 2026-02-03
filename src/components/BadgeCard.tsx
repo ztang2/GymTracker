@@ -19,7 +19,7 @@ const formatEarnedDate = (dateStr: string): string => {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
+function BadgeCardInner({ badge, compact = false }: BadgeCardProps) {
   const { colors } = useTheme();
   const styles = createStyles(colors);
   const rarityColor = rarityColors[badge.rarity];
@@ -127,6 +127,9 @@ export default function BadgeCard({ badge, compact = false }: BadgeCardProps) {
     </View>
   );
 }
+
+const BadgeCard = React.memo(BadgeCardInner);
+export default BadgeCard;
 
 const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {

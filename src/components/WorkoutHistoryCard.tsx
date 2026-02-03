@@ -12,7 +12,7 @@ interface WorkoutHistoryCardProps {
   accentColor?: string;
 }
 
-export default function WorkoutHistoryCard({
+function WorkoutHistoryCardInner({
   workout,
   onPress,
   accentColor,
@@ -76,6 +76,9 @@ export default function WorkoutHistoryCard({
     </TouchableOpacity>
   );
 }
+
+const WorkoutHistoryCard = React.memo(WorkoutHistoryCardInner);
+export default WorkoutHistoryCard;
 
 const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {

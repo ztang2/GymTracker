@@ -8,6 +8,7 @@ import {
   getCurrentSession,
   onAuthStateChange,
 } from '../services/authService';
+import { setSentryUser } from '../utils/sentry';
 
 interface AuthContextType {
   user: User | null;
@@ -62,6 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Keep Sentry user context in sync with auth state
+      setSentryUser(session?.user?.id ?? null);
     });
 
     return () => {

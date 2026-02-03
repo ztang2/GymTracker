@@ -13,7 +13,7 @@ interface ExerciseListItemProps {
   showFavoriteButton?: boolean;
 }
 
-export default function ExerciseListItem({
+function ExerciseListItemInner({
   exercise,
   onPress,
   isFavorite = false,
@@ -76,6 +76,9 @@ export default function ExerciseListItem({
     </TouchableOpacity>
   );
 }
+
+const ExerciseListItem = React.memo(ExerciseListItemInner);
+export default ExerciseListItem;
 
 const createStyles = (colors: ThemeColors) => StyleSheet.create({
   container: {

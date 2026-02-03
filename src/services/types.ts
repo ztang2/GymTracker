@@ -187,6 +187,7 @@ export interface UserProfile {
   avatar_url: string | null;
   total_xp: number;
   current_level: number;
+  push_token: string | null;
   created_at: string;
   updated_at: string;
 }

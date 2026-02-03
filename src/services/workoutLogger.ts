@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import { TABLES } from '../constants/tables';
+import { enqueueOperation } from './offlineQueue';
+import NetInfo from '@react-native-community/netinfo';
 import type {
   WorkoutSession,
   WorkoutExercise,
@@ -199,6 +201,77 @@ export async function saveWorkout(
   }
 
   return sessionData as WorkoutSession;
+}
+
+/**
+ * Save workout with offline awareness.
+ * When online, saves directly to Supabase (existing flow).
+ * When offline, queues the workout data for later sync.
+ *
+ * @returns The created WorkoutSession (online) or a placeholder session (offline/queued)
+ */
+export async function saveWorkoutWithOfflineSupport(
+  userId: string,
+  workout: ActiveWorkoutState,
+): Promise<WorkoutSession> {
+  const netState = await NetInfo.fetch();
+
+  if (netState.isConnected && netState.isInternetReachable !== false) {
+    // Online — use the normal save path
+    return saveWorkout(userId, workout);
+  }
+
+  // Offline — queue the operations
+  const endTime = new Date();
+  const durationMinutes = calculateDuration(workout.startTime);
+
+  const exercisesWithSets = workout.exercises.filter(
+    (ex) => ex.sets.some((set) => set.completed && set.reps > 0),
+  );
+
+  if (exercisesWithSets.length === 0) {
+    throw new Error('No completed sets to save. Please complete at least one set.');
+  }
+
+  // Build a serialisable snapshot of the full workout for later replay
+  const workoutPayload = {
+    user_id: userId,
+    date: workout.startTime.toISOString().split('T')[0],
+    start_time: workout.startTime.toISOString(),
+    end_time: endTime.toISOString(),
+    duration_minutes: durationMinutes,
+    notes: workout.notes || null,
+    _exercises: exercisesWithSets.map((ex, index) => ({
+      exercise_id: ex.exerciseId,
+      order_index: index,
+      notes: ex.notes ? ex.notes.trim() : null,
+      _sets: ex.sets
+        .filter((set) => set.completed && set.reps > 0)
+        .map((set, setIdx) => ({
+          set_number: setIdx + 1,
+          reps: set.reps,
+          weight_kg: set.weight > 0 ? set.weight : null,
+          rest_seconds: 90,
+          completed: true,
+          notes: null,
+        })),
+    })),
+  };
+
+  await enqueueOperation('insert', TABLES.WORKOUT_SESSIONS, workoutPayload);
+
+  // Return a placeholder session so callers can continue
+  return {
+    id: `queued-${Date.now()}`,
+    user_id: userId,
+    date: workoutPayload.date,
+    start_time: workoutPayload.start_time,
+    end_time: workoutPayload.end_time,
+    duration_minutes: durationMinutes,
+    notes: workout.notes || null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  } as WorkoutSession;
 }
 
 /**

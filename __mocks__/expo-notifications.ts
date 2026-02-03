@@ -1,0 +1,10 @@
+export const getPermissionsAsync = jest.fn().mockResolvedValue({ status: 'granted' });
+export const requestPermissionsAsync = jest.fn().mockResolvedValue({ status: 'granted' });
+export const getExpoPushTokenAsync = jest.fn().mockResolvedValue({ data: 'mock-token' });
+export const scheduleNotificationAsync = jest.fn().mockResolvedValue('mock-id');
+export const cancelAllScheduledNotificationsAsync = jest.fn().mockResolvedValue(undefined);
+export const setNotificationHandler = jest.fn();
+export const setNotificationChannelAsync = jest.fn().mockResolvedValue(undefined);
+export const addNotificationResponseReceivedListener = jest.fn().mockReturnValue({ remove: jest.fn() });
+export const AndroidImportance = { MAX: 5, HIGH: 4, DEFAULT: 3 };
+export const SchedulableTriggerInputTypes = { WEEKLY: 'weekly', DATE: 'date' };

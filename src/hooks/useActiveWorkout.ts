@@ -28,6 +28,7 @@ import { useAuth } from '../contexts';
 import type { WorkoutSummary } from '../services/types';
 import { useWorkoutTimer } from './useWorkoutTimer';
 import { useRestTimer } from './useRestTimer';
+import { trackEvent } from '../utils/analytics';
 import { useWorkoutState } from './useWorkoutState';
 import { showAlert } from '../utils/alert';
 
@@ -409,6 +410,25 @@ export function useActiveWorkout({
               newBadges,
             };
 
+            // Track workout completion
+            trackEvent('workout_completed', {
+              exerciseCount: summary.exerciseCount,
+              setCount: summary.setCount,
+              totalVolume: summary.totalVolume,
+              duration: summary.duration,
+              xpEarned: summary.xpEarned,
+              prCount: newPRs.length,
+              badgeCount: newBadges.length,
+            });
+
+            // Track any newly unlocked achievements
+            for (const badge of newBadges) {
+              trackEvent('achievement_unlocked', {
+                badgeId: badge.id,
+                badgeName: badge.name,
+              });
+            }
+
             setWorkoutSummary(summary);
             setShowSummaryModal(true);
           } catch (error) {
@@ -458,6 +478,12 @@ export function useActiveWorkout({
         const durationMinutes = Math.floor((Date.now() - startTime.getTime()) / 60000);
 
         await createTemplateFromWorkout(user.id, name, workoutExercises, durationMinutes);
+
+        trackEvent('template_created', {
+          name,
+          exerciseCount: workoutExercises.length,
+          estimatedDuration: durationMinutes,
+        });
 
         setShowSaveTemplateModal(false);
         showAlert('Template Saved', `"${name}" has been saved as a template.`, [

@@ -1,11 +1,13 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, TransitionPresets, CardStyleInterpolators } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Platform, View, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { NavigationState } from '@react-navigation/native';
+import { trackScreen } from '../utils/analytics';
 import type {
   AuthStackParamList,
   MainTabParamList,
@@ -38,9 +40,17 @@ import {
   PrivacyPolicyScreen,
   DeleteAccountScreen,
   ExportDataScreen,
+  NotificationSettingsScreen,
 } from '../screens';
 import { useAuth, useTheme } from '../contexts';
 import { seedExercises } from '../services';
+import {
+  setupNotificationChannels,
+  registerForPushNotifications,
+  scheduleWorkoutReminders,
+  addNotificationResponseListener,
+  getLastNotificationResponse,
+} from '../services/notificationService';
 import { ErrorBoundary, OfflineBanner } from '../components';
 import type { ThemeColors } from '../constants/theme';
 
@@ -194,6 +204,11 @@ function ProfileNavigator() {
         options={{ headerShown: false }}
       />
       <ProfileStack.Screen
+        name="NotificationSettingsScreen"
+        component={NotificationSettingsScreen}
+        options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
         name="PrivacyPolicyScreen"
         component={PrivacyPolicyScreen}
         options={{ headerShown: false }}
@@ -294,10 +309,25 @@ function MainTabNavigator() {
   );
 }
 
+/**
+ * Recursively extract the active route name from a navigation state.
+ */
+function getActiveRouteName(state: NavigationState | undefined): string | undefined {
+  if (!state) return undefined;
+  const route = state.routes[state.index];
+  if (route.state) {
+    return getActiveRouteName(route.state as NavigationState);
+  }
+  return route.name;
+}
+
+const navigationRef = createNavigationContainerRef();
+
 export default function AppNavigator() {
   const { user, loading } = useAuth();
   const { colors } = useTheme();
   const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
+  const routeNameRef = useRef<string | undefined>(undefined);
 
   // Check onboarding status and seed exercises when user logs in
   useEffect(() => {
@@ -305,6 +335,39 @@ export default function AppNavigator() {
     if (user) {
       seedExercises().catch((err) => console.warn('Exercise seed skipped:', err));
     }
+  }, [user]);
+
+  // Setup notifications when user is authenticated
+  useEffect(() => {
+    if (!user) return;
+
+    // Setup Android notification channels
+    setupNotificationChannels().catch(console.error);
+
+    // Register for push notifications and store token
+    registerForPushNotifications(user.id).catch(console.error);
+
+    // Re-schedule any existing workout reminders (e.g., after app update)
+    scheduleWorkoutReminders().catch(console.error);
+
+    // Handle notification taps → navigate to relevant screen
+    const cleanup = addNotificationResponseListener((screen) => {
+      if (!screen) return;
+      // Navigate based on the screen hint stored in the notification data
+      try {
+        if (screen === 'AchievementsScreen') {
+          // Navigate to Profile tab → Achievements
+          navigationRef.current?.navigate('ProfileTab' as never);
+        } else if (screen === 'ProfileScreen') {
+          navigationRef.current?.navigate('ProfileTab' as never);
+        }
+        // Default: just open the app (HomeScreen)
+      } catch (err) {
+        console.warn('Notification navigation failed:', err);
+      }
+    });
+
+    return cleanup;
   }, [user]);
 
   const checkOnboardingStatus = async () => {
@@ -329,11 +392,19 @@ export default function AppNavigator() {
   return (
     <ErrorBoundary>
       <NavigationContainer
-        onStateChange={() => {
+        ref={navigationRef}
+        onStateChange={(state) => {
           // Re-check onboarding status when navigation changes
           if (user) {
             checkOnboardingStatus();
           }
+
+          // Track screen views for analytics
+          const currentRouteName = getActiveRouteName(state as NavigationState | undefined);
+          if (currentRouteName && currentRouteName !== routeNameRef.current) {
+            trackScreen(currentRouteName);
+          }
+          routeNameRef.current = currentRouteName;
         }}
       >
         {user ? (

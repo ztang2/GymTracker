@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNetworkState } from '../hooks';
+import { useNetworkState, useOfflineQueue } from '../hooks';
 import { useTheme } from '../contexts';
 import { spacing, typography, borderRadius } from '../constants/theme';
 
 const OfflineBanner: React.FC = () => {
   const { isConnected } = useNetworkState();
+  const { queueSize } = useOfflineQueue();
   const { colors } = useTheme();
   const slideAnim = useRef(new Animated.Value(-100)).current;
 
@@ -47,7 +48,9 @@ const OfflineBanner: React.FC = () => {
       <View style={styles.content}>
         <Ionicons name="warning" size={20} color="#000" style={styles.icon} />
         <Text style={[styles.text, { color: '#000' }]}>
-          You're offline. Some features may be unavailable.
+          {queueSize > 0
+            ? `Offline · ${queueSize} pending`
+            : "You're offline. Some features may be unavailable."}
         </Text>
       </View>
     </Animated.View>

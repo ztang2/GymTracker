@@ -242,6 +242,10 @@ export const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
             data={filteredExercises}
             keyExtractor={(item) => item.id}
             renderItem={renderExerciseItem}
+            removeClippedSubviews={true}
+            initialNumToRender={15}
+            maxToRenderPerBatch={10}
+            windowSize={5}
             contentContainerStyle={styles.exerciseList}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             ListEmptyComponent={

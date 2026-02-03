@@ -10,3 +10,4 @@ export type { WeightUnit } from './useWeightUnit';
 export { useEntranceAnimation } from './useEntranceAnimation';
 export { useActiveWorkout } from './useActiveWorkout';
 export type { UseActiveWorkoutReturn } from './useActiveWorkout';
+export { useOfflineQueue } from './useOfflineQueue';

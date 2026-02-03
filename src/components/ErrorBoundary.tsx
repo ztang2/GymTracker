@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { spacing, typography, borderRadius } from '../constants/theme';
+import { captureException } from '../utils/sentry';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -40,6 +41,11 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log error details to console
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+
+    // Report to Sentry with component stack context
+    captureException(error, {
+      componentStack: errorInfo.componentStack ?? 'unknown',
+    });
     
     this.setState({
       error,

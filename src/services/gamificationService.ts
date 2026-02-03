@@ -1,6 +1,10 @@
 import { supabase } from './supabase';
 import { TABLES } from '../constants/tables';
 import { handleServiceError } from '../utils/errorHandler';
+import {
+  sendBadgeUnlockNotification,
+  sendLevelUpNotification,
+} from './notificationService';
 import type {
   UserProfile,
   Badge,
@@ -162,6 +166,12 @@ export async function awardXP(
   }
 
   const result = data as { new_xp: number; new_level: number; leveled_up: boolean };
+
+  // Send level-up notification if applicable
+  if (result.leveled_up) {
+    sendLevelUpNotification(result.new_level).catch(console.error);
+  }
+
   return {
     newXP: result.new_xp,
     newLevel: result.new_level,
@@ -189,6 +199,11 @@ async function awardXPFallback(
   if (error) {
     handleServiceError(error, 'awardXPFallback');
     return null;
+  }
+
+  // Send level-up notification if applicable
+  if (leveledUp) {
+    sendLevelUpNotification(newLevel).catch(console.error);
   }
 
   return { newXP, newLevel, leveledUp };
@@ -347,6 +362,9 @@ export async function awardBadge(
 
   // Award XP for badge
   await awardXP(userId, badge.xp_reward);
+
+  // Send badge unlock notification
+  sendBadgeUnlockNotification(badge.name, badge.description).catch(console.error);
 
   return { awarded: true, badge, xpAwarded: badge.xp_reward };
 }

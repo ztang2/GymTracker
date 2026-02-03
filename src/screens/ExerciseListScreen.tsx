@@ -161,6 +161,10 @@ export default function ExerciseListScreen({ navigation }: ExerciseListScreenPro
             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]} accessibilityRole="header">{title}</Text>
           </View>
         )}
+        removeClippedSubviews={true}
+        initialNumToRender={15}
+        maxToRenderPerBatch={10}
+        windowSize={5}
         contentContainerStyle={styles.listContent}
         stickySectionHeadersEnabled={false}
       />

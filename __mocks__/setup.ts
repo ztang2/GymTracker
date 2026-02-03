@@ -40,6 +40,20 @@ jest.mock('../src/services/prService', () => ({
   getExercisePRs: jest.fn().mockResolvedValue([]),
 }));
 
+// Mock react-native
+jest.mock('react-native', () => ({
+  Platform: { OS: 'web', select: jest.fn((obj: any) => obj.web || obj.default) },
+  Alert: { alert: jest.fn() },
+  Dimensions: { get: jest.fn(() => ({ width: 375, height: 812 })) },
+  StyleSheet: { create: (styles: any) => styles },
+}));
+
+// Mock notificationService (imported by gamificationService)
+jest.mock('../src/services/notificationService', () => ({
+  sendBadgeUnlockNotification: jest.fn().mockResolvedValue(undefined),
+  sendLevelUpNotification: jest.fn().mockResolvedValue(undefined),
+}));
+
 // Mock theme constants (getLevelTier)
 jest.mock('../src/constants/theme', () => ({
   getLevelTier: (level: number) => {

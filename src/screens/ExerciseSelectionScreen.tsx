@@ -13,6 +13,7 @@ import {
 import { useExerciseSearch } from '../hooks';
 import { addExerciseToWorkout } from '../services';
 import { typography, spacing ,  type ThemeColors } from '../constants/theme';
+import { trackEvent } from '../utils/analytics';
 import type { Exercise } from '../services/types';
 
 export default function ExerciseSelectionScreen({
@@ -42,6 +43,7 @@ export default function ExerciseSelectionScreen({
       // Get the current order index (last position)
       const orderIndex = 0; // Will be handled by the service if needed
       await addExerciseToWorkout(workoutId, exerciseId, orderIndex);
+      trackEvent('exercise_added', { exerciseId, workoutId });
       navigation.goBack();
     } catch (error) {
       console.error('Failed to add exercise:', error);
@@ -156,6 +158,10 @@ export default function ExerciseSelectionScreen({
             <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>{title}</Text>
           </View>
         )}
+        removeClippedSubviews={true}
+        initialNumToRender={15}
+        maxToRenderPerBatch={10}
+        windowSize={5}
         contentContainerStyle={styles.listContent}
         stickySectionHeadersEnabled={false}
       />

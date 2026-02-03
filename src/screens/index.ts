@@ -26,3 +26,4 @@ export { default as PrivacyPolicyScreen } from './PrivacyPolicyScreen';
 export { default as DeleteAccountScreen } from './DeleteAccountScreen';
 export { default as ExportDataScreen } from './ExportDataScreen';
 export { default as ActiveWorkoutFromTemplateScreen } from './ActiveWorkoutFromTemplateScreen';
+export { default as NotificationSettingsScreen } from './NotificationSettingsScreen';

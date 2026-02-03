@@ -75,7 +75,7 @@ function getMuscleGroups(workout: WorkoutSessionWithExercises): ExerciseCategory
   return Array.from(seen);
 }
 
-export default function RecentWorkoutCard({
+function RecentWorkoutCardInner({
   workout,
   onPress,
   accentColor,
@@ -171,6 +171,9 @@ export default function RecentWorkoutCard({
     </TouchableOpacity>
   );
 }
+
+const RecentWorkoutCard = React.memo(RecentWorkoutCardInner);
+export default RecentWorkoutCard;
 
 const styles = StyleSheet.create({
   container: {

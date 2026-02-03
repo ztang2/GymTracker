@@ -91,7 +91,7 @@ const WeightInput: React.FC<{
   );
 };
 
-export const SetRow: React.FC<SetRowProps> = ({
+const SetRowInner: React.FC<SetRowProps> = ({
   set,
   index,
   unit,
@@ -158,3 +158,5 @@ export const SetRow: React.FC<SetRowProps> = ({
     </View>
   );
 };
+
+export const SetRow = React.memo(SetRowInner);

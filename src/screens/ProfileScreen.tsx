@@ -103,7 +103,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   };
 
   const handleNotifications = () => {
-    showAlert('Notifications', 'Notification settings coming soon!');
+    navigation.navigate('NotificationSettingsScreen');
   };
 
   const handlePrivacy = () => {

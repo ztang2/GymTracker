@@ -49,6 +49,7 @@ export type ProgressStackParamList = {
 export type ProfileStackParamList = {
   ProfileScreen: undefined;
   AchievementsScreen: undefined;
+  NotificationSettingsScreen: undefined;
   PrivacyPolicyScreen: undefined;
   DeleteAccountScreen: undefined;
   ExportDataScreen: undefined;
@@ -115,6 +116,11 @@ export type TemplateListScreenProps = StackScreenProps<
 export type AchievementsScreenProps = StackScreenProps<
   HomeStackParamList,
   'AchievementsScreen'
+>;
+
+export type NotificationSettingsScreenProps = StackScreenProps<
+  ProfileStackParamList,
+  'NotificationSettingsScreen'
 >;
 
 // Calendar Stack Screens
